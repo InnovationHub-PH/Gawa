@@ -7,6 +7,9 @@
     <title>Makers Club</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D'16'%20height%3D'16'%20viewBox%3D'0%200%2016%2016'%20fill%3D'none'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M8.99999%204.49994V11.5H7V4.49994H8.99999Z'%20fill%3D'%239700EF'%2F%3E%3Cpath%20d%3D'M16%204.50007L9%204.50011V11.5002L7.00024%2011.5003L7%2013.5001L16.0001%2013.5L16%204.50007Z'%20fill%3D'%23348F82'%2F%3E%3Cpath%20d%3D'M9%202.5H0V11.5H7V4.5H9V2.5Z'%20fill%3D'%23FEDE7D'%2F%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/prismjs@1.29.0/themes/prism.css">
+    <link rel="stylesheet" href="css/style.css" />
     <script>
     (function() {
       const theme = localStorage.getItem('theme') || 'grey';
@@ -25,13 +28,10 @@
       }
     })();
     </script>
-    <base href="/Gawa/">
-    <link rel="stylesheet" href="style.css" />
   </head>
   
   <body>
     <div class="nav-container">
-      
       <button class="menu-toggle" aria-label="Toggle menu">
         <span></span>
         <span></span>
@@ -43,7 +43,6 @@
           <path d="M177 134H73V104H104V30H177V134ZM104 30H73V104H0V0H104V30Z"/>
         </svg>Gawa
       </a>
-
       
       <nav class="main-nav">
         <a href="jobs.html" class="nav-link">JOBS</a>
@@ -62,8 +61,7 @@
         <h1>INNOVATION HUB</h1>
       </div>
 
-<pre><code class="language-cpp">
-        
+      <pre><code class="language-cpp">
 // Single-line comment
 
 /*
@@ -117,9 +115,7 @@ int main() {
 
     return 0;
 }
-
-</code>
-</pre>
+</code></pre>
       
       <h2>MAKERS CLUB</h2>
 
@@ -169,7 +165,25 @@ int main() {
         <p>INNOVATION AT THE INTERSECTION OF DISCIPLINES</p>
       </footer>
     </div>
-    <script type="module" src="js/theme.js"></script>
-    <script type="module" src="js/blog.js"></script>
+
+    <!-- External Dependencies -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/prism.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-java.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-ruby.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-rust.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-go.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-csharp.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-kotlin.min.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="js/theme.js"></script>
+    <script src="js/blogData.js"></script>
+    <script src="js/blog.js"></script>
   </body>
 </html>
