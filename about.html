@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About Us - Makers Club</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D'16'%20height%3D'16'%20viewBox%3D'0%200%2016%2016'%20fill%3D'none'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M8.99999%204.49994V11.5H7V4.49994H8.99999Z'%20fill%3D'%239700EF'%2F%3E%3Cpath%20d%3D'M16%204.50007L9%204.50011V11.5002L7.00024%2011.5003L7%2013.5001L16.0001%2013.5L16%204.50007Z'%20fill%3D'%23348F82'%2F%3E%3Cpath%20d%3D'M9%202.5H0V11.5H7V4.5H9V2.5Z'%20fill%3D'%23FEDE7D'%2F%3E%3C/svg%3E">
+    
+
+    <script>
+    (function() {
+  const theme = localStorage.getItem('theme') || 'grey';
+  document.documentElement.setAttribute('data-theme', theme);
+  const themeColors = {
+    black: '#000000',
+    purple: '#160B26',
+    green: '#000000',
+    brown: '#111111',
+    grey: '#ffffff',
+    beige: '#fdf6e3'
+  };
+  const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+  if (metaThemeColor) {
+    metaThemeColor.setAttribute('content', themeColors[theme]);
+  }
+})();
+    </script>
+
+    <link rel="stylesheet" href="style.css" />
+    
+  </head>
+  <body>
+    <div class="nav-container">
+      <button class="menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+
+      <a href="index.html" class="nav-link logo-link">
+        <svg width="24" height="24" viewBox="0 0 177 134" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+          <path d="M177 134H73V104H104V30H177V134ZM104 30H73V104H0V0H104V30Z"/>
+        </svg>Gawa
+      </a>
+
+      
+      <nav class="main-nav">
+        <a href="jobs.html" class="nav-link">JOBS</a>
+        <a href="resources.html" class="nav-link">RESOURCES</a>
+        <a href="community.html" class="nav-link">COMMUNITY</a>
+        <a href="about.html" class="nav-link">ABOUT</a>
+      </nav>
+
+
+      <button id="themeToggle" class="theme-toggle" aria-label="Switch theme">
+        <pre class="theme-icon">[LIGHT]</pre>
+      </button>
+
+    </div>
+
+    <div class="container">
+      <h1>ABOUT US</h1>
+
+      <section>
+        <div class="about-section">
+          <h2>OUR MISSION</h2>
+          <p>We are dedicated to fostering innovation and learning in mechatronics engineering through hands-on projects, workshops, and collaboration.</p>
+        </div>
+
+        <div class="about-section">
+          <h2>WHAT WE DO</h2>
+          <ul class="brutalist-list">
+            <li>Weekly Meet-ups</li>
+            <li>Industry Guest Speakers</li>
+            <li>Co-Working</li>
+            <li>Networking Events</li>
+            <li>Technical Skill Sharing</li>
+          </ul>
+        </div>
+
+        <div class="about-section">
+          <h2>Club Organizer</h2>
+          <div class="team-grid">
+            <div class="team-member">
+              <h3>Jon Prado</h3>
+              <p>Industrial Designer</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>INNOVATION AT THE INTERSECTION OF DISCIPLINES</p>
+      </footer>
+    </div>
+    <script src="js/theme.js"></script>
+  </body>
+</html>
