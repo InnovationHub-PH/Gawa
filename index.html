@@ -9,22 +9,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
     (function() {
-  const theme = localStorage.getItem('theme') || 'grey';
-  document.documentElement.setAttribute('data-theme', theme);
-  const themeColors = {
-    black: '#000000',
-    purple: '#160B26',
-    green: '#000000',
-    brown: '#111111',
-    grey: '#ffffff',
-    beige: '#fdf6e3'
-  };
-  const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-  if (metaThemeColor) {
-    metaThemeColor.setAttribute('content', themeColors[theme]);
-  }
-})();
+      const theme = localStorage.getItem('theme') || 'grey';
+      document.documentElement.setAttribute('data-theme', theme);
+      const themeColors = {
+        black: '#000000',
+        purple: '#160B26',
+        green: '#000000',
+        brown: '#111111',
+        grey: '#ffffff',
+        beige: '#fdf6e3'
+      };
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', themeColors[theme]);
+      }
+    })();
     </script>
+    <base href="/Gawa/">
     <link rel="stylesheet" href="style.css" />
   </head>
   

@@ -1,3 +1,6 @@
+// Add Leaflet CSS import at the top
+import 'leaflet/dist/leaflet.css';
+
 // Community member data
 const communityMembers = [
   {
