@@ -1,5 +1,5 @@
 // Blog posts data
-export const blogPosts = [
+const blogPosts = [
   {
     id: 1,
     title: 'Testing Website Color Themes on Code',
