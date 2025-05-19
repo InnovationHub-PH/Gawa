@@ -9,8 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "pdfjs-dist": "^4.0.379",
-    "prismjs": "^1.29.0"
+    "pdfjs-dist": "^4.0.379"
   },
   "devDependencies": {
     "vite": "^5.0.8"
