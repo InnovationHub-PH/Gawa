@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "leaflet": "^1.9.4",
     "pdfjs-dist": "^4.0.379",
     "prismjs": "^1.29.0"
   },
