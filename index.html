@@ -11,47 +11,45 @@
     <script src="https://unpkg.com/prismjs@1.29.0/components/prism-core.min.js"></script>
     <script src="https://unpkg.com/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script>
-    (function() {
-      const theme = localStorage.getItem('theme') || 'grey';
-      document.documentElement.setAttribute('data-theme', theme);
-      const themeColors = {
-        black: '#000000',
-        purple: '#160B26',
-        green: '#000000',
-        brown: '#111111',
-        grey: '#ffffff',
-        beige: '#fdf6e3'
-      };
-      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', themeColors[theme]);
-      }
-    })();
+      (function() {
+        const theme = localStorage.getItem('theme') || 'grey';
+        document.documentElement.setAttribute('data-theme', theme);
+        const themeColors = {
+          black: '#000000',
+          purple: '#160B26',
+          green: '#000000',
+          brown: '#111111',
+          grey: '#ffffff',
+          beige: '#fdf6e3'
+        };
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+          metaThemeColor.setAttribute('content', themeColors[theme]);
+        }
+      })();
     </script>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/Gawa/style.css" />
   </head>
   
   <body>
     <div class="nav-container">
-      
       <button class="menu-toggle" aria-label="Toggle menu">
         <span></span>
         <span></span>
         <span></span>
       </button>
 
-      <a href="index.html" class="nav-link logo-link">
+      <a href="/Gawa/index.html" class="nav-link logo-link">
         <svg width="24" height="24" viewBox="0 0 177 134" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
           <path d="M177 134H73V104H104V30H177V134ZM104 30H73V104H0V0H104V30Z"/>
         </svg>Gawa
       </a>
-
       
       <nav class="main-nav">
-        <a href="jobs.html" class="nav-link">JOBS</a>
-        <a href="resources.html" class="nav-link">RESOURCES</a>
-        <a href="community.html" class="nav-link">COMMUNITY</a>
-        <a href="about.html" class="nav-link">ABOUT</a>
+        <a href="/Gawa/jobs.html" class="nav-link">JOBS</a>
+        <a href="/Gawa/resources.html" class="nav-link">RESOURCES</a>
+        <a href="/Gawa/community.html" class="nav-link">COMMUNITY</a>
+        <a href="/Gawa/about.html" class="nav-link">ABOUT</a>
       </nav>
 
       <button id="themeToggle" class="theme-toggle" aria-label="Switch theme">
@@ -64,9 +62,7 @@
         <h1>INNOVATION HUB</h1>
       </div>
 
-<pre><code class="language-cpp">
-        
-// Single-line comment
+      <pre><code class="language-cpp">// Single-line comment
 
 /*
  * Multi-line comment
@@ -118,10 +114,7 @@ int main() {
     }
 
     return 0;
-}
-
-</code>
-</pre>
+}</code></pre>
       
       <h2>MAKERS CLUB</h2>
 
@@ -171,7 +164,7 @@ int main() {
         <p>INNOVATION AT THE INTERSECTION OF DISCIPLINES</p>
       </footer>
     </div>
-    <script type="module" src="js/theme.js"></script>
-    <script type="module" src="js/blog.js"></script>
+    <script type="module" src="/Gawa/js/theme.js"></script>
+    <script type="module" src="/Gawa/js/blog.js"></script>
   </body>
 </html>

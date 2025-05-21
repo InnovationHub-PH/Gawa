@@ -28,7 +28,7 @@ const createBlogCard = (post) => {
   const firstParagraph = post.content.split('\n')[0];
   
   return `
-    <a href="post.html?id=${post.id}" class="card blog-card" data-tags="${post.tags.join(' ')}">
+    <a href="/Gawa/post.html?id=${post.id}" class="card blog-card" data-tags="${post.tags.join(' ')}">
       <div class="blog-image">
         <img src="${post.image}" alt="${post.title}">
       </div>
