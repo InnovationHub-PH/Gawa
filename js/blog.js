@@ -1,4 +1,3 @@
-// Import blog posts data
 import { blogPosts } from './blogData.js';
 
 // Get unique tags from blog posts

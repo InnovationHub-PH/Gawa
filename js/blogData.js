@@ -1,5 +1,5 @@
 // Blog posts data
-const blogPosts = [
+export const blogPosts = [
   {
     id: 1,
     title: 'Testing Website Color Themes on Code',
@@ -442,7 +442,10 @@ puts "Result: #{result || 'No result'}"
 \`\`\`
 
 `,
+    
   },
+  
+  
   {
     id: 2,
     title: 'Successful Hackathon Event',
@@ -504,6 +507,3 @@ puts "Result: #{result || 'No result'}"
     image: 'https://images.pexels.com/photos/3862130/pexels-photo-3862130.jpeg'
   }
 ];
-
-window.blogPosts = blogPosts;
-export { blogPosts };
