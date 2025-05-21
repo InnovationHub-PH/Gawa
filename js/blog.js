@@ -1,9 +1,7 @@
-import { blogPosts } from './blogData.js';
-
 // Get unique tags from blog posts
 const getAllTags = () => {
   const tags = new Set();
-  blogPosts.forEach(post => {
+  window.blogPosts.forEach(post => {
     post.tags.forEach(tag => tags.add(tag));
   });
   return Array.from(tags);
@@ -79,7 +77,7 @@ const initBlog = () => {
   // Filter and display posts
   const updatePosts = () => {
     const searchTerm = searchInput.value.toLowerCase();
-    const filteredPosts = blogPosts.filter(post => {
+    const filteredPosts = window.blogPosts.filter(post => {
       const matchesSearch = 
         post.title.toLowerCase().includes(searchTerm) ||
         post.content.toLowerCase().includes(searchTerm) ||

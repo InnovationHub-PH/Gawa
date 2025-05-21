@@ -505,4 +505,5 @@ puts "Result: #{result || 'No result'}"
   }
 ];
 
+window.blogPosts = blogPosts;
 export { blogPosts };
