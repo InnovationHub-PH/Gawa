@@ -316,7 +316,7 @@ h2 {
 }
 
 .nav-link:last-child {
-  border-right: 2px solid var(--border-color);
+  border-right: none;
 }
 
 .nav-link:hover {
@@ -329,8 +329,6 @@ h2 {
 .theme-toggle {
   background: none;
   border: 2px solid var(--border-color);
-  border-left: none;
-  border-right: none;
   color: var(--text-color);
   cursor: pointer;
   font-family: var(--font-mono);
