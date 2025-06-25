@@ -302,6 +302,7 @@ h2 {
   text-decoration: none;
   padding: 0 1rem;
   border: 2px solid var(--border-color);
+  border-right: none;
   transition: all 0.3s ease;
   text-align: center;
   font-family: var(--font-mono);
@@ -312,6 +313,10 @@ h2 {
   text-align: center;
   justify-content: center;
   gap: 0.5rem;
+}
+
+.nav-link:last-child {
+  border-right: 2px solid var(--border-color);
 }
 
 .nav-link:hover {
