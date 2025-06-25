@@ -171,16 +171,17 @@ body {
   color: var(--text-color);
   line-height: 1.6;
   overflow-x: hidden;
-  padding-top: var(--nav-height);
   min-height: 100vh;
   text-shadow: var(--terminal-shadow);
+  padding: 0 2rem;
+  padding-top: calc(var(--nav-height) + 2rem);
 }
 
 /* Container */
 .container {
   width: 100%;
   max-width: 1800px;
-
+  margin: 0 auto;
   
   position: relative;
 }
@@ -240,10 +241,11 @@ h2::before {
 .nav-container {
   position: fixed;
   top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 2rem;
+  right: 2rem;
   width: 100%;
   max-width: 1800px;
+  margin: 0 auto;
   background-color: var(--bg-color);
   border: 2px solid var(--border-color);
   z-index: 1000;
@@ -694,18 +696,18 @@ footer {
 /* Media Queries */
 @media (max-width: 768px) {
   body {
-    padding-top: var(--nav-element-height);
+    padding: 1rem;
+    padding-top: calc(var(--nav-element-height) + 1rem);
   }
 
   .nav-container {
     position: fixed;
     top: 0;
-    left: 0;
-    right: 0;
-    transform: none;
+    left: 1rem;
+    right: 1rem;
     width: 100%;
     max-width: none;
-    padding: 0;
+    margin: 0;
     border-radius: 0;
     border-left: none;
     border-right: none;
