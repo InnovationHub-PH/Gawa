@@ -106,48 +106,115 @@ function truncateWords(text, wordCount) {
   return words.slice(0, wordCount).join(' ') + '...';
 }
 
-// Initialize map
-const map = L.map('communityMap').setView([14.5995, 120.9842], 12);
-const markers = new Map();
-
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors'
-}).addTo(map);
-
-// Add markers for members with locations
-communityMembers.forEach(member => {
-  if (member.location) {
-    const marker = L.marker([member.location.lat, member.location.lng])
-      .bindPopup(`
-        <strong>${member.name}</strong><br>
-        ${member.location.address}
-      `)
-      .addTo(map);
-    
-    markers.set(member.name, marker);
-    
-    marker.on('click', () => {
-      highlightMember(member.name);
-    });
-  }
-});
-
-// PDF Preview Modal
-const modal = document.createElement('div');
-modal.className = 'pdf-modal';
-modal.innerHTML = `
-  <div class="pdf-modal-content">
-    <button class="close-modal">&times;</button>
-    <button class="nav-btn prev-page">←</button>
-    <canvas id="pdf-canvas"></canvas>
-    <button class="nav-btn next-page">→</button>
-    <div class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></div>
-  </div>
-`;
-document.body.appendChild(modal);
-
+// Variables for community page functionality
+let map = null;
+let markers = new Map();
+let modal = null;
 let currentPdf = null;
 let currentPage = 1;
+let activeFilters = new Set();
+
+function initializeCommunityPage() {
+  // Check if we're on the community page
+  const mapContainer = document.getElementById('communityMap');
+  if (!mapContainer) {
+    return; // Exit if not on community page
+  }
+
+  // Initialize map
+  map = L.map('communityMap').setView([14.5995, 120.9842], 12);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Add markers for members with locations
+  communityMembers.forEach(member => {
+    if (member.location) {
+      const marker = L.marker([member.location.lat, member.location.lng])
+        .bindPopup(`
+          <strong>${member.name}</strong><br>
+          ${member.location.address}
+        `)
+        .addTo(map);
+      
+      markers.set(member.name, marker);
+      
+      marker.on('click', () => {
+        highlightMember(member.name);
+      });
+    }
+  });
+
+  // PDF Preview Modal
+  modal = document.createElement('div');
+  modal.className = 'pdf-modal';
+  modal.innerHTML = `
+    <div class="pdf-modal-content">
+      <button class="close-modal">&times;</button>
+      <button class="nav-btn prev-page">←</button>
+      <canvas id="pdf-canvas"></canvas>
+      <button class="nav-btn next-page">→</button>
+      <div class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Event listeners for modal navigation
+  document.querySelector('.close-modal').addEventListener('click', () => {
+    modal.style.display = 'none';
+    currentPdf = null;
+    currentPage = 1;
+  });
+
+  document.querySelector('.prev-page').addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      showPdfPreview(currentPdf.url, currentPage);
+    }
+  });
+
+  document.querySelector('.next-page').addEventListener('click', () => {
+    if (currentPage < currentPdf.numPages) {
+      currentPage++;
+      showPdfPreview(currentPdf.url, currentPage);
+    }
+  });
+
+  // Search and filter functionality
+  const searchInput = document.getElementById('searchInput');
+  const tagButtons = document.querySelectorAll('.tag-btn');
+
+  // Event listeners
+  if (searchInput) {
+    searchInput.addEventListener('input', updateDirectory);
+  }
+
+  tagButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const tag = button.dataset.tag;
+      if (activeFilters.has(tag)) {
+        activeFilters.delete(tag);
+        button.classList.remove('active');
+      } else {
+        activeFilters.add(tag);
+        button.classList.add('active');
+      }
+      updateDirectory();
+    });
+  });
+
+  // Category collapse functionality
+  document.querySelectorAll('.directory-category h2').forEach(header => {
+    header.addEventListener('click', () => {
+      const category = header.closest('.directory-category');
+      category.classList.toggle('collapsed');
+    });
+  });
+
+  // Initial render
+  updateDirectory();
+}
 
 async function showPdfPreview(pdfUrl, pageNumber = 1) {
   try {
@@ -176,27 +243,6 @@ async function showPdfPreview(pdfUrl, pageNumber = 1) {
     console.error('Error loading PDF:', error);
   }
 }
-
-// Event listeners for modal navigation
-document.querySelector('.close-modal').addEventListener('click', () => {
-  modal.style.display = 'none';
-  currentPdf = null;
-  currentPage = 1;
-});
-
-document.querySelector('.prev-page').addEventListener('click', () => {
-  if (currentPage > 1) {
-    currentPage--;
-    showPdfPreview(currentPdf.url, currentPage);
-  }
-});
-
-document.querySelector('.next-page').addEventListener('click', () => {
-  if (currentPage < currentPdf.numPages) {
-    currentPage++;
-    showPdfPreview(currentPdf.url, currentPage);
-  }
-});
 
 function createMemberCard(member) {
   // Process member info fields for truncation
@@ -313,7 +359,8 @@ function initializePdfPreviews() {
 }
 
 function updateDirectory() {
-  const searchTerm = searchInput.value.toLowerCase();
+  const searchInput = document.getElementById('searchInput');
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
   
   document.querySelectorAll('.member-grid').forEach(grid => {
     grid.innerHTML = '';
@@ -366,11 +413,6 @@ function updateDirectory() {
   initializePdfPreviews();
 }
 
-// Search and filter functionality
-const searchInput = document.getElementById('searchInput');
-const tagButtons = document.querySelectorAll('.tag-btn');
-let activeFilters = new Set();
-
 function highlightMember(memberName) {
   // Remove previous selection
   document.querySelectorAll('.member-card.selected').forEach(card => {
@@ -391,30 +433,5 @@ function highlightMember(memberName) {
   }
 }
 
-// Category collapse functionality
-document.querySelectorAll('.directory-category h2').forEach(header => {
-  header.addEventListener('click', () => {
-    const category = header.closest('.directory-category');
-    category.classList.toggle('collapsed');
-  });
-});
-
-// Event listeners
-searchInput.addEventListener('input', updateDirectory);
-
-tagButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const tag = button.dataset.tag;
-    if (activeFilters.has(tag)) {
-      activeFilters.delete(tag);
-      button.classList.remove('active');
-    } else {
-      activeFilters.add(tag);
-      button.classList.add('active');
-    }
-    updateDirectory();
-  });
-});
-
-// Initial render
-updateDirectory();
+// Initialize community page when DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeCommunityPage);
