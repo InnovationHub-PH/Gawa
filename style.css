@@ -236,11 +236,12 @@ h2 {
   max-width: 1800px;
   background-color: var(--bg-color);
   border: 2px solid var(--border-color);
-  z-index: 1000;
+  z-index: 9999;
   height: var(--nav-element-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  box-sizing: border-box;
 }
 
 .nav-container .header-text {
@@ -969,11 +970,16 @@ footer {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - 2rem - 4px);
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
     max-width: none;
     border-left: none;
     border-right: none;
     border-top: none;
+    z-index: 9999;
+    box-sizing: border-box;
   }
 
   .menu-toggle {
@@ -997,6 +1003,7 @@ footer {
 
   .main-nav.active {
     display: flex;
+    z-index: 9998;
   }
 
   .nav-links {
