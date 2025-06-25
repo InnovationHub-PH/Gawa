@@ -969,7 +969,7 @@ footer {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: calc(100% - 2rem);
+    width: calc(100% - 2rem - 4px);
     max-width: none;
     border-left: none;
     border-right: none;
