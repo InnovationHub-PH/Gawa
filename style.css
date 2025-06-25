@@ -1024,6 +1024,7 @@ footer {
   transition: opacity 0.5s ease-in-out;
   flex: 1;
   overflow-y: auto;
+  position: relative;
 }
 
 .carousel-slide.active {
@@ -1037,6 +1038,7 @@ footer {
   padding: 2rem;
   height: 100%;
   box-sizing: border-box;
+  padding-bottom: 4rem;
 }
 
 .carousel-controls {
@@ -1045,10 +1047,11 @@ footer {
   align-items: center;
   padding: 1rem;
   background: var(--bg-color);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   border-top: 1px solid var(--border-color);
-  border-left: 3px solid var(--border-color);
-  border-right: 3px solid var(--border-color);
-  border-bottom: 3px solid var(--border-color);
 }
 
 .carousel-btn {
