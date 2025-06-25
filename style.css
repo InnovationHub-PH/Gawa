@@ -978,6 +978,8 @@ footer {
   overflow-y: auto;
   position: relative;
   width: 100%;
+  padding: 2rem;
+  padding-top: 3rem;
 }
 
 .popup-close {
@@ -1027,14 +1029,15 @@ footer {
   border: none;
   margin-bottom: 0;
   background-color: transparent;
+  padding-bottom: 0;
 }
 
 .carousel-controls {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 2rem;
-  padding: 1rem 0;
+  margin-top: 1rem;
+  padding: 0.5rem 0;
   z-index: 2;
 }
 
