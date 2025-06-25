@@ -239,11 +239,13 @@ h2::before {
 /* Navigation */
 .nav-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 1800px;
   background-color: var(--bg-color);
-  border-bottom: 2px solid var(--border-color);
+  border: 2px solid var(--border-color);
   z-index: 1000;
   height: var(--nav-element-height);
   box-shadow: var(--terminal-shadow);
@@ -251,6 +253,7 @@ h2::before {
   align-items: center;
   padding: 0;
   justify-content: space-between;
+  margin: 0 2rem;
 }
 
 .nav-container .header-text {
@@ -385,7 +388,6 @@ h2::before {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
-  width: 375px;
 }
 
 .blog-card:hover {
@@ -573,7 +575,6 @@ input[type="radio"]:checked::before {
   background-color: var(--frame-bg-color);
   box-shadow: var(--terminal-shadow);
   transition: transform 0.2s ease;
-  width: 375px;
 }
 
 .title-info {
@@ -648,7 +649,6 @@ input[type="radio"]:checked::before {
 
 /* Member Cards */
 .member-card {
-  width: 375px;
 }
 
 .member-card:hover {
@@ -695,6 +695,25 @@ footer {
 
 /* Media Queries */
 @media (max-width: 768px) {
+  body {
+    padding-top: var(--nav-element-height);
+  }
+
+  .nav-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+
   .menu-toggle {
     display: block;
   }
