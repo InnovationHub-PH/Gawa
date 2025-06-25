@@ -327,14 +327,15 @@ h2 {
   color: var(--text-color);
   cursor: pointer;
   font-family: var(--font-mono);
+  
   line-height: 1;
   position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   height: var(--nav-element-height);
   padding: 0 1rem;
-  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .theme-icon {
@@ -346,7 +347,7 @@ h2 {
 }
 
 .theme-toggle:hover {
-  background: var(--border-color);
+  background-color: var(--border-color);
   color: var(--bg-color);
 }
 
