@@ -294,8 +294,10 @@ h2 {
   font-family: var(--font-mono);
   font-size: 1.2rem;
   color: var(--text-color);
+  display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
 
 .menu-toggle::before {
@@ -983,7 +985,6 @@ footer {
   }
 
   .menu-toggle {
-    display: block;
     display: flex;
     align-items: center;
     justify-content: center;
