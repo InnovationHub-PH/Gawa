@@ -32,7 +32,6 @@
   --code-string: #50fa7b;
   --code-function: #f1fa8c;
   --code-regex: #ffb86c;
-  --horizontal-spacing: 2rem;
 }
 
 /* Theme definitions */
@@ -172,7 +171,7 @@ body {
   color: var(--text-color);
   line-height: 1.6;
   overflow-x: hidden;
-  padding-top: calc(var(--nav-height) + 2rem);
+  padding-top: var(--nav-height);
   min-height: 100vh;
   text-shadow: var(--terminal-shadow);
 }
@@ -181,8 +180,8 @@ body {
 .container {
   width: 100%;
   max-width: 1800px;
-  margin: 0 auto;
-  padding: 2rem var(--horizontal-spacing);
+
+  
   position: relative;
 }
 
@@ -252,7 +251,6 @@ h2::before {
   box-shadow: var(--terminal-shadow);
   display: flex;
   align-items: center;
-  padding: 0 var(--horizontal-spacing);
   justify-content: space-between;
 }
 
@@ -699,10 +697,6 @@ footer {
     padding-top: var(--nav-element-height);
   }
 
-  .container {
-    padding: 1rem 0.5rem;
-  }
-
   .nav-container {
     position: fixed;
     top: 0;
@@ -711,7 +705,7 @@ footer {
     transform: none;
     width: 100%;
     max-width: none;
-    padding: 0 0.5rem;
+    padding: 0;
     border-radius: 0;
     border-left: none;
     border-right: none;
