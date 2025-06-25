@@ -624,14 +624,18 @@ input[type="radio"]:checked::before {
   background: none;
   border: none;
   color: var(--text-color);
-  font-size: .9rem;
+  font-family: var(--font-mono);
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
   padding: 0;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
+  margin-left: 0.5rem;
 }
 
 .read-more:hover {
-  opacity: 0.7;
+  text-decoration: underline;
 }
 
 .read-more::after {
@@ -647,16 +651,19 @@ input[type="radio"]:checked::before {
   background: none;
   border: none;
   color: var(--text-color);
-  font-size: .9rem;
+  font-family: var(--font-mono);
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
   padding: 0;
   cursor: pointer;
-  text-decoration: underline;
+  text-decoration: none;
   margin-left: 0.5rem;
 }
 
 .read-more-info:hover,
 .read-more-blog:hover {
-  opacity: 0.7;
+  text-decoration: underline;
 }
 
 .read-more-info::after,
