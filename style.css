@@ -303,6 +303,7 @@ h2 {
   padding: 0 1rem;
   border: 2px solid var(--border-color);
   border-right: none;
+  border-left: none;
   transition: all 0.3s ease;
   text-align: center;
   font-family: var(--font-mono);
@@ -313,6 +314,10 @@ h2 {
   text-align: center;
   justify-content: center;
   gap: 0.5rem;
+}
+
+.nav-link:first-child {
+  border-left: 2px solid var(--border-color);
 }
 
 .nav-link:last-child {
@@ -330,7 +335,6 @@ h2 {
   background: none;
   border: 2px solid var(--border-color);
   border-left: none;
-  color: var(--text-color);
   cursor: pointer;
   font-family: var(--font-mono);
   
