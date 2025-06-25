@@ -252,7 +252,7 @@ h2::before {
   height: var(--nav-element-height);
   box-shadow: var(--terminal-shadow);
   display: flex;
-  align-items:  center;
+  align-items: center;
   justify-content: space-between;
 }
 
