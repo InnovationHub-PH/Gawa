@@ -974,7 +974,7 @@ footer {
   background: var(--bg-color);
   border: 3px solid var(--border-color);
   max-width: 800px;
-  max-height: 90vh;
+  height: 600px;
   overflow-y: auto;
   position: relative;
   width: 100%;
