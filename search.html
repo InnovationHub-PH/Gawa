@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search - Makers Club</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D'16'%20height%3D'16'%20viewBox%3D'0%200%2016%2016'%20fill%3D'none'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M8.99999%204.49994V11.5H7V4.49994H8.99999Z'%20fill%3D'%239700EF'%2F%3E%3Cpath%20d%3D'M16%204.50007L9%204.50011V11.5002L7.00024%2011.5003L7%2013.5001L16.0001%2013.5L16%204.50007Z'%20fill%3D'%23348F82'%2F%3E%3Cpath%20d%3D'M9%202.5H0V11.5H7V4.5H9V2.5Z'%20fill%3D'%23FEDE7D'%2F%3E%3C/svg%3E">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://unpkg.com/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://unpkg.com/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://unpkg.com/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || 'grey';
+      document.documentElement.setAttribute('data-theme', theme);
+      const themeColors = {
+        black: '#000000',
+        purple: '#160B26',
+        green: '#000000',
+        brown: '#111111',
+        grey: '#ffffff',
+        beige: '#fdf6e3'
+      };
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', themeColors[theme]);
+      }
+    })();
+    </script>
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="nav-container">
+      <button class="menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <a href="index.html" class="nav-link logo-link">
+        <svg width="24" height="24" viewBox="0 0 177 134" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+          <path d="M177 134H73V104H104V30H177V134ZM104 30H73V104H0V0H104V30Z"/>
+        </svg>Gawa
+      </a>
+      
+      <nav class="main-nav">
+        <a href="jobs.html" class="nav-link">JOBS</a>
+        <a href="resources.html" class="nav-link">RESOURCES</a>
+        <a href="community.html" class="nav-link">COMMUNITY</a>
+        <a href="about.html" class="nav-link">ABOUT</a>
+      </nav>
+
+      <button id="themeToggle" class="theme-toggle" aria-label="Switch theme">
+        <pre class="theme-icon">[LIGHT]</pre>
+      </button>
+    </div>
+
+    <div class="container">
+      <h1>SEARCH</h1>
+
+      <!-- Search Mode Toggle -->
+      <section class="search-mode-toggle">
+        <h3>SEARCH MODE:</h3>
+        <div class="mode-buttons">
+          <button class="mode-btn active" data-mode="blog">BLOG POSTS</button>
+          <button class="mode-btn" data-mode="jobs">JOBS</button>
+          <button class="mode-btn" data-mode="community">COMMUNITY</button>
+        </div>
+      </section>
+
+      <!-- Search Input -->
+      <section class="search-section">
+        <input type="text" id="searchInput" placeholder="Search..." class="search-input">
+      </section>
+
+      <!-- Filter Section -->
+      <section class="filter-section">
+        <div id="blogFilters" class="filter-content active">
+          <h3>FILTER BY TAGS:</h3>
+          <div class="tag-buttons" id="blogTags">
+            <!-- Blog tags will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <div id="jobsFilters" class="filter-content">
+          <div class="filter-container">
+            <div class="tags-filter">
+              <h3>FILTER BY TAGS:</h3>
+              <div class="tag-buttons">
+                <button class="tag-btn" data-tag="robotics">ROBOTICS</button>
+                <button class="tag-btn" data-tag="software">SOFTWARE</button>
+                <button class="tag-btn" data-tag="hardware">HARDWARE</button>
+                <button class="tag-btn" data-tag="internship">INTERNSHIP</button>
+                <button class="tag-btn" data-tag="industrial-design">INDUSTRIAL DESIGN</button>
+                <button class="tag-btn" data-tag="manufacturing">MANUFACTURING</button>
+                <button class="tag-btn" data-tag="mechatronics">MECHATRONICS</button>
+              </div>
+            </div>
+            <div class="remote-toggle">
+              <input type="radio" id="remoteToggle" name="remote">
+              <label for="remoteToggle">REMOTE ONLY</label>
+            </div>
+          </div>
+        </div>
+
+        <div id="communityFilters" class="filter-content">
+          <h3>FILTER BY TAGS:</h3>
+          <div class="tag-buttons">
+            <button class="tag-btn" data-tag="company">COMPANIES</button>
+            <button class="tag-btn" data-tag="individual">INDIVIDUALS</button>
+            <button class="tag-btn" data-tag="education">EDUCATION</button>
+            <button class="tag-btn" data-tag="robotics">ROBOTICS</button>
+            <button class="tag-btn" data-tag="software">SOFTWARE</button>
+            <button class="tag-btn" data-tag="hardware">HARDWARE</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Map Container (hidden for blog mode) -->
+      <div id="mapContainer" style="display: none;">
+        <div id="searchMap"></div>
+      </div>
+
+      <!-- Results Container -->
+      <section class="results-section">
+        <!-- Blog Results -->
+        <div id="blogResults" class="results-content active">
+          <div class="blog-nav">
+            <button class="nav-btn prev-btn">←</button>
+            <button class="nav-btn next-btn">→</button>
+          </div>
+          <div id="blogGrid" class="blog-grid">
+            <!-- Blog posts will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Jobs Results -->
+        <div id="jobsResults" class="results-content">
+          <div id="jobsList" class="jobs-list">
+            <!-- Jobs will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <!-- Community Results -->
+        <div id="communityResults" class="results-content">
+          <div class="community-directory">
+            <div class="directory-category">
+              <h2>COMPANIES</h2>
+              <div class="member-grid companies-grid">
+                <!-- Companies will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <div class="directory-category">
+              <h2>INDIVIDUALS</h2>
+              <div class="member-grid individuals-grid">
+                <!-- Individuals will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <div class="directory-category">
+              <h2>EDUCATIONAL INSTITUTIONS</h2>
+              <div class="member-grid education-grid">
+                <!-- Educational institutions will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <p>INNOVATION AT THE INTERSECTION OF DISCIPLINES</p>
+      </footer>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/search.js" type="module"></script>
+  </body>
+</html>
