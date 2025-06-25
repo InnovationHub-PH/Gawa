@@ -112,6 +112,8 @@ let searchTerm = '';
 let currentPage = 0;
 let map = null;
 let markers = new Map();
+let currentSlide = 0;
+const totalSlides = 2;
 
 // Utility functions
 function truncateWords(text, wordCount) {
@@ -516,6 +518,46 @@ function switchMode(mode) {
   updateResults();
 }
 
+// Carousel functions
+function showSlide(slideIndex) {
+  const slides = document.querySelectorAll('.carousel-slide');
+  const indicators = document.querySelectorAll('.indicator');
+  
+  // Hide all slides
+  slides.forEach(slide => slide.classList.remove('active'));
+  indicators.forEach(indicator => indicator.classList.remove('active'));
+  
+  // Show current slide
+  slides[slideIndex].classList.add('active');
+  indicators[slideIndex].classList.add('active');
+  
+  currentSlide = slideIndex;
+}
+
+function nextSlide() {
+  const nextIndex = (currentSlide + 1) % totalSlides;
+  showSlide(nextIndex);
+}
+
+function prevSlide() {
+  const prevIndex = (currentSlide - 1 + totalSlides) % totalSlides;
+  showSlide(prevIndex);
+}
+
+function initializeCarousel() {
+  // Carousel navigation buttons
+  document.querySelector('.prev-carousel').addEventListener('click', prevSlide);
+  document.querySelector('.next-carousel').addEventListener('click', nextSlide);
+  
+  // Carousel indicators
+  document.querySelectorAll('.indicator').forEach((indicator, index) => {
+    indicator.addEventListener('click', () => showSlide(index));
+  });
+  
+  // Auto-advance carousel every 8 seconds
+  setInterval(nextSlide, 8000);
+}
+
 function updateResults() {
   switch (currentMode) {
     case 'blog':
@@ -532,6 +574,9 @@ function updateResults() {
 
 // Initialize
 function initialize() {
+  // Initialize carousel
+  initializeCarousel();
+  
   // Populate blog tags
   const blogTagsContainer = document.getElementById('blogTags');
   getAllBlogTags().forEach(tag => {
