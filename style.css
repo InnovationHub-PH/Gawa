@@ -951,10 +951,59 @@ footer {
   }
 }
 
+/* About Popup Modal */
+.about-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.about-popup.hidden {
+  display: none;
+}
+
+.popup-content {
+  background: var(--bg-color);
+  border: 3px solid var(--border-color);
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+  width: 100%;
+}
+
+.popup-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-family: var(--font-mono);
+  z-index: 1;
+}
+
+.popup-close:hover {
+  background: var(--border-color);
+  color: var(--bg-color);
+}
+
 /* About Carousel */
 .about-carousel {
-  margin-bottom: 4rem;
+  display: none;
   position: relative;
+  margin-bottom: 4rem;
 }
 
 .carousel-container {
@@ -1327,5 +1376,17 @@ code[class*="language-"] {
 
   .carousel-controls {
     justify-content: center;
+  }
+
+  .popup-content {
+    margin: 1rem;
+    max-height: 90vh;
+  }
+
+  .popup-close {
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 1.2rem;
+    padding: 0.25rem 0.5rem;
   }
 }

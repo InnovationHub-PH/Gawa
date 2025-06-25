@@ -114,6 +114,7 @@ let map = null;
 let markers = new Map();
 let currentSlide = 0;
 const totalSlides = 2;
+let popupShown = false;
 
 // Utility functions
 function truncateWords(text, wordCount) {
@@ -471,6 +472,75 @@ function updateCommunityResults() {
   addMarkersToMap(filteredMembers, 'community');
 }
 
+// Popup functions
+function showAboutPopup() {
+  if (!popupShown) {
+    const popup = document.getElementById('aboutPopup');
+    popup.classList.remove('hidden');
+    popupShown = true;
+  }
+}
+
+function hideAboutPopup() {
+  const popup = document.getElementById('aboutPopup');
+  popup.classList.add('hidden');
+}
+
+function initializePopup() {
+  const closeBtn = document.getElementById('closePopup');
+  const popup = document.getElementById('aboutPopup');
+  
+  // Close button event
+  closeBtn.addEventListener('click', hideAboutPopup);
+  
+  // Close on background click
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+      hideAboutPopup();
+    }
+  });
+  
+  // Close on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !popup.classList.contains('hidden')) {
+      hideAboutPopup();
+    }
+  });
+  
+  // Popup carousel functionality
+  const popupIndicators = popup.querySelectorAll('.indicator');
+  const popupSlides = popup.querySelectorAll('.carousel-slide');
+  
+  popupIndicators.forEach((indicator, index) => {
+    indicator.addEventListener('click', () => {
+      // Hide all slides
+      popupSlides.forEach(slide => slide.classList.remove('active'));
+      popupIndicators.forEach(ind => ind.classList.remove('active'));
+      
+      // Show selected slide
+      popupSlides[index].classList.add('active');
+      indicator.classList.add('active');
+    });
+  });
+  
+  // Auto-advance popup carousel every 8 seconds
+  setInterval(() => {
+    if (!popup.classList.contains('hidden')) {
+      const activeIndex = Array.from(popupSlides).findIndex(slide => slide.classList.contains('active'));
+      const nextIndex = (activeIndex + 1) % popupSlides.length;
+      
+      popupSlides.forEach(slide => slide.classList.remove('active'));
+      popupIndicators.forEach(ind => ind.classList.remove('active'));
+      
+      popupSlides[nextIndex].classList.add('active');
+      popupIndicators[nextIndex].classList.add('active');
+    }
+  }, 8000);
+  
+  // Show popup on page load
+  setTimeout(showAboutPopup, 500);
+}
+
 // Mode switching
 function switchMode(mode) {
   currentMode = mode;
@@ -574,6 +644,9 @@ function updateResults() {
 
 // Initialize
 function initialize() {
+  // Initialize popup
+  initializePopup();
+  
   // Initialize carousel
   initializeCarousel();
   
