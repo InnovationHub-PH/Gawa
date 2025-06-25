@@ -32,6 +32,7 @@
   --code-string: #50fa7b;
   --code-function: #f1fa8c;
   --code-regex: #ffb86c;
+  --card-width: 375px;
 }
 
 /* Theme definitions */
@@ -376,15 +377,17 @@ h2::before {
 
 .blog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, var(--card-width));
   gap: 2rem;
   margin-top: 2rem;
+  justify-content: center;
 }
 
 .blog-card {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
+  width: var(--card-width);
 }
 
 .blog-card:hover {
@@ -572,6 +575,9 @@ input[type="radio"]:checked::before {
   background-color: var(--frame-bg-color);
   box-shadow: var(--terminal-shadow);
   transition: transform 0.2s ease;
+  width: var(--card-width);
+  display: flex;
+  flex-direction: column;
 }
 
 .title-info {
@@ -617,6 +623,7 @@ input[type="radio"]:checked::before {
 
 .description-container {
   margin-bottom: 1rem;
+  flex: 1;
 }
 
 .description {
@@ -644,7 +651,22 @@ input[type="radio"]:checked::before {
   margin-left: 2px;
 }
 
+/* Jobs List */
+.jobs-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--card-width));
+  gap: 2rem;
+  justify-content: center;
+}
+
 /* Member Cards */
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, var(--card-width));
+  gap: 2rem;
+  justify-content: center;
+}
+
 .member-card:hover {
   transform: translateX(5px);
   cursor: pointer;
@@ -681,6 +703,10 @@ footer {
 
 /* Media Queries */
 @media (max-width: 768px) {
+  :root {
+    --card-width: 100%;
+  }
+
   .menu-toggle {
     display: block;
   }
@@ -729,8 +755,16 @@ footer {
     text-align: center;
   }
 
-  .blog-grid {
+  .blog-grid,
+  .jobs-list,
+  .member-grid {
     grid-template-columns: 1fr;
+    justify-content: stretch;
+  }
+
+  .card,
+  .blog-card {
+    width: 100%;
   }
 }
 
