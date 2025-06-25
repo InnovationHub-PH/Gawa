@@ -78,6 +78,11 @@ function addMarkersToMap(items, type) {
         .bindPopup(popupContent)
         .addTo(map);
       
+      // Add click event to highlight corresponding card
+      marker.on('click', () => {
+        highlightCard(itemId, type);
+      });
+      
       markers.set(item.title || item.name, marker);
     }
   });
@@ -237,6 +242,45 @@ function createMemberCard(member) {
 }
 
 // Update functions
+// Highlight functions
+function highlightCard(itemId, type) {
+  // Remove previous highlights
+  document.querySelectorAll('.card.highlighted').forEach(card => {
+    card.classList.remove('highlighted');
+  });
+  
+  let selector;
+  if (type === 'jobs') {
+    // For jobs, we need to find by title and company
+    const cards = document.querySelectorAll('#jobsList .card');
+    cards.forEach(card => {
+      const title = card.querySelector('h3').textContent;
+      const company = card.querySelector('h4').textContent;
+      const cardId = `${title}-${company}`;
+      if (cardId === itemId) {
+        card.classList.add('highlighted');
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    });
+  } else if (type === 'community') {
+    // For community, find by member name
+    const memberCard = document.querySelector(`.member-card[data-member="${itemId}"]`);
+    if (memberCard) {
+      memberCard.classList.add('highlighted');
+      memberCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+}
+
+function highlightMarker(itemId) {
+  const marker = markers.get(itemId);
+  if (marker) {
+    marker.openPopup();
+    // Center map on marker
+    map.setView(marker.getLatLng(), map.getZoom());
+  }
+}
+
 function updateBlogResults() {
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = 
@@ -329,6 +373,25 @@ function updateJobsResults() {
     });
   });
 
+  // Add click event listeners to job cards for map highlighting
+  document.querySelectorAll('#jobsList .card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Don't trigger if clicking on buttons or links
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
+      
+      const title = card.querySelector('h3').textContent;
+      const company = card.querySelector('h4').textContent;
+      const itemId = `${title}-${company}`;
+      
+      // Highlight this card
+      document.querySelectorAll('.card.highlighted').forEach(c => c.classList.remove('highlighted'));
+      card.classList.add('highlighted');
+      
+      // Highlight corresponding marker
+      highlightMarker(itemId);
+    });
+  });
+
   // Update map with job markers
   addMarkersToMap(filteredJobs, 'jobs');
 }
@@ -385,6 +448,23 @@ function updateCommunityResults() {
 
   // Initialize PDF previews
   initializePdfPreviews();
+
+  // Add click event listeners to community cards for map highlighting
+  document.querySelectorAll('.member-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Don't trigger if clicking on buttons or links
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button') || e.target.closest('a')) return;
+      
+      const memberName = card.dataset.member;
+      
+      // Highlight this card
+      document.querySelectorAll('.card.highlighted').forEach(c => c.classList.remove('highlighted'));
+      card.classList.add('highlighted');
+      
+      // Highlight corresponding marker
+      highlightMarker(memberName);
+    });
+  });
 
   // Update map with community markers
   addMarkersToMap(filteredMembers, 'community');

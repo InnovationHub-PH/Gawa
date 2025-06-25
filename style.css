@@ -570,6 +570,14 @@ input[type="radio"]:checked::before {
   max-height: 550px;
   overflow-y: auto;
   width: 375px;
+  cursor: pointer;
+}
+
+.card.highlighted {
+  border-color: var(--accent-color);
+  border-width: 3px;
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .title-info {
@@ -703,6 +711,13 @@ input[type="radio"]:checked::before {
 
 .member-card.selected {
   border-color: var(--accent-color);
+}
+
+.member-card.highlighted {
+  border-color: var(--accent-color);
+  border-width: 3px;
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Member Grid */

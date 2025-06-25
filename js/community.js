@@ -384,7 +384,10 @@ function updateDirectory() {
   });
 
   document.querySelectorAll('.member-card').forEach(card => {
-    card.addEventListener('click', () => {
+    card.addEventListener('click', (e) => {
+      // Don't trigger if clicking on buttons or links
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button') || e.target.closest('a')) return;
+      
       const memberName = card.dataset.member;
       highlightMember(memberName);
     });
@@ -415,14 +418,14 @@ function updateDirectory() {
 
 function highlightMember(memberName) {
   // Remove previous selection
-  document.querySelectorAll('.member-card.selected').forEach(card => {
-    card.classList.remove('selected');
+  document.querySelectorAll('.member-card.highlighted').forEach(card => {
+    card.classList.remove('highlighted');
   });
   
   // Add selection to new card
   const memberCard = document.querySelector(`.member-card[data-member="${memberName}"]`);
   if (memberCard) {
-    memberCard.classList.add('selected');
+    memberCard.classList.add('highlighted');
     memberCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
   
@@ -430,6 +433,10 @@ function highlightMember(memberName) {
   const marker = markers.get(memberName);
   if (marker) {
     marker.openPopup();
+    // Center map on marker
+    if (map) {
+      map.setView(marker.getLatLng(), map.getZoom());
+    }
   }
 }
 
