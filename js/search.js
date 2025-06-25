@@ -74,6 +74,14 @@ function addMarkersToMap(items, type) {
     }
     
     if (coords) {
+      // Define itemId based on the type
+      let itemId;
+      if (type === 'jobs') {
+        itemId = `${item.title}-${item.company}`;
+      } else if (type === 'community') {
+        itemId = item.name;
+      }
+      
       const marker = L.marker(coords)
         .bindPopup(popupContent)
         .addTo(map);
