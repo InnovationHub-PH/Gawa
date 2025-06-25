@@ -973,7 +973,7 @@ footer {
 .popup-content {
   background: var(--bg-color);
   max-width: 800px;
-  height: 730px;
+  max-height: 90vh;
   overflow-y: auto;
   position: relative;
   width: 100%;
@@ -1036,7 +1036,7 @@ footer {
   margin-bottom: 0;
   background-color: var(--bg-color);
   padding: 2rem;
-  height: 100%;
+  min-height: auto;
   box-sizing: border-box;
   padding-bottom: 4rem;
 }
