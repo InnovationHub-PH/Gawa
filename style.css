@@ -241,8 +241,7 @@ h2::before {
 .nav-container {
   position: fixed;
   top: 1rem;
-  left: 2rem;
-  right: 2rem;
+ 
   width: 100%;
   max-width: 1800px;
   margin: 0 auto;
