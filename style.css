@@ -172,6 +172,7 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   padding-top: var(--nav-height);
+  padding: calc(var(--nav-height) + 2rem) 2rem 2rem 2rem;
   min-height: 100vh;
   text-shadow: var(--terminal-shadow);
 }
@@ -180,8 +181,8 @@ body {
 .container {
   width: 100%;
   max-width: 1800px;
-
-  
+  margin: 0 auto;
+  padding: 0;
   position: relative;
 }
 
@@ -251,6 +252,7 @@ h2::before {
   box-shadow: var(--terminal-shadow);
   display: flex;
   align-items: center;
+  padding: 0 2rem;
   justify-content: space-between;
 }
 
@@ -694,7 +696,7 @@ footer {
 /* Media Queries */
 @media (max-width: 768px) {
   body {
-    padding-top: var(--nav-element-height);
+    padding: var(--nav-element-height) 1rem 1rem 1rem;
   }
 
   .nav-container {
@@ -705,7 +707,7 @@ footer {
     transform: none;
     width: 100%;
     max-width: none;
-    padding: 0;
+    padding: 0 1rem;
     border-radius: 0;
     border-left: none;
     border-right: none;
