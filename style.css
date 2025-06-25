@@ -239,7 +239,7 @@ h2::before {
 
 /* Navigation */
 .nav-container {
-  position: fixed;
+ 
   top: 1rem;
   left: 50%;
   transform: translateX(-50%);
