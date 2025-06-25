@@ -713,6 +713,13 @@ input[type="radio"]:checked::before {
   margin-top: 2rem;
 }
 
+/* Jobs List */
+.jobs-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(375px, 1fr));
+  gap: 2rem;
+}
+
 /* Map Container */
 #communityMap {
   width: 100%;
@@ -822,6 +829,10 @@ footer {
   }
 
   .member-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .jobs-list {
     grid-template-columns: 1fr;
   }
 }
