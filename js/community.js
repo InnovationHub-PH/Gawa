@@ -99,6 +99,13 @@ import pdfWorker from 'pdfjs-dist/build/pdf.worker?url';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
+// Utility function to truncate text to word limit
+function truncateWords(text, wordCount) {
+  const words = text.split(' ');
+  if (words.length <= wordCount) return text;
+  return words.slice(0, wordCount).join(' ') + '...';
+}
+
 // Initialize map
 const map = L.map('communityMap').setView([14.5995, 120.9842], 12);
 const markers = new Map();
@@ -192,6 +199,34 @@ document.querySelector('.next-page').addEventListener('click', () => {
 });
 
 function createMemberCard(member) {
+  // Process member info fields for truncation
+  const processedInfo = {};
+  if (member.website) {
+    const websiteText = member.website.replace('https://', '').replace('http://', '');
+    processedInfo.website = {
+      full: member.website,
+      truncated: truncateWords(websiteText, 14),
+      needsReadMore: websiteText.split(' ').length > 14
+    };
+  }
+  
+  if (member.email) {
+    processedInfo.email = {
+      full: member.email,
+      truncated: truncateWords(member.email, 14),
+      needsReadMore: member.email.split(' ').length > 14
+    };
+  }
+  
+  if (member.facebook) {
+    const facebookText = member.facebook.replace('https://facebook.com/', '@');
+    processedInfo.facebook = {
+      full: member.facebook,
+      truncated: truncateWords(facebookText, 14),
+      needsReadMore: facebookText.split(' ').length > 14
+    };
+  }
+
   const pdfPreview = member.pdfDocument ? `
     <div class="pdf-preview" data-pdf-url="${member.pdfDocument}">
       <canvas class="pdf-thumbnail"></canvas>
@@ -209,10 +244,37 @@ function createMemberCard(member) {
         </div>
       </div>
       <div class="member-info">
-        ${member.website ? `<p>Website: <a href="${member.website}" target="_blank">${member.website}</a></p>` : ''}
-        ${member.email ? `<p>Email: <a href="mailto:${member.email}">${member.email}</a></p>` : ''}
+        ${member.website ? `
+          <div class="info-item">
+            <span class="info-label">Website: </span>
+            <span class="info-content">
+              <span class="truncated"><a href="${processedInfo.website.full}" target="_blank">${processedInfo.website.truncated}</a></span>
+              <span class="full" style="display: none;"><a href="${processedInfo.website.full}" target="_blank">${processedInfo.website.full}</a></span>
+              ${processedInfo.website.needsReadMore ? '<button class="read-more-info">READ MORE</button>' : ''}
+            </span>
+          </div>
+        ` : ''}
+        ${member.email ? `
+          <div class="info-item">
+            <span class="info-label">Email: </span>
+            <span class="info-content">
+              <span class="truncated"><a href="mailto:${processedInfo.email.full}">${processedInfo.email.truncated}</a></span>
+              <span class="full" style="display: none;"><a href="mailto:${processedInfo.email.full}">${processedInfo.email.full}</a></span>
+              ${processedInfo.email.needsReadMore ? '<button class="read-more-info">READ MORE</button>' : ''}
+            </span>
+          </div>
+        ` : ''}
         ${member.phone ? `<p>Phone: <a href="tel:${member.phone}">${member.phone}</a></p>` : ''}
-        ${member.facebook ? `<p>Facebook: <a href="${member.facebook}" target="_blank">${member.facebook.replace('https://facebook.com/', '@')}</a></p>` : ''}
+        ${member.facebook ? `
+          <div class="info-item">
+            <span class="info-label">Facebook: </span>
+            <span class="info-content">
+              <span class="truncated"><a href="${processedInfo.facebook.full}" target="_blank">${processedInfo.facebook.truncated}</a></span>
+              <span class="full" style="display: none;"><a href="${processedInfo.facebook.full}" target="_blank">${processedInfo.facebook.full}</a></span>
+              ${processedInfo.facebook.needsReadMore ? '<button class="read-more-info">READ MORE</button>' : ''}
+            </span>
+          </div>
+        ` : ''}
       </div>
       ${pdfPreview}
       <div class="tags">
@@ -278,6 +340,26 @@ function updateDirectory() {
     card.addEventListener('click', () => {
       const memberName = card.dataset.member;
       highlightMember(memberName);
+    });
+  });
+
+  // Add event listeners to read more buttons for member info
+  document.querySelectorAll('.read-more-info').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.stopPropagation(); // Prevent card click
+      const container = this.closest('.info-content');
+      const truncated = container.querySelector('.truncated');
+      const full = container.querySelector('.full');
+      
+      if (truncated.style.display !== 'none') {
+        truncated.style.display = 'none';
+        full.style.display = 'inline';
+        this.textContent = 'READ LESS';
+      } else {
+        truncated.style.display = 'inline';
+        full.style.display = 'none';
+        this.textContent = 'READ MORE';
+      }
     });
   });
 

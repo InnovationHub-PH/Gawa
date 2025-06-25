@@ -7,7 +7,8 @@ export const blogPosts = [
     author: 'Jon Prado',
     tags: ['workshop', 'robotics', 'education'],
     image: 'https://images.unsplash.com/photo-1625535163131-9d1fc30ea5f5?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3Dg',
-    content: `Some things are unnecessary but fun. Arguibly this is one of those examples. However this website is all about innovation, self expression and having fun. In the future I envision this site to share all sorts of information and highlight different Makers. And one thing that will be highlighted is code. That is why I wanted to have different color schemes for users to toggle through to make the process of reading the code more enjoyable,
+    excerpt: `Some things are unnecessary but fun. Arguably this is one of those examples. However this website is all about innovation, self expression and having fun.`,
+    content: `Some things are unnecessary but fun. Arguably this is one of those examples. However this website is all about innovation, self expression and having fun. In the future I envision this site to share all sorts of information and highlight different Makers. And one thing that will be highlighted is code. That is why I wanted to have different color schemes for users to toggle through to make the process of reading the code more enjoyable,
 
 Here's a some AI generated examples of code blocks in various coding languages to test the color schemes.
 
@@ -451,6 +452,7 @@ puts "Result: #{result || 'No result'}"
     title: 'Successful Hackathon Event',
     date: '2024-01-10',
     author: 'Maria Santos',
+    excerpt: `Last weekend's hackathon was a huge success! Teams created amazing projects focusing on sustainable technology solutions.`,
     content: `Last weekend's hackathon was a huge success! Teams created amazing projects focusing on sustainable technology solutions.
 
     Over 100 participants formed 25 teams, working tirelessly for 48 hours to develop innovative solutions for environmental challenges. The projects ranged from smart recycling systems to renewable energy applications.
@@ -469,6 +471,7 @@ puts "Result: #{result || 'No result'}"
     title: 'Industry Partnership Announcement',
     date: '2024-01-05',
     author: 'Jon Prado',
+    excerpt: `We're excited to announce our new partnership with TechCorp, bringing more opportunities for our members!`,
     content: `We're excited to announce our new partnership with TechCorp, bringing more opportunities for our members!
 
     This partnership will provide:
@@ -486,6 +489,7 @@ puts "Result: #{result || 'No result'}"
     title: 'New Maker Space Opening',
     date: '2024-01-01',
     author: 'Maria Santos',
+    excerpt: `We're thrilled to announce the opening of our new maker space! Join us for the grand opening celebration.`,
     content: `We're thrilled to announce the opening of our new maker space! Join us for the grand opening celebration.
 
     The new space features:

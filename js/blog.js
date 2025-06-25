@@ -1,5 +1,12 @@
 import { blogPosts } from './blogData.js';
 
+// Utility function to truncate text to word limit
+function truncateWords(text, wordCount) {
+  const words = text.split(' ');
+  if (words.length <= wordCount) return text;
+  return words.slice(0, wordCount).join(' ') + '...';
+}
+
 // Get unique tags from blog posts
 const getAllTags = () => {
   const tags = new Set();
@@ -25,7 +32,9 @@ const processCodeBlocks = (content) => {
 // Create blog post card
 const createBlogCard = (post) => {
   const processedContent = processCodeBlocks(post.content);
-  const firstParagraph = post.content.split('\n')[0];
+  const excerpt = post.excerpt || post.content.split('\n')[0];
+  const truncatedExcerpt = truncateWords(excerpt, 14);
+  const needsReadMore = excerpt.split(' ').length > 14;
   
   return `
     <a href="post.html?id=${post.id}" class="card blog-card" data-tags="${post.tags.join(' ')}">
@@ -38,7 +47,11 @@ const createBlogCard = (post) => {
           <span class="blog-date">${new Date(post.date).toLocaleDateString()}</span>
           <span class="blog-author">By ${post.author}</span>
         </div>
-        <p>${firstParagraph}</p>
+        <div class="blog-excerpt">
+          <p class="truncated">${truncatedExcerpt}</p>
+          <p class="full" style="display: none;">${excerpt}</p>
+          ${needsReadMore ? '<button class="read-more-blog">READ MORE</button>' : ''}
+        </div>
         <div class="tags">
           ${post.tags.map(tag => `<span class="tag">${tag.toUpperCase()}</span>`).join('')}
         </div>
@@ -113,6 +126,27 @@ const initBlog = () => {
     
     // Highlight code blocks in visible posts
     Prism.highlightAll();
+    
+    // Add event listeners to read more buttons for blog excerpts
+    document.querySelectorAll('.read-more-blog').forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const container = this.closest('.blog-excerpt');
+        const truncated = container.querySelector('.truncated');
+        const full = container.querySelector('.full');
+        
+        if (truncated.style.display !== 'none') {
+          truncated.style.display = 'none';
+          full.style.display = 'block';
+          this.textContent = 'READ LESS';
+        } else {
+          truncated.style.display = 'block';
+          full.style.display = 'none';
+          this.textContent = 'READ MORE';
+        }
+      });
+    });
   };
 
   // Event listeners
