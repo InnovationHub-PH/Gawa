@@ -62,26 +62,17 @@ function addMarkersToMap(items, type) {
   items.forEach(item => {
     let coords, popupContent;
     
-    if (type === 'jobs' && item.location) {
-      // For jobs, we need to add coordinates if they don't exist
-      // Using Manila area coordinates as default
-      const defaultCoords = { lat: 14.5995, lng: 120.9842 };
-      coords = item.coordinates ? [item.coordinates.lat, item.coordinates.lng] : [defaultCoords.lat, defaultCoords.lng];
+    if (type === 'jobs' && item.coordinates) {
+      coords = [item.coordinates.lat, item.coordinates.lng];
       popupContent = `<strong>${item.title}</strong><br>${item.company}<br>${item.location}`;
+      itemId = `${item.title}-${item.company}`;
     } else if (type === 'community' && item.location) {
       coords = [item.location.lat, item.location.lng];
       popupContent = `<strong>${item.name}</strong><br>${item.location.address}`;
+      itemId = item.name;
     }
     
     if (coords) {
-      // Define itemId based on the type
-      let itemId;
-      if (type === 'jobs') {
-        itemId = `${item.title}-${item.company}`;
-      } else if (type === 'community') {
-        itemId = item.name;
-      }
-      
       const marker = L.marker(coords)
         .bindPopup(popupContent)
         .addTo(map);
@@ -91,7 +82,7 @@ function addMarkersToMap(items, type) {
         highlightCard(itemId, type);
       });
       
-      markers.set(item.title || item.name, marker);
+      markers.set(itemId, marker);
     }
   });
 }

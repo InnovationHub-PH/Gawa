@@ -5,6 +5,7 @@ export const jobs = [
         company: 'Company Name',
         logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
         location: 'Makati, MNL',
+        coordinates: { lat: 14.5547, lng: 120.9947 },
         remote: false,
         tags: ['robotics', 'hardware'],
         description: 'Describe the Job openning here...'
@@ -14,6 +15,7 @@ export const jobs = [
         company: 'Remote Robotics',
         logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
         location: 'Remote',
+        coordinates: { lat: 14.5995, lng: 120.9842 },
         remote: true,
         tags: ['software', 'robotics'],
         description: 'Developing control systems for autonomous robots. We are looking for a skilled software developer with experience in robotics and control systems. The ideal candidate will have a strong background in Python, C++, and ROS. You will be working with a team of engineers to develop and implement control algorithms for our autonomous robot fleet. Key responsibilities include: developing and maintaining robot control software, implementing new features and functionality, debugging and troubleshooting issues, and collaborating with the hardware team.'
@@ -23,6 +25,7 @@ export const jobs = [
         company: 'Innovation Labs',
         logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
         location: 'Boston, MA',
+        coordinates: { lat: 14.5580, lng: 120.9890 },
         remote: false,
         tags: ['internship', 'hardware', 'software'],
         description: 'Summer internship opportunity in our robotics division. Join our team of experts and gain hands-on experience in robotics development.'
@@ -32,6 +35,7 @@ export const jobs = [
         company: 'Virtual Mechanics',
         logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
         location: 'Remote',
+        coordinates: { lat: 14.5648, lng: 120.9932 },
         remote: true,
         tags: ['software', 'hardware'],
         description: 'Design and implement control systems for industrial robots. Work with cutting-edge technology and collaborate with a global team.'
