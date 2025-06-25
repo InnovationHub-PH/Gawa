@@ -631,7 +631,9 @@ input[type="radio"]:checked::before {
   padding: 0;
   cursor: pointer;
   text-decoration: none;
-  margin-left: 0.5rem;
+  display: block;
+  text-align: left;
+  margin-top: 0.5rem;
 }
 
 .read-more:hover {
@@ -658,7 +660,9 @@ input[type="radio"]:checked::before {
   padding: 0;
   cursor: pointer;
   text-decoration: none;
-  margin-left: 0.5rem;
+  display: block;
+  text-align: left;
+  margin-top: 0.5rem;
 }
 
 .read-more-info:hover,
