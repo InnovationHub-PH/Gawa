@@ -377,7 +377,7 @@ h2::before {
 
 .blog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, var(--card-width));
+  grid-template-columns: repeat(auto-fill, var(--card-width));
   gap: 2rem;
   margin-top: 2rem;
   justify-content: center;
@@ -654,7 +654,7 @@ input[type="radio"]:checked::before {
 /* Jobs List */
 .jobs-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, var(--card-width));
+  grid-template-columns: repeat(auto-fill, var(--card-width));
   gap: 2rem;
   justify-content: center;
 }
@@ -662,7 +662,7 @@ input[type="radio"]:checked::before {
 /* Member Cards */
 .member-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, var(--card-width));
+  grid-template-columns: repeat(auto-fill, var(--card-width));
   gap: 2rem;
   justify-content: center;
 }
