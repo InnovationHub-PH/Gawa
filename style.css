@@ -296,6 +296,7 @@ h2 {
   color: var(--text-color);
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .menu-toggle::before {
