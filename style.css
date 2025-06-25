@@ -863,15 +863,16 @@ footer {
 /* Sponsor Carousel */
 .sponsor-carousel {
   margin-top: 2rem;
-  overflow: hidden;
+  overflow: visible;
   position: relative;
-  padding: 1rem 0;
+  padding: 2rem 0;
 }
 
 .sponsor-carousel-container {
   width: 100%;
   overflow: hidden;
   position: relative;
+  padding: 1rem 0;
 }
 
 .sponsor-carousel-track {
