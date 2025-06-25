@@ -22,7 +22,6 @@
   --accent-color: #ffcc00;
   --nav-height: 60px;
   --nav-element-height: 42px;
-  --terminal-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   --font-mono: 'Fira Code', 'Courier New', monospace;
   --link-color: #ff00cc;
   --code-comment: #6272a4;
@@ -172,7 +171,6 @@ body {
   line-height: 1.6;
   overflow-x: hidden;
   min-height: 100vh;
-  text-shadow: var(--terminal-shadow);
   padding: 0 2rem;
   padding-top: calc(var(--nav-height) + 2rem);
 }
@@ -249,7 +247,6 @@ h2::before {
   border: 2px solid var(--border-color);
   z-index: 1000;
   height: var(--nav-element-height);
-  box-shadow: var(--terminal-shadow);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -432,7 +429,6 @@ h2::before {
   font-family: var(--font-mono);
   font-size: 1rem;
   margin-bottom: 1.5rem;
-  box-shadow: var(--terminal-shadow);
   position: relative;
 }
 
@@ -561,8 +557,6 @@ input[type="radio"]:checked::before {
 .social-button:hover {
   background: var(--border-color);
   color: var(--bg-color);
-  transform: translate(-4px, -4px);
-  box-shadow: 4px 4px 0 var(--border-color);
   text-decoration: none;
 }
 
@@ -572,7 +566,6 @@ input[type="radio"]:checked::before {
   padding: 1.5rem;
   margin-bottom: 2rem;
   background-color: var(--frame-bg-color);
-  box-shadow: var(--terminal-shadow);
   transition: transform 0.2s ease;
 }
 
@@ -674,7 +667,6 @@ input[type="radio"]:checked::before {
   border: 1px solid var(--border-color);
   margin: 2rem 0;
   background-color: var(--bg-color);
-  box-shadow: var(--terminal-shadow);
 }
 
 /* Footer */
