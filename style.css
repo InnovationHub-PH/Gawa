@@ -1038,24 +1038,20 @@ footer {
   padding: 2rem;
   height: 100%;
   box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-}
-
-.about-section-content {
-  flex: 1;
-}
-
-.about-section-controls {
-  margin-top: 2rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  justify-content: center;
+  padding-bottom: 4rem;
 }
 
 .carousel-controls {
-  display: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-color);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--border-color);
 }
 
 .carousel-btn {
