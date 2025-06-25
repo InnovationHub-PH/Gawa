@@ -376,7 +376,7 @@ h2::before {
 
 .blog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(375px, 1fr));
   gap: 2rem;
   margin-top: 2rem;
 }
@@ -385,6 +385,7 @@ h2::before {
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease;
+  width: 375px;
 }
 
 .blog-card:hover {
@@ -572,6 +573,7 @@ input[type="radio"]:checked::before {
   background-color: var(--frame-bg-color);
   box-shadow: var(--terminal-shadow);
   transition: transform 0.2s ease;
+  width: 375px;
 }
 
 .title-info {
@@ -645,6 +647,10 @@ input[type="radio"]:checked::before {
 }
 
 /* Member Cards */
+.member-card {
+  width: 375px;
+}
+
 .member-card:hover {
   transform: translateX(5px);
   cursor: pointer;
@@ -652,6 +658,14 @@ input[type="radio"]:checked::before {
 
 .member-card.selected {
   border-color: var(--accent-color);
+}
+
+/* Member Grid */
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(375px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
 /* Map Container */
@@ -730,6 +744,22 @@ footer {
   }
 
   .blog-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .blog-card {
+    width: 100%;
+  }
+
+  .card {
+    width: 100%;
+  }
+
+  .member-card {
+    width: 100%;
+  }
+
+  .member-grid {
     grid-template-columns: 1fr;
   }
 }
