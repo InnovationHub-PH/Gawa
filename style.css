@@ -216,18 +216,6 @@ h2 {
   display: inline-block;
 }
 
-h1::before {
-  content: ">";
-  margin-right: 1rem;
-  color: var(--secondary-color);
-}
-
-h2::before {
-  content: ">>";
-  margin-right: 1rem;
-  color: var(--secondary-color);
-}
-
 .header-text :after {
   content: "_";
   animation: cursor-blink 1s infinite;
