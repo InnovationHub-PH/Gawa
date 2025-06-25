@@ -60,7 +60,7 @@ function addMarkersToMap(items, type) {
   clearMapMarkers();
   
   items.forEach(item => {
-    let coords, popupContent;
+    let coords, popupContent, itemId;
     
     if (type === 'jobs' && item.coordinates) {
       coords = [item.coordinates.lat, item.coordinates.lng];
