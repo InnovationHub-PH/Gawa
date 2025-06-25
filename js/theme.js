@@ -1,7 +1,7 @@
 // Theme definitions
 const themes = {
   black: {
-    name: 'BLACK',
+    name: '◐',
     color: '#000000',
     vars: {
       '--frame-bg-color': '#0d0d0d',
@@ -22,7 +22,7 @@ const themes = {
     }
   },
   purple: {
-    name: 'PURPLE',
+    name: '◑',
     color: '#160B26',
     vars: {
       '--frame-bg-color': 'rgba(292, 7, 145, 0.05)',
@@ -43,7 +43,7 @@ const themes = {
     }
   },
   green: {
-    name: 'GREEN',
+    name: '◒',
     color: '#000000',
     vars: {
       '--frame-bg-color': 'rgba(0, 255, 0, 0.05)',
@@ -64,7 +64,7 @@ const themes = {
     }
   },
   brown: {
-    name: 'BROWN',
+    name: '◓',
     color: '#111111',
     vars: {
       '--frame-bg-color': 'rgba(255, 176, 0, 0.1)',
@@ -85,7 +85,7 @@ const themes = {
     }
   },
   grey: {
-    name: 'GREY',
+    name: '◔',
     color: '#ffffff',
     vars: {
       '--frame-bg-color': 'rgba(180, 190, 200, 0.25)',
@@ -106,7 +106,7 @@ const themes = {
     }
   },
   beige: {
-    name: 'BEIGE',
+    name: '◕',
     color: '#fdf6e3',
     vars: {
       '--frame-bg-color': '#fef3c7',
@@ -151,7 +151,7 @@ const updateTheme = (themeName) => {
   // Update theme toggle button
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = themeToggle.querySelector('.theme-icon');
-  themeIcon.textContent = `[${theme.name}]`;
+  themeIcon.textContent = theme.name;
   themeToggle.setAttribute('aria-label', `Switch theme (current: ${theme.name})`);
 };
 
