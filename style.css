@@ -330,6 +330,7 @@ h2 {
   background: none;
   border: 2px solid var(--border-color);
   border-left: none;
+  border-right: none;
   color: var(--text-color);
   cursor: pointer;
   font-family: var(--font-mono);
