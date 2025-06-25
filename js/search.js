@@ -19,6 +19,9 @@ let markers = new Map();
 let currentSlide = 0;
 const totalSlides = 2;
 let popupShown = false;
+let drawnItems = null;
+let drawControl = null;
+let activeSpatialFilterLayer = null;
 
 // Utility functions
 function truncateWords(text, wordCount) {
@@ -46,7 +49,93 @@ function initializeMap() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
+    
+    // Initialize drawing functionality
+    drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+    
+    drawControl = new L.Control.Draw({
+      edit: {
+        featureGroup: drawnItems
+      },
+      draw: {
+        polygon: true,
+        rectangle: true,
+        circle: false,
+        marker: false,
+        polyline: false,
+        circlemarker: false
+      }
+    });
+    map.addControl(drawControl);
+    
+    // Event listeners for drawing
+    map.on(L.Draw.Event.CREATED, handleDrawCreated);
+    map.on(L.Draw.Event.DELETED, handleDrawDeleted);
+    map.on(L.Draw.Event.EDITED, handleDrawEdited);
   }
+}
+
+// Handle draw events
+function handleDrawCreated(e) {
+  const layer = e.layer;
+  
+  // Clear any existing layers to ensure only one spatial filter is active
+  drawnItems.clearLayers();
+  
+  // Add the new layer
+  drawnItems.addLayer(layer);
+  activeSpatialFilterLayer = layer;
+  
+  // Update results with spatial filter
+  updateResults();
+}
+
+function handleDrawDeleted(e) {
+  activeSpatialFilterLayer = null;
+  updateResults();
+}
+
+function handleDrawEdited(e) {
+  // Update results when shape is edited
+  updateResults();
+}
+
+// Check if a point is within the drawn area
+function isPointInDrawnArea(lat, lng) {
+  if (!activeSpatialFilterLayer) return true;
+  
+  const point = L.latLng(lat, lng);
+  
+  if (activeSpatialFilterLayer instanceof L.Rectangle) {
+    return activeSpatialFilterLayer.getBounds().contains(point);
+  } else if (activeSpatialFilterLayer instanceof L.Polygon) {
+    // For polygons, we need to check if point is inside the polygon
+    const latLngs = activeSpatialFilterLayer.getLatLngs()[0];
+    return isPointInPolygon(point, latLngs);
+  }
+  
+  return true;
+}
+
+// Point in polygon algorithm
+function isPointInPolygon(point, polygon) {
+  const x = point.lat;
+  const y = point.lng;
+  let inside = false;
+  
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].lat;
+    const yi = polygon[i].lng;
+    const xj = polygon[j].lat;
+    const yj = polygon[j].lng;
+    
+    if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+      inside = !inside;
+    }
+  }
+  
+  return inside;
 }
 
 // Clear map markers
@@ -337,7 +426,16 @@ function updateBlogResults() {
 }
 
 function updateJobsResults() {
-  const filteredJobs = jobs.filter(job => {
+  // First filter by spatial area if one is drawn
+  let spatiallyFilteredJobs = jobs;
+  if (activeSpatialFilterLayer) {
+    spatiallyFilteredJobs = jobs.filter(job => {
+      if (!job.coordinates) return false;
+      return isPointInDrawnArea(job.coordinates.lat, job.coordinates.lng);
+    });
+  }
+  
+  const filteredJobs = spatiallyFilteredJobs.filter(job => {
     const matchesSearch = (
       job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -396,7 +494,16 @@ function updateJobsResults() {
 }
 
 function updateCommunityResults() {
-  const filteredMembers = communityMembers.filter(member => {
+  // First filter by spatial area if one is drawn
+  let spatiallyFilteredMembers = communityMembers;
+  if (activeSpatialFilterLayer) {
+    spatiallyFilteredMembers = communityMembers.filter(member => {
+      if (!member.location) return false;
+      return isPointInDrawnArea(member.location.lat, member.location.lng);
+    });
+  }
+  
+  const filteredMembers = spatiallyFilteredMembers.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesFilters = activeFilters.size === 0 || 
