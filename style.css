@@ -567,6 +567,8 @@ input[type="radio"]:checked::before {
   margin-bottom: 2rem;
   background-color: var(--frame-bg-color);
   transition: transform 0.2s ease;
+  max-height: 550px;
+  overflow-y: auto;
 }
 
 .title-info {
