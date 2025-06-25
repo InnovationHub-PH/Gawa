@@ -65,7 +65,7 @@ function validateDescription(description) {
 }
 
 function createJobCard(job) {
-    const truncatedDescription = truncateWords(job.description, 13);
+    const truncatedDescription = truncateWords(job.description, 11);
     const fullDescription = validateDescription(job.description);
     const isExpanded = truncatedDescription === fullDescription;
 

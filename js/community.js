@@ -205,16 +205,16 @@ function createMemberCard(member) {
     const websiteText = member.website.replace('https://', '').replace('http://', '');
     processedInfo.website = {
       full: member.website,
-      truncated: truncateWords(websiteText, 13),
-      needsReadMore: websiteText.split(' ').length > 13
+      truncated: truncateWords(websiteText, 11),
+      needsReadMore: websiteText.split(' ').length > 11
     };
   }
   
   if (member.email) {
     processedInfo.email = {
       full: member.email,
-      truncated: truncateWords(member.email, 13),
-      needsReadMore: member.email.split(' ').length > 13
+      truncated: truncateWords(member.email, 11),
+      needsReadMore: member.email.split(' ').length > 11
     };
   }
   
@@ -222,8 +222,8 @@ function createMemberCard(member) {
     const facebookText = member.facebook.replace('https://facebook.com/', '@');
     processedInfo.facebook = {
       full: member.facebook,
-      truncated: truncateWords(facebookText, 13),
-      needsReadMore: facebookText.split(' ').length > 13
+      truncated: truncateWords(facebookText, 11),
+      needsReadMore: facebookText.split(' ').length > 11
     };
   }
 

@@ -33,8 +33,8 @@ const processCodeBlocks = (content) => {
 const createBlogCard = (post) => {
   const processedContent = processCodeBlocks(post.content);
   const excerpt = post.excerpt || post.content.split('\n')[0];
-  const truncatedExcerpt = truncateWords(excerpt, 13);
-  const needsReadMore = excerpt.split(' ').length > 13;
+  const truncatedExcerpt = truncateWords(excerpt, 11);
+  const needsReadMore = excerpt.split(' ').length > 11;
   
   return `
     <a href="post.html?id=${post.id}" class="card blog-card" data-tags="${post.tags.join(' ')}">
