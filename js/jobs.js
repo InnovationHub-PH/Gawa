@@ -1,5 +1,5 @@
 // Sample job data - Replace with your actual job data
-const jobs = [
+export const jobs = [
     {
         title: 'Job Title',
         company: 'Company Name',

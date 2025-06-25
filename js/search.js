@@ -1,109 +1,12 @@
 import { blogPosts } from './blogData.js';
+import { jobs } from './jobs.js';
+import { communityMembers } from './community.js';
 
 // Import PDF.js for community member documents
 import * as pdfjsLib from 'pdfjs-dist';
 import pdfWorker from 'pdfjs-dist/build/pdf.worker?url';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
-
-// Sample job data
-const jobs = [
-  {
-    title: 'Job Title',
-    company: 'Company Name',
-    logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: 'Makati, MNL',
-    remote: false,
-    tags: ['robotics', 'hardware'],
-    description: 'Describe the Job opening here...',
-    coordinates: { lat: 14.5547, lng: 120.9947 }
-  },
-  {
-    title: 'Software Developer',
-    company: 'Remote Robotics',
-    logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: 'Remote',
-    remote: true,
-    tags: ['software', 'robotics'],
-    description: 'Developing control systems for autonomous robots. We are looking for a skilled software developer with experience in robotics and control systems.',
-    coordinates: { lat: 14.5580, lng: 120.9890 }
-  },
-  {
-    title: 'Mechatronics Intern',
-    company: 'Innovation Labs',
-    logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: 'Boston, MA',
-    remote: false,
-    tags: ['internship', 'hardware', 'software'],
-    description: 'Summer internship opportunity in our robotics division. Join our team of experts and gain hands-on experience.',
-    coordinates: { lat: 14.5695, lng: 120.9822 }
-  }
-];
-
-// Community member data
-const communityMembers = [
-  {
-    name: 'TechLabs Manila',
-    category: 'COMPANIES',
-    website: 'https://techlabs.ph',
-    email: 'contact@techlabs.ph',
-    phone: '+63 2 8123 4567',
-    facebook: 'https://facebook.com/techlabsmanila',
-    tags: ['company', 'robotics', 'software'],
-    profileImage: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    pdfDocument: 'https://innovationhub-ph.github.io/MakersClub/Portfolios/portfolio_Darja_Osojnik.pdf',
-    location: {
-      lat: 14.5547,
-      lng: 120.9947,
-      address: 'Makati City, Philippines'
-    }
-  },
-  {
-    name: 'RoboCore Solutions',
-    category: 'COMPANIES',
-    website: 'https://robocore.ph',
-    email: 'info@robocore.ph',
-    phone: '+63 2 8234 5678',
-    facebook: 'https://facebook.com/robocore',
-    tags: ['company', 'robotics', 'hardware'],
-    profileImage: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: {
-      lat: 14.5580,
-      lng: 120.9890,
-      address: 'BGC, Taguig City, Philippines'
-    }
-  },
-  {
-    name: 'De La Salle University',
-    category: 'EDUCATIONAL INSTITUTIONS',
-    website: 'https://www.dlsu.edu.ph',
-    email: 'info@dlsu.edu.ph',
-    phone: '+63 2 8524 4611',
-    facebook: 'https://facebook.com/dlsu',
-    tags: ['education', 'robotics', 'research'],
-    profileImage: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: {
-      lat: 14.5648,
-      lng: 120.9932,
-      address: '2401 Taft Avenue, Manila'
-    }
-  },
-  {
-    name: 'Jon Prado',
-    category: 'INDIVIDUALS',
-    website: 'https://jonprado.com',
-    email: 'jon@example.com',
-    phone: '+63 917 123 4567',
-    facebook: 'https://facebook.com/jonprado',
-    tags: ['individual', 'hardware', 'software'],
-    profileImage: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: {
-      lat: 14.5695,
-      lng: 120.9822,
-      address: 'Manila, Philippines'
-    }
-  }
-];
 
 // Global state
 let currentMode = 'blog';
@@ -159,8 +62,11 @@ function addMarkersToMap(items, type) {
   items.forEach(item => {
     let coords, popupContent;
     
-    if (type === 'jobs' && item.coordinates) {
-      coords = [item.coordinates.lat, item.coordinates.lng];
+    if (type === 'jobs' && item.location) {
+      // For jobs, we need to add coordinates if they don't exist
+      // Using Manila area coordinates as default
+      const defaultCoords = { lat: 14.5995, lng: 120.9842 };
+      coords = item.coordinates ? [item.coordinates.lat, item.coordinates.lng] : [defaultCoords.lat, defaultCoords.lng];
       popupContent = `<strong>${item.title}</strong><br>${item.company}<br>${item.location}`;
     } else if (type === 'community' && item.location) {
       coords = [item.location.lat, item.location.lng];

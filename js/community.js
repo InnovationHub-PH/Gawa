@@ -1,5 +1,5 @@
 // Community member data
-const communityMembers = [
+export const communityMembers = [
   {
     name: 'TechLabs Manila',
     category: 'COMPANIES',
