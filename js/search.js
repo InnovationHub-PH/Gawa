@@ -51,6 +51,7 @@ const communityMembers = [
     facebook: 'https://facebook.com/techlabsmanila',
     tags: ['company', 'robotics', 'software'],
     profileImage: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
+    pdfDocument: 'https://innovationhub-ph.github.io/MakersClub/Portfolios/portfolio_Darja_Osojnik.pdf',
     location: {
       lat: 14.5547,
       lng: 120.9947,
@@ -272,6 +273,13 @@ function createMemberCard(member) {
     };
   }
 
+  const pdfPreview = member.pdfDocument ? `
+    <div class="pdf-preview" data-pdf-url="${member.pdfDocument}">
+      <canvas class="pdf-thumbnail"></canvas>
+      <button class="view-pdf-btn">View Document</button>
+    </div>
+  ` : '';
+
   return `
     <div class="card member-card" data-member="${member.name}" data-tags="${member.tags.join(' ')}">
       <div class="card-header">
@@ -314,6 +322,7 @@ function createMemberCard(member) {
           </div>
         ` : ''}
       </div>
+      ${pdfPreview}
       <div class="tags">
         ${member.tags.map(tag => `<span class="tag">${tag.toUpperCase()}</span>`).join('')}
       </div>
@@ -467,6 +476,9 @@ function updateCommunityResults() {
       }
     });
   });
+
+  // Initialize PDF previews
+  initializePdfPreviews();
 
   // Update map with community markers
   addMarkersToMap(filteredMembers, 'community');
