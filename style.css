@@ -955,38 +955,6 @@ footer {
 .about-carousel {
   margin-bottom: 4rem;
   position: relative;
-  transition: all 0.3s ease;
-  overflow: hidden;
-}
-
-.about-carousel.collapsed {
-  height: 60px;
-  cursor: pointer;
-}
-
-.about-carousel.collapsed .carousel-container {
-  height: 60px;
-  overflow: hidden;
-}
-
-.about-carousel.collapsed .carousel-controls {
-  display: none;
-}
-
-.about-carousel.collapsed::after {
-  content: "Click to expand...";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--bg-color);
-  color: var(--text-color);
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border-color);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  z-index: 10;
-  pointer-events: none;
 }
 
 .carousel-container {
@@ -994,7 +962,6 @@ footer {
   overflow: hidden;
   border: 3px solid var(--border-color);
   background-color: var(--frame-bg-color);
-  transition: height 0.3s ease;
 }
 
 .carousel-slide {

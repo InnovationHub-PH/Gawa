@@ -114,8 +114,6 @@ let map = null;
 let markers = new Map();
 let currentSlide = 0;
 const totalSlides = 2;
-let carouselCollapsed = false;
-let hasScrolled = false;
 
 // Utility functions
 function truncateWords(text, wordCount) {
@@ -560,48 +558,6 @@ function initializeCarousel() {
   setInterval(nextSlide, 8000);
 }
 
-// Carousel collapse functionality
-function collapseCarousel() {
-  if (!carouselCollapsed) {
-    const carousel = document.querySelector('.about-carousel');
-    carousel.classList.add('collapsed');
-    carouselCollapsed = true;
-  }
-}
-
-function expandCarousel() {
-  if (carouselCollapsed) {
-    const carousel = document.querySelector('.about-carousel');
-    carousel.classList.remove('collapsed');
-    carouselCollapsed = false;
-  }
-}
-
-function initializeScrollCollapse() {
-  let scrollTimeout;
-  
-  window.addEventListener('scroll', () => {
-    // Clear any existing timeout
-    clearTimeout(scrollTimeout);
-    
-    // Set a small delay to avoid triggering on very small scrolls
-    scrollTimeout = setTimeout(() => {
-      if (window.scrollY > 50 && !hasScrolled) {
-        hasScrolled = true;
-        collapseCarousel();
-      }
-    }, 100);
-  });
-  
-  // Add click listener to expand carousel when collapsed
-  const carousel = document.querySelector('.about-carousel');
-  carousel.addEventListener('click', () => {
-    if (carouselCollapsed) {
-      expandCarousel();
-    }
-  });
-}
-
 function updateResults() {
   switch (currentMode) {
     case 'blog':
@@ -620,9 +576,6 @@ function updateResults() {
 function initialize() {
   // Initialize carousel
   initializeCarousel();
-  
-  // Initialize scroll collapse functionality
-  initializeScrollCollapse();
   
   // Populate blog tags
   const blogTagsContainer = document.getElementById('blogTags');
