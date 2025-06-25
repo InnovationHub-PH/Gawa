@@ -548,6 +548,14 @@ input[type="radio"]:checked::before {
   text-decoration: none;
 }
 
+/* Center H2 text for sponsors and social sections */
+.sponsors h2,
+.socials h2 {
+  text-align: center;
+  width: 100%;
+  display: block;
+}
+
 /* Cards */
 .card {
   border: 1px solid var(--border-color);
