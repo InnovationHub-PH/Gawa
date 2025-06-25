@@ -173,6 +173,7 @@ body {
   overflow-x: hidden;
   padding-top: var(--nav-height);
   padding: calc(var(--nav-height) + 2rem) 2rem 2rem 2rem;
+  padding:  0 2rem;
   min-height: 100vh;
   text-shadow: var(--terminal-shadow);
 }
