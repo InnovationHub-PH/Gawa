@@ -553,6 +553,99 @@ function initializePopup() {
   setTimeout(showAboutPopup, 500);
 }
 
+// PDF Preview functionality
+const modal = document.createElement('div');
+modal.className = 'pdf-modal';
+modal.innerHTML = `
+  <div class="pdf-modal-content">
+    <button class="close-modal">&times;</button>
+    <button class="nav-btn prev-page">←</button>
+    <canvas id="pdf-canvas"></canvas>
+    <button class="nav-btn next-page">→</button>
+    <div class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></div>
+  </div>
+`;
+document.body.appendChild(modal);
+
+let currentPdf = null;
+let currentPdfPage = 1;
+
+async function showPdfPreview(pdfUrl, pageNumber = 1) {
+  try {
+    if (!currentPdf) {
+      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+      currentPdf = await loadingTask.promise;
+    }
+
+    const page = await currentPdf.getPage(pageNumber);
+    const canvas = document.getElementById('pdf-canvas');
+    const context = canvas.getContext('2d');
+
+    const viewport = page.getViewport({ scale: 1.5 });
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+
+    await page.render({
+      canvasContext: context,
+      viewport: viewport
+    }).promise;
+
+    document.getElementById('current-page').textContent = pageNumber;
+    document.getElementById('total-pages').textContent = currentPdf.numPages;
+    modal.style.display = 'flex';
+  } catch (error) {
+    console.error('Error loading PDF:', error);
+  }
+}
+
+// Event listeners for modal navigation
+document.querySelector('.close-modal').addEventListener('click', () => {
+  modal.style.display = 'none';
+  currentPdf = null;
+  currentPdfPage = 1;
+});
+
+document.querySelector('.prev-page').addEventListener('click', () => {
+  if (currentPdfPage > 1) {
+    currentPdfPage--;
+    showPdfPreview(currentPdf.url, currentPdfPage);
+  }
+});
+
+document.querySelector('.next-page').addEventListener('click', () => {
+  if (currentPdfPage < currentPdf.numPages) {
+    currentPdfPage++;
+    showPdfPreview(currentPdf.url, currentPdfPage);
+  }
+});
+
+function initializePdfPreviews() {
+  document.querySelectorAll('.pdf-preview').forEach(async (preview) => {
+    const pdfUrl = preview.dataset.pdfUrl;
+    const canvas = preview.querySelector('.pdf-thumbnail');
+    const viewBtn = preview.querySelector('.view-pdf-btn');
+
+    try {
+      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+      const pdf = await loadingTask.promise;
+      const page = await pdf.getPage(1);
+      
+      const viewport = page.getViewport({ scale: 0.5 });
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+
+      await page.render({
+        canvasContext: canvas.getContext('2d'),
+        viewport: viewport
+      }).promise;
+
+      viewBtn.addEventListener('click', () => showPdfPreview(pdfUrl));
+    } catch (error) {
+      console.error('Error loading PDF preview:', error);
+    }
+  });
+}
+
 // Mode switching
 function switchMode(mode) {
   currentMode = mode;
