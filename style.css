@@ -1263,6 +1263,7 @@ input[type="radio"]:checked::before {
   min-width: 0; /* Allows flex item to shrink below content size */
   height: 100%;
   overflow-y: auto;
+  padding-left: 2rem;
 }
 
 /* Search interface should be above map */
@@ -1972,6 +1973,7 @@ code[class*="language-"] {
   .results-column {
     flex: none;
     order: 0; /* Results appear first on mobile */
+    padding-left: 0; /* Remove left padding on mobile */
   }
   
   .map-toggle {
