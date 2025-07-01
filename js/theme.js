@@ -1,3 +1,6 @@
+// Import CSS styles
+import '../style.css';
+
 // Theme definitions
 const themes = {
   black: {
