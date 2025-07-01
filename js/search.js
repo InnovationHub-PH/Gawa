@@ -1075,6 +1075,40 @@ function initialize() {
 
   // Initial render
   switchMode('blog');
+  
+  // Initialize mobile dropdown collapse functionality
+  initializeMobileDropdowns();
+}
+
+// Mobile dropdown collapse functionality
+function initializeMobileDropdowns() {
+  const dropdownFilters = document.querySelectorAll('.dropdown-filter');
+  
+  dropdownFilters.forEach(filter => {
+    const header = filter.querySelector('h3');
+    
+    // Set initial collapsed state on mobile
+    function updateCollapseState() {
+      if (window.innerWidth <= 768) {
+        filter.classList.add('collapsed');
+      } else {
+        filter.classList.remove('collapsed');
+      }
+    }
+    
+    // Initial state
+    updateCollapseState();
+    
+    // Handle window resize
+    window.addEventListener('resize', updateCollapseState);
+    
+    // Handle click to toggle
+    header.addEventListener('click', () => {
+      if (window.innerWidth <= 768) {
+        filter.classList.toggle('collapsed');
+      }
+    });
+  });
 }
 
 // Initialize when DOM is loaded
