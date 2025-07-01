@@ -1312,12 +1312,8 @@ footer {
 @media (max-width: 768px) {
   body {
     padding: 1rem;
-    padding-top: 0;
-  }
-
-  .container {
-    height: calc(100vh - calc(var(--nav-element-height) + 2rem));
-    margin-top: calc(var(--nav-element-height) + 1rem);
+    padding-top: calc(var(--nav-element-height) + 1rem);
+    scroll-padding-top: calc(var(--nav-element-height) + 1rem);
   }
 
   .nav-container {
