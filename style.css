@@ -357,6 +357,83 @@ h2 {
   text-decoration: none;
 }
 
+/* Auth Button Styling */
+#authButton {
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: all 0.3s ease;
+}
+
+#authButton:hover {
+  background-color: var(--border-color);
+  color: var(--bg-color);
+}
+
+/* User Menu Styling */
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 1rem;
+  border: 2px solid var(--border-color);
+  border-right: none;
+  height: var(--nav-element-height);
+  color: var(--text-color);
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.user-menu:hover {
+  background-color: var(--border-color);
+  color: var(--bg-color);
+}
+
+.user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-color);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--bg-color);
+  border: 2px solid var(--border-color);
+  border-top: none;
+  min-width: 150px;
+  display: none;
+  z-index: 1000;
+}
+
+.user-menu:hover .user-dropdown {
+  display: block;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: var(--text-color);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background: var(--border-color);
+  color: var(--bg-color);
+}
+
 /* Theme Toggle */
 .theme-toggle {
   background: none;
