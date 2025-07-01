@@ -51,13 +51,17 @@ async function loadUserProfile() {
       username: currentUser.email.split('@')[0],
       full_name: currentUser.user_metadata?.full_name || '',
       bio: '',
-      avatar_url: currentUser.user_metadata?.avatar_url || ''
+      avatar_url: currentUser.user_metadata?.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png'
     };
     
     await db.createProfile(currentUser.id, profileData);
     userProfile = { id: currentUser.id, ...profileData };
   } else if (!error) {
     userProfile = data;
+    // Ensure default avatar if none set
+    if (!userProfile.avatar_url) {
+      userProfile.avatar_url = 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png';
+    }
   }
 }
 
@@ -98,7 +102,7 @@ function updateUserMenuContent() {
   const userName = document.getElementById('userName');
   
   if (userAvatar && userProfile) {
-    userAvatar.src = userProfile.avatar_url || 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg';
+    userAvatar.src = userProfile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png';
   }
   
   if (userName && userProfile) {

@@ -79,6 +79,31 @@ export const db = {
     return { data, error };
   },
 
+  // Profile picture upload
+  async uploadProfilePicture(fileName, file) {
+    const { data, error } = await supabase.storage
+      .from('profile-pictures')
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: true
+      });
+    return { data, error };
+  },
+
+  async getProfilePictureUrl(fileName) {
+    const { data } = supabase.storage
+      .from('profile-pictures')
+      .getPublicUrl(fileName);
+    return { data };
+  },
+
+  async deleteProfilePicture(fileName) {
+    const { data, error } = await supabase.storage
+      .from('profile-pictures')
+      .remove([fileName]);
+    return { data, error };
+  },
+
   // Posts
   async createPost(postData) {
     const { data, error } = await supabase

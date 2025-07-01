@@ -83,7 +83,7 @@ async function loadUserProfile(userId) {
 // Update profile UI
 function updateProfileUI(profile, posts, ratings, averageRating, ratingCount, followersCount, followingCount, isOwnProfile, isFollowing) {
   // Update profile header
-  document.getElementById('profileAvatar').src = profile.avatar_url || 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg';
+  document.getElementById('profileAvatar').src = profile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png';
   document.getElementById('profileName').textContent = profile.full_name || profile.username;
   document.getElementById('profileUsername').textContent = `@${profile.username}`;
   document.getElementById('profileBio').textContent = profile.bio || 'No bio available';
@@ -110,10 +110,22 @@ function updateProfileUI(profile, posts, ratings, averageRating, ratingCount, fo
     followButton.style.display = 'none';
     rateUserButton.style.display = 'none';
     editProfileButton.style.display = 'block';
+    
+    // Show upload button for own profile
+    const uploadBtn = document.getElementById('uploadProfilePictureBtn');
+    if (uploadBtn) {
+      uploadBtn.style.display = 'block';
+    }
   } else {
     editProfileButton.style.display = 'none';
     followButton.style.display = 'block';
     rateUserButton.style.display = 'block';
+    
+    // Hide upload button for other profiles
+    const uploadBtn = document.getElementById('uploadProfilePictureBtn');
+    if (uploadBtn) {
+      uploadBtn.style.display = 'none';
+    }
     
     followButton.textContent = isFollowing ? 'UNFOLLOW' : 'FOLLOW';
     followButton.dataset.following = isFollowing;
@@ -159,7 +171,7 @@ function createPostCard(post) {
   return `
     <div class="post-card">
       <div class="post-header">
-        <img src="${post.profiles.avatar_url || 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg'}" alt="${post.profiles.username}" class="post-avatar">
+        <img src="${post.profiles.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png'}" alt="${post.profiles.username}" class="post-avatar">
         <div class="post-info">
           <h4>${post.profiles.full_name || post.profiles.username}</h4>
           <span class="post-time">${timeAgo}</span>
@@ -197,7 +209,7 @@ function createRatingCard(rating) {
   return `
     <div class="rating-card">
       <div class="rating-header">
-        <img src="${rating.profiles.avatar_url || 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg'}" alt="${rating.profiles.username}" class="rating-avatar">
+        <img src="${rating.profiles.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png'}" alt="${rating.profiles.username}" class="rating-avatar">
         <div class="rating-info">
           <h4>${rating.profiles.full_name || rating.profiles.username}</h4>
           <div class="rating-stars">${stars}</div>
@@ -229,11 +241,89 @@ export function initProfileInteractions() {
     editProfileButton.addEventListener('click', showEditProfileModal);
   }
   
+  // Profile picture upload
+  const profilePictureInput = document.getElementById('profilePictureInput');
+  const uploadProfilePictureBtn = document.getElementById('uploadProfilePictureBtn');
+  
+  if (uploadProfilePictureBtn && profilePictureInput) {
+    uploadProfilePictureBtn.addEventListener('click', () => {
+      profilePictureInput.click();
+    });
+    
+    profilePictureInput.addEventListener('change', handleProfilePictureUpload);
+  }
+  
   // Rating modal
   initRatingModal();
   
   // Edit profile modal
   initEditProfileModal();
+}
+
+// Handle profile picture upload
+async function handleProfilePictureUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    showError('Please select an image file');
+    return;
+  }
+  
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    showError('Image must be smaller than 5MB');
+    return;
+  }
+  
+  const currentUser = getCurrentUser();
+  if (!currentUser) {
+    showError('Please sign in to upload a profile picture');
+    return;
+  }
+  
+  try {
+    // Show loading state
+    const uploadBtn = document.getElementById('uploadProfilePictureBtn');
+    const originalText = uploadBtn.textContent;
+    uploadBtn.textContent = 'UPLOADING...';
+    uploadBtn.disabled = true;
+    
+    // Upload to Supabase Storage
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
+    
+    const { data: uploadData, error: uploadError } = await db.uploadProfilePicture(fileName, file);
+    
+    if (uploadError) throw uploadError;
+    
+    // Get public URL
+    const { data: urlData } = await db.getProfilePictureUrl(fileName);
+    
+    if (urlData?.publicUrl) {
+      // Update profile with new avatar URL
+      await db.updateProfile(currentUser.id, { avatar_url: urlData.publicUrl });
+      
+      // Update UI
+      document.getElementById('profileAvatar').src = urlData.publicUrl;
+      const userAvatar = document.getElementById('userAvatar');
+      if (userAvatar) {
+        userAvatar.src = urlData.publicUrl;
+      }
+      
+      showSuccess('Profile picture updated successfully!');
+    }
+    
+  } catch (error) {
+    console.error('Error uploading profile picture:', error);
+    showError('Failed to upload profile picture. Please try again.');
+  } finally {
+    // Reset button state
+    const uploadBtn = document.getElementById('uploadProfilePictureBtn');
+    uploadBtn.textContent = 'UPLOAD PICTURE';
+    uploadBtn.disabled = false;
+  }
 }
 
 // Handle follow/unfollow

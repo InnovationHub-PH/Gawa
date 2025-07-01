@@ -69,7 +69,11 @@
       <!-- Profile Header -->
       <section class="profile-header">
         <div class="profile-info">
-          <img id="profileAvatar" src="" alt="Profile Avatar" class="profile-avatar">
+          <div class="profile-avatar-container">
+            <img id="profileAvatar" src="" alt="Profile Avatar" class="profile-avatar">
+            <button id="uploadProfilePictureBtn" class="upload-avatar-btn" style="display: none;">UPLOAD PICTURE</button>
+            <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+          </div>
           <div class="profile-details">
             <h1 id="profileName">Loading...</h1>
             <p id="profileUsername">@loading</p>
