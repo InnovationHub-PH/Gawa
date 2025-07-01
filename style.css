@@ -174,6 +174,7 @@ body {
   padding-top: calc(var(--nav-height) + 2rem);
   display: flex;
   flex-direction: column;
+  padding-bottom: 0;
 }
 
 /* Container */
@@ -185,6 +186,7 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: calc(100vh - var(--nav-height) - 4rem);
 }
 
 .container::before {
@@ -1215,6 +1217,7 @@ footer {
   position: relative;
   z-index: 1;
   background-color: var(--bg-color);
+  flex-shrink: 0;
 }
 
 /* Animations */
@@ -1304,6 +1307,7 @@ footer {
   body {
     padding: 1rem;
     padding-top: calc(var(--nav-element-height) + 1rem);
+    padding-bottom: 0;
   }
 
   .nav-container {
@@ -1919,6 +1923,7 @@ code[class*="language-"] {
     margin: 1rem;
     max-height: 90vh;
     height: auto;
+    min-height: calc(100vh - var(--nav-element-height) - 2rem);
   }
 
   .popup-close {
