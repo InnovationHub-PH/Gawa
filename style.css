@@ -1313,53 +1313,6 @@ footer {
   margin-bottom: 0.5rem;
 }
 
-/* Large screen layout (>2000px) - Map on left, content on right */
-@media (min-width: 2000px) {
-  .container {
-    display: flex;
-    gap: 2rem;
-    align-items: flex-start;
-  }
-
-  /* When map is visible, create two-column layout */
-  #mapContainer:not([style*="display: none"]) ~ .search-interface,
-  #mapContainer:not([style*="display: none"]) ~ .results-section {
-    flex: 1;
-  }
-
-  #mapContainer:not([style*="display: none"]) {
-    flex: 0 0 600px;
-    position: sticky;
-    top: calc(1rem + var(--nav-element-height) + 2rem);
-    height: calc(100vh - var(--nav-element-height) - 6rem);
-    order: -1; /* Move map to the left */
-  }
-
-  #mapContainer:not([style*="display: none"]) #searchMap {
-    height: 100%;
-    border: 2px solid var(--border-color);
-  }
-
-  /* Create a wrapper for search interface and results when map is visible */
-  #mapContainer:not([style*="display: none"]) ~ .search-interface {
-    position: static; /* Remove sticky positioning when in side-by-side layout */
-    background: transparent;
-  }
-
-  /* Adjust content area when map is present */
-  .container:has(#mapContainer:not([style*="display: none"])) {
-    max-width: none;
-    width: 100%;
-    padding: 0 2rem;
-  }
-
-  /* Ensure proper spacing for the content area */
-  .container:has(#mapContainer:not([style*="display: none"])) .search-interface,
-  .container:has(#mapContainer:not([style*="display: none"])) .results-section {
-    max-width: calc(100% - 600px - 2rem);
-  }
-}
-
 /* Media Queries */
 @media (max-width: 768px) {
   body::before {
