@@ -457,8 +457,11 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-    <script type="module" src="./js/theme.js"></script>
-    <script type="module" src="./js/auth.js"></script>
-    <script type="module" src="./js/search.js"></script>
+    <script type="module">
+      // Import modules and initialize
+      import './js/theme.js';
+      import './js/auth.js';
+      import './js/search.js';
+    </script>
   </body>
 </html>

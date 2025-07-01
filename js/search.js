@@ -4,10 +4,25 @@ import { communityMembers } from './community.js';
 import { fabricationItems, machineCategories, materialCategories } from './fabrication.js';
 
 // Import PDF.js for community member documents
-import * as pdfjsLib from 'pdfjs-dist';
-import pdfWorker from 'pdfjs-dist/build/pdf.worker?url';
+let pdfjsLib = null;
+let pdfWorkerLoaded = false;
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+// Dynamically load PDF.js only when needed
+async function loadPdfJs() {
+  if (!pdfjsLib) {
+    try {
+      pdfjsLib = await import('pdfjs-dist');
+      if (!pdfWorkerLoaded) {
+        const pdfWorker = await import('pdfjs-dist/build/pdf.worker?url');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker.default;
+        pdfWorkerLoaded = true;
+      }
+    } catch (error) {
+      console.warn('PDF.js not available:', error);
+    }
+  }
+  return pdfjsLib;
+}
 
 // Global state
 let currentMode = 'blog';
@@ -55,34 +70,44 @@ function processCodeBlocks(content) {
 // Initialize map
 function initializeMap() {
   if (!map) {
+    // Check if Leaflet is available
+    if (typeof L === 'undefined') {
+      console.error('Leaflet library not loaded');
+      return;
+    }
+    
     map = L.map('searchMap').setView([14.5995, 120.9842], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
     
     // Initialize drawing functionality
-    drawnItems = new L.FeatureGroup();
-    map.addLayer(drawnItems);
-    
-    drawControl = new L.Control.Draw({
-      edit: {
-        featureGroup: drawnItems
-      },
-      draw: {
-        polygon: true,
-        rectangle: true,
-        circle: false,
-        marker: false,
-        polyline: false,
-        circlemarker: false
-      }
-    });
-    map.addControl(drawControl);
-    
-    // Event listeners for drawing
-    map.on(L.Draw.Event.CREATED, handleDrawCreated);
-    map.on(L.Draw.Event.DELETED, handleDrawDeleted);
-    map.on(L.Draw.Event.EDITED, handleDrawEdited);
+    if (typeof L.Draw !== 'undefined') {
+      drawnItems = new L.FeatureGroup();
+      map.addLayer(drawnItems);
+      
+      drawControl = new L.Control.Draw({
+        edit: {
+          featureGroup: drawnItems
+        },
+        draw: {
+          polygon: true,
+          rectangle: true,
+          circle: false,
+          marker: false,
+          polyline: false,
+          circlemarker: false
+        }
+      });
+      map.addControl(drawControl);
+      
+      // Event listeners for drawing
+      map.on(L.Draw.Event.CREATED, handleDrawCreated);
+      map.on(L.Draw.Event.DELETED, handleDrawDeleted);
+      map.on(L.Draw.Event.EDITED, handleDrawEdited);
+    } else {
+      console.warn('Leaflet Draw not available - drawing features disabled');
+    }
   }
 }
 
@@ -1002,8 +1027,14 @@ let currentPdfPage = 1;
 
 async function showPdfPreview(pdfUrl, pageNumber = 1) {
   try {
+    const pdfLib = await loadPdfJs();
+    if (!pdfLib) {
+      console.error('PDF.js not available');
+      return;
+    }
+    
     if (!currentPdf) {
-      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+      const loadingTask = pdfLib.getDocument(pdfUrl);
       currentPdf = await loadingTask.promise;
     }
 
@@ -1056,7 +1087,13 @@ function initializePdfPreviews() {
     const viewBtn = preview.querySelector('.view-pdf-btn');
 
     try {
-      const loadingTask = pdfjsLib.getDocument(pdfUrl);
+      const pdfLib = await loadPdfJs();
+      if (!pdfLib) {
+        console.warn('PDF.js not available for preview');
+        return;
+      }
+      
+      const loadingTask = pdfLib.getDocument(pdfUrl);
       const pdf = await loadingTask.promise;
       const page = await pdf.getPage(1);
       
@@ -1421,4 +1458,9 @@ function initializeMapToggle() {
 }
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initialize);
+document.addEventListener('DOMContentLoaded', () => {
+  // Check if we're on the search page before initializing
+  if (document.getElementById('searchInterface')) {
+    initialize();
+  }
+});

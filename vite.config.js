@@ -2,6 +2,11 @@ import { defineConfig } from 'vite'
 import { resolve } from 'path'
 
 export default defineConfig({
+  define: {
+    // Ensure environment variables are available at build time
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(process.env.VITE_SUPABASE_URL || ''),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY': JSON.stringify(process.env.VITE_SUPABASE_ANON_KEY || '')
+  },
   build: {
     rollupOptions: {
       input: {
@@ -16,13 +21,20 @@ export default defineConfig({
         // Ensure proper asset naming
         assetFileNames: 'assets/[name]-[hash][extname]',
         chunkFileNames: 'assets/[name]-[hash].js',
-        entryFileNames: 'assets/[name]-[hash].js'
+        entryFileNames: 'assets/[name]-[hash].js',
+        // Ensure external dependencies are handled correctly
+        manualChunks: {
+          'leaflet': ['leaflet'],
+          'pdfjs': ['pdfjs-dist']
+        }
       }
     },
     // Ensure all dependencies are bundled
     commonjsOptions: {
       include: [/node_modules/]
-    }
+    },
+    // Increase chunk size warning limit
+    chunkSizeWarningLimit: 1000
   },
   resolve: {
     alias: {

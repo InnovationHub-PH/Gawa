@@ -1,8 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+
+// Check if environment variables are available
+if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('your-project')) {
+  console.warn('Supabase environment variables not configured. Some features may not work.');
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
