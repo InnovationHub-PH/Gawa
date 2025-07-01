@@ -199,6 +199,70 @@ const setActiveNavLink = () => {
   });
 };
 
+// Handle mobile menu navigation including auth button
+const handleMobileNavigation = () => {
+  const mainNav = document.querySelector('.main-nav');
+  const authButton = document.getElementById('authButton');
+  const userMenu = document.getElementById('userMenu');
+  
+  // Clone auth button or user menu for mobile menu
+  if (window.innerWidth <= 768) {
+    // Remove any existing mobile auth elements
+    const existingMobileAuth = mainNav.querySelector('.mobile-auth');
+    if (existingMobileAuth) {
+      existingMobileAuth.remove();
+    }
+    
+    // Add auth button or user menu to mobile navigation
+    if (authButton && authButton.style.display !== 'none') {
+      const mobileAuthButton = authButton.cloneNode(true);
+      mobileAuthButton.classList.add('mobile-auth');
+      mobileAuthButton.id = 'mobileAuthButton';
+      mainNav.appendChild(mobileAuthButton);
+      
+      // Add event listener to mobile auth button
+      mobileAuthButton.addEventListener('click', () => {
+        const authModal = document.getElementById('authModal');
+        if (authModal) {
+          authModal.classList.remove('hidden');
+        }
+        // Close mobile menu
+        mainNav.classList.remove('active');
+        document.querySelector('.menu-toggle').classList.remove('active');
+      });
+    } else if (userMenu && userMenu.style.display !== 'none') {
+      const mobileUserMenu = userMenu.cloneNode(true);
+      mobileUserMenu.classList.add('mobile-auth');
+      mobileUserMenu.id = 'mobileUserMenu';
+      mainNav.appendChild(mobileUserMenu);
+      
+      // Add event listeners to mobile user menu
+      const profileLink = mobileUserMenu.querySelector('a[href="profile.html"]');
+      const signOutButton = mobileUserMenu.querySelector('#signOutButton');
+      
+      if (profileLink) {
+        profileLink.addEventListener('click', () => {
+          mainNav.classList.remove('active');
+          document.querySelector('.menu-toggle').classList.remove('active');
+        });
+      }
+      
+      if (signOutButton) {
+        signOutButton.id = 'mobileSignOutButton';
+        signOutButton.addEventListener('click', () => {
+          // Trigger the original sign out button
+          const originalSignOut = document.getElementById('signOutButton');
+          if (originalSignOut) {
+            originalSignOut.click();
+          }
+          mainNav.classList.remove('active');
+          document.querySelector('.menu-toggle').classList.remove('active');
+        });
+      }
+    }
+  }
+};
+
 // Initialize theme and navigation
 document.addEventListener('DOMContentLoaded', () => {
   const storedTheme = getStoredTheme();
@@ -221,4 +285,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Set active navigation link
   setActiveNavLink();
+  
+  // Handle mobile navigation
+  handleMobileNavigation();
+  
+  // Update mobile navigation on resize
+  window.addEventListener('resize', handleMobileNavigation);
 });
