@@ -24,7 +24,6 @@ export default defineConfig({
         entryFileNames: 'assets/[name]-[hash].js',
         // Ensure external dependencies are handled correctly
         manualChunks: {
-          'leaflet': ['leaflet'],
           'pdfjs': ['pdfjs-dist']
         }
       }
