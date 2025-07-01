@@ -1189,11 +1189,14 @@ input[type="radio"]:checked::before {
 
 /* Map positioned under search interface */
 #mapContainer {
-  position: relative;
+  position: fixed;
+  top: calc(1rem + var(--nav-element-height) + 200px); /* Position below search interface */
+  right: 2rem;
   width: 100%;
+  max-width: 400px;
   height: 400px;
-  z-index: 5;
-  margin-bottom: 2rem;
+  z-index: 50;
+  pointer-events: auto;
 }
 
 #mapContainer #searchMap {
@@ -1201,6 +1204,7 @@ input[type="radio"]:checked::before {
   height: 400px;
   border: 2px solid var(--border-color);
   margin: 0;
+  background-color: var(--bg-color);
 }
 
 /* Results section normal positioning */
@@ -1208,6 +1212,7 @@ input[type="radio"]:checked::before {
   position: relative;
   z-index: 1;
   margin-top: 0;
+  margin-right: 420px; /* Make space for fixed map */
 }
 
 /* Search interface should be above map */
@@ -1903,6 +1908,18 @@ code[class*="language-"] {
 }
 
 @media (max-width: 768px) {
+  #mapContainer {
+    position: relative;
+    top: auto;
+    right: auto;
+    max-width: 100%;
+    margin-bottom: 2rem;
+  }
+  
+  .results-section {
+    margin-right: 0;
+  }
+  
   .search-interface {
     top: calc(1rem + var(--nav-element-height));
   }
