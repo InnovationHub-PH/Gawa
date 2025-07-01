@@ -2,12 +2,6 @@
   publish = "dist"
   command = "npm run build"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
-
 # Serve static HTML files directly
 [[redirects]]
   from = "/about"
@@ -34,8 +28,20 @@
   to = "/profile.html"
   status = 200
 
-# Handle SPA routing - this should be last
+# Handle query parameters for post pages
+[[redirects]]
+  from = "/post.html"
+  to = "/post.html"
+  status = 200
+
+# Handle query parameters for profile pages
+[[redirects]]
+  from = "/profile.html"
+  to = "/profile.html"
+  status = 200
+
+# Default fallback to home page
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200
+  status = 404
