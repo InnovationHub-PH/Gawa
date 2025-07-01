@@ -436,6 +436,148 @@ h2 {
   color: var(--bg-color);
 }
 
+/* Authentication Modal */
+.auth-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.auth-modal.hidden {
+  display: none;
+}
+
+.auth-modal-content {
+  background: var(--bg-color);
+  border: 2px solid var(--border-color);
+  max-width: 400px;
+  width: 100%;
+  position: relative;
+  padding: 0;
+}
+
+.auth-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.auth-modal-header h3 {
+  margin: 0;
+  font-family: var(--font-mono);
+}
+
+.modal-close {
+  background: none;
+  border: 2px solid var(--border-color);
+  color: var(--text-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  font-family: var(--font-mono);
+}
+
+.modal-close:hover {
+  background: var(--border-color);
+  color: var(--bg-color);
+}
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border-color);
+}
+
+.auth-tab {
+  flex: 1;
+  background: var(--bg-color);
+  border: none;
+  border-right: 2px solid var(--border-color);
+  color: var(--text-color);
+  padding: 1rem;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  transition: all 0.2s ease;
+}
+
+.auth-tab:last-child {
+  border-right: none;
+}
+
+.auth-tab:hover {
+  background: var(--border-color);
+  color: var(--bg-color);
+}
+
+.auth-tab.active {
+  background: var(--border-color);
+  color: var(--bg-color);
+}
+
+.auth-form {
+  display: none;
+  padding: 2rem;
+}
+
+.auth-form.active {
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--font-mono);
+  font-weight: bold;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--bg-color);
+  border: 2px solid var(--border-color);
+  color: var(--text-color);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+}
+
+.auth-error,
+.auth-success {
+  display: none;
+  padding: 1rem;
+  margin: 1rem 2rem;
+  font-family: var(--font-mono);
+  border: 2px solid var(--border-color);
+}
+
+.auth-error {
+  background: var(--secondary-color);
+  color: var(--bg-color);
+}
+
+.auth-success {
+  background: var(--primary-color);
+  color: var(--bg-color);
+}
+
 /* Theme Toggle */
 .theme-toggle {
   background: none;
