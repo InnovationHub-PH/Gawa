@@ -448,7 +448,6 @@ h2 {
 .search-input {
   width: 100%;
   padding: 1rem;
-  padding-bottom: 0;
   background-color: var(--frame-bg-color);
   border: 2px solid var(--border-color);
   border-top: none;
