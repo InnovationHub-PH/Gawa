@@ -27,7 +27,7 @@
     })();
     </script>
     
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <div class="nav-container">
@@ -124,11 +124,11 @@
         <p>INNOVATION AT THE INTERSECTION OF DISCIPLINES</p>
       </footer>
     </div>
-    <script src="js/theme.js"></script>
-    <script src="js/post.js" type="module"></script>
-    <script src="js/auth.js" type="module"></script>
+    <script type="module" src="/js/theme.js"></script>
+    <script type="module" src="/js/post.js"></script>
+    <script type="module" src="/js/auth.js"></script>
     <script type="module">
-      import { initAuth } from './js/auth.js';
+      import { initAuth } from '/js/auth.js';
       
       document.addEventListener('DOMContentLoaded', async () => {
         await initAuth();

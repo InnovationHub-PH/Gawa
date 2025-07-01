@@ -13,5 +13,10 @@ export default defineConfig({
         profile: resolve(__dirname, 'profile.html')
       }
     }
+  },
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, './js')
+    }
   }
 })
