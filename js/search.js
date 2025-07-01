@@ -25,6 +25,7 @@ let popupShown = false;
 let drawnItems = null;
 let drawControl = null;
 let activeSpatialFilterLayer = null;
+let selectedCommunityFilters = new Set();
 
 // Utility functions
 function truncateWords(text, wordCount) {
@@ -533,6 +534,92 @@ function updateJobsResults() {
   addMarkersToMap(filteredJobs, 'jobs');
 }
 
+// Mobile filter popup functionality
+function initializeMobileFilterPopup() {
+  const filterTrigger = document.getElementById('communityFilterTrigger');
+  const filterPopup = document.getElementById('mobileFilterPopup');
+  const filterClose = document.getElementById('mobileFilterClose');
+  const filterOptions = document.getElementById('mobileFilterOptions');
+  const selectedFiltersContainer = document.getElementById('selectedFilters');
+
+  // Show popup
+  filterTrigger.addEventListener('click', () => {
+    filterPopup.classList.add('active');
+    updateMobileFilterOptions();
+  });
+
+  // Close popup
+  filterClose.addEventListener('click', () => {
+    filterPopup.classList.remove('active');
+  });
+
+  // Close on background click
+  filterPopup.addEventListener('click', (e) => {
+    if (e.target === filterPopup) {
+      filterPopup.classList.remove('active');
+    }
+  });
+
+  // Handle filter option clicks
+  filterOptions.addEventListener('click', (e) => {
+    if (e.target.classList.contains('mobile-filter-option')) {
+      const tag = e.target.dataset.tag;
+      
+      if (selectedCommunityFilters.has(tag)) {
+        selectedCommunityFilters.delete(tag);
+        e.target.classList.remove('selected');
+      } else {
+        selectedCommunityFilters.add(tag);
+        e.target.classList.add('selected');
+      }
+      
+      updateSelectedFiltersDisplay();
+      updateResults();
+    }
+  });
+
+  // Update selected filters display
+  function updateSelectedFiltersDisplay() {
+    selectedFiltersContainer.innerHTML = '';
+    
+    selectedCommunityFilters.forEach(tag => {
+      const filterTag = document.createElement('div');
+      filterTag.className = 'selected-filter-tag';
+      filterTag.innerHTML = `
+        ${tag.toUpperCase()}
+        <button class="remove-filter" data-tag="${tag}">×</button>
+      `;
+      selectedFiltersContainer.appendChild(filterTag);
+    });
+
+    // Add event listeners to remove buttons
+    selectedFiltersContainer.querySelectorAll('.remove-filter').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const tag = e.target.dataset.tag;
+        selectedCommunityFilters.delete(tag);
+        updateSelectedFiltersDisplay();
+        updateMobileFilterOptions();
+        updateResults();
+      });
+    });
+  }
+
+  // Update mobile filter options to reflect current selection
+  function updateMobileFilterOptions() {
+    filterOptions.querySelectorAll('.mobile-filter-option').forEach(option => {
+      const tag = option.dataset.tag;
+      if (selectedCommunityFilters.has(tag)) {
+        option.classList.add('selected');
+      } else {
+        option.classList.remove('selected');
+      }
+    });
+  }
+
+  // Initial display update
+  updateSelectedFiltersDisplay();
+}
+
 function updateCommunityResults() {
   // First filter by spatial area if one is drawn
   let spatiallyFilteredMembers = communityMembers;
@@ -546,8 +633,14 @@ function updateCommunityResults() {
   const filteredMembers = spatiallyFilteredMembers.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesFilters = activeFilters.size === 0 || 
-                          member.tags.some(tag => activeFilters.has(tag));
+    
+    // Use mobile filters if on mobile and community mode, otherwise use desktop filters
+    const filtersToUse = window.innerWidth <= 768 && currentMode === 'community' 
+      ? selectedCommunityFilters 
+      : activeFilters;
+    
+    const matchesFilters = filtersToUse.size === 0 || 
+                          member.tags.some(tag => filtersToUse.has(tag));
 
     return matchesSearch && matchesFilters;
   });
@@ -859,6 +952,7 @@ function initializePdfPreviews() {
 function switchMode(mode) {
   currentMode = mode;
   activeFilters.clear();
+  selectedCommunityFilters.clear();
   activeMachineCategories.clear();
   activeMaterialCategories.clear();
   currentPage = 0;
@@ -895,6 +989,12 @@ function switchMode(mode) {
   document.querySelectorAll('.tag-btn').forEach(btn => {
     btn.classList.remove('active');
   });
+  
+  // Clear selected community filters display
+  const selectedFiltersContainer = document.getElementById('selectedFilters');
+  if (selectedFiltersContainer) {
+    selectedFiltersContainer.innerHTML = '';
+  }
   
   // Reset remote toggle
   document.getElementById('remoteToggle').checked = false;
@@ -965,6 +1065,9 @@ function updateResults() {
 function initialize() {
   // Initialize popup
   initializePopup();
+  
+  // Initialize mobile filter popup
+  initializeMobileFilterPopup();
   
   // Initialize carousel
   initializeCarousel();
