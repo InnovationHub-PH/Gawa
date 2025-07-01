@@ -1,11 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://your-project.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'your-anon-key';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Check if environment variables are available
-if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('your-project')) {
+if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase environment variables not configured. Some features may not work.');
 }
 
@@ -81,27 +81,42 @@ export const db = {
 
   // Profile picture upload
   async uploadProfilePicture(fileName, file) {
-    const { data, error } = await supabase.storage
-      .from('profile-pictures')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: true
-      });
-    return { data, error };
+    try {
+      const { data, error } = await supabase.storage
+        .from('profile-pictures')
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+      return { data, error };
+    } catch (error) {
+      console.error('Upload error:', error);
+      return { data: null, error };
+    }
   },
 
   async getProfilePictureUrl(fileName) {
-    const { data } = supabase.storage
-      .from('profile-pictures')
-      .getPublicUrl(fileName);
-    return { data };
+    try {
+      const { data } = supabase.storage
+        .from('profile-pictures')
+        .getPublicUrl(fileName);
+      return { data };
+    } catch (error) {
+      console.error('Get URL error:', error);
+      return { data: null };
+    }
   },
 
   async deleteProfilePicture(fileName) {
-    const { data, error } = await supabase.storage
-      .from('profile-pictures')
-      .remove([fileName]);
-    return { data, error };
+    try {
+      const { data, error } = await supabase.storage
+        .from('profile-pictures')
+        .remove([fileName]);
+      return { data, error };
+    } catch (error) {
+      console.error('Delete error:', error);
+      return { data: null, error };
+    }
   },
 
   // Posts

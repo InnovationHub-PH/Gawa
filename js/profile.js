@@ -290,38 +290,76 @@ async function handleProfilePictureUpload(e) {
     uploadBtn.textContent = 'UPLOADING...';
     uploadBtn.disabled = true;
     
-    // Upload to Supabase Storage
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
-    
-    const { data: uploadData, error: uploadError } = await db.uploadProfilePicture(fileName, file);
-    
-    if (uploadError) throw uploadError;
-    
-    // Get public URL
-    const { data: urlData } = await db.getProfilePictureUrl(fileName);
-    
-    if (urlData?.publicUrl) {
-      // Update profile with new avatar URL
-      await db.updateProfile(currentUser.id, { avatar_url: urlData.publicUrl });
-      
-      // Update UI
-      document.getElementById('profileAvatar').src = urlData.publicUrl;
-      const userAvatar = document.getElementById('userAvatar');
-      if (userAvatar) {
-        userAvatar.src = urlData.publicUrl;
-      }
-      
-      showSuccess('Profile picture updated successfully!');
+    // Check if Supabase is configured
+    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+      throw new Error('Supabase not configured. Please set up your environment variables.');
     }
+    
+    // Convert image to base64 as fallback if Supabase Storage isn't available
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+      try {
+        const base64Image = event.target.result;
+        
+        // Try Supabase Storage first
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await db.uploadProfilePicture(fileName, file);
+        
+        let avatarUrl;
+        
+        if (uploadError) {
+          console.warn('Supabase Storage upload failed, using base64 fallback:', uploadError);
+          // Use base64 as fallback
+          avatarUrl = base64Image;
+        } else {
+          // Get public URL from Supabase Storage
+          const { data: urlData } = await db.getProfilePictureUrl(fileName);
+          avatarUrl = urlData?.publicUrl || base64Image;
+        }
+        
+        // Update profile with new avatar URL
+        await db.updateProfile(currentUser.id, { avatar_url: avatarUrl });
+        
+        // Update UI
+        document.getElementById('profileAvatar').src = avatarUrl;
+        const userAvatar = document.getElementById('userAvatar');
+        if (userAvatar) {
+          userAvatar.src = avatarUrl;
+        }
+        
+        showSuccess('Profile picture updated successfully!');
+        
+      } catch (error) {
+        console.error('Error processing profile picture:', error);
+        showError('Failed to upload profile picture. Please try again.');
+      } finally {
+        // Reset button state
+        const uploadBtn = document.getElementById('uploadProfilePictureBtn');
+        uploadBtn.textContent = originalText;
+        uploadBtn.disabled = false;
+      }
+    };
+    
+    reader.onerror = function() {
+      showError('Failed to read the image file');
+      // Reset button state
+      const uploadBtn = document.getElementById('uploadProfilePictureBtn');
+      uploadBtn.textContent = originalText;
+      uploadBtn.disabled = false;
+    };
+    
+    // Read the file as base64
+    reader.readAsDataURL(file);
     
   } catch (error) {
     console.error('Error uploading profile picture:', error);
-    showError('Failed to upload profile picture. Please try again.');
-  } finally {
+    showError(`Failed to upload profile picture: ${error.message}`);
+    
     // Reset button state
     const uploadBtn = document.getElementById('uploadProfilePictureBtn');
-    uploadBtn.textContent = 'UPLOAD PICTURE';
+    uploadBtn.textContent = originalText;
     uploadBtn.disabled = false;
   }
 }
