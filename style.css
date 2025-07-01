@@ -171,7 +171,7 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   padding: 0 2rem;
-  padding-top: calc(var(--nav-height) + 2rem);
+  padding-top: calc(1rem + var(--nav-element-height));
   display: flex;
   flex-direction: column;
   position: relative;
@@ -184,7 +184,7 @@ body::before {
   top: 0;
   left: 0;
   width: 100%;
-  height: calc(var(--nav-height) + 2rem);
+  height: calc(1rem + var(--nav-element-height));
   background-color: var(--bg-color);
   z-index: 9998;
   pointer-events: none;
@@ -1124,7 +1124,7 @@ input[type="radio"]:checked::before {
 /* Search interface container */
 .search-interface {
   position: sticky;
-  top: calc(var(--nav-height) + 2rem);
+  top: calc(1rem + var(--nav-element-height));
   z-index: 100;
   background-color: var(--bg-color);
   transition: transform 0.3s ease, opacity 0.3s ease;
@@ -1213,7 +1213,7 @@ input[type="radio"]:checked::before {
 /* Search interface should be above map */
 .search-interface {
   position: sticky;
-  top: calc(var(--nav-height) + 2rem);
+  top: calc(1rem + var(--nav-element-height));
   z-index: 10;
   background-color: var(--bg-color);
   transition: transform 0.3s ease, opacity 0.3s ease;
@@ -1316,12 +1316,12 @@ footer {
 /* Media Queries */
 @media (max-width: 768px) {
   body::before {
-    height: calc(var(--nav-element-height) + 1rem);
+    height: calc(1rem + var(--nav-element-height));
   }
   
   body {
     padding: 1rem;
-    padding-top: calc(var(--nav-element-height) + 1rem);
+    padding-top: calc(1rem + var(--nav-element-height));
   }
 
   .nav-container {
@@ -1904,7 +1904,7 @@ code[class*="language-"] {
 
 @media (max-width: 768px) {
   .search-interface {
-    top: calc(var(--nav-element-height) + 1rem);
+    top: calc(1rem + var(--nav-element-height));
   }
   
   #mapContainer #searchMap {
