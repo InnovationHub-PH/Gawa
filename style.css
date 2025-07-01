@@ -1963,16 +1963,17 @@ code[class*="language-"] {
   .content-layout {
     flex-direction: column;
     gap: 1rem;
+    height: auto;
   }
   
   .map-column {
     flex: none;
-    order: 1; /* Map appears after results on mobile */
+    order: -1; /* Map appears before results on mobile */
   }
   
   .results-column {
     flex: none;
-    order: 0; /* Results appear first on mobile */
+    order: 1; /* Results appear after map on mobile */
     padding-left: 0; /* Remove left padding on mobile */
   }
   
