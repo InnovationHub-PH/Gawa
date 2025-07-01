@@ -186,7 +186,6 @@ body::before {
   width: 100%;
   height: calc(var(--nav-height) + 2rem);
   background-color: var(--bg-color);
-  border-bottom: 2px solid var(--border-color);
   z-index: 9998;
   pointer-events: none;
 }
