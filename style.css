@@ -1107,6 +1107,14 @@ input[type="radio"]:checked::before {
   color: var(--bg-color);
 }
 
+/* Desktop filter buttons - show by default */
+.tag-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
 /* Search interface container */
 .search-interface {
   position: sticky;
@@ -1439,11 +1447,50 @@ footer {
   #fabricationFilters .mobile-filter-trigger {
     display: block;
   }
+}
+
+/* Additional mobile-only rules */
+@media (max-width: 768px) {
+  #communityFilters .tag-buttons {
+    display: none;
+  }
+
+  #communityFilters .mobile-filter-trigger {
+    display: block;
+  }
+
+  /* Show mobile filter trigger and hide desktop filters for blog */
+  #blogFilters .tag-buttons {
+    display: none;
+  }
+
+  #blogFilters .mobile-filter-trigger {
+    display: block;
+  }
+
+  /* Show mobile filter trigger and hide desktop filters for jobs */
+  #jobsFilters .tag-buttons {
+    display: none;
+  }
+
+  #jobsFilters .mobile-filter-trigger {
+    display: block;
+  }
+
+  /* Show mobile filter trigger and hide desktop filters for fabrication */
+  #fabricationFilters .filter-container {
+    display: none;
+  }
+
+  #fabricationFilters .mobile-filter-trigger {
+    display: block;
+  }
 
   /* Show fabrication filters title on mobile */
   #fabricationFilters h3 {
     display: block;
   }
+}
 
   .dropdown-filter {
     min-width: 100%;
