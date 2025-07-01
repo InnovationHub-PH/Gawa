@@ -104,6 +104,14 @@ function updateUserMenuContent() {
   if (userName && userProfile) {
     userName.textContent = userProfile.username || userProfile.full_name || 'User';
   }
+  
+  // Update profile link to include user ID
+  const profileLinks = document.querySelectorAll('a[href="profile.html"]');
+  profileLinks.forEach(link => {
+    if (currentUser) {
+      link.href = `profile.html?id=${currentUser.id}`;
+    }
+  });
 }
 
 // Initialize auth modal

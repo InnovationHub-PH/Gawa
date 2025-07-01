@@ -7,6 +7,7 @@ export function initProfilePage() {
   const profileId = urlParams.get('id');
   
   if (profileId) {
+    // Load specific user's profile
     loadUserProfile(profileId);
   } else {
     // Load current user's profile
@@ -14,8 +15,20 @@ export function initProfilePage() {
     if (currentUser) {
       loadUserProfile(currentUser.id);
     } else {
-      // Redirect to sign in
-      window.location.href = 'search.html';
+      // Wait for auth to initialize, then try again
+      setTimeout(() => {
+        const user = getCurrentUser();
+        if (user) {
+          loadUserProfile(user.id);
+        } else {
+          // Show message instead of redirecting
+          showError('Please sign in to view your profile');
+          // Optionally redirect to home page instead of search
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        }
+      }, 1000);
     }
   }
 }
