@@ -199,6 +199,16 @@
         </div>
 
         <div id="communityFilters" class="filter-content">
+          <!-- Mobile Filter Trigger -->
+          <button class="mobile-filter-trigger" id="communityFilterTrigger">
+            SELECT FILTERS
+          </button>
+          
+          <!-- Selected Filters Display -->
+          <div class="selected-filters" id="selectedFilters">
+            <!-- Selected filter tags will appear here -->
+          </div>
+          
           <h3>FILTER BY TAGS:</h3>
           <div class="tag-buttons">
             <button class="tag-btn" data-tag="company">COMPANIES</button>
@@ -243,6 +253,24 @@
           </div>
         </div>
       </section>
+
+      <!-- Mobile Filter Popup -->
+      <div class="mobile-filter-popup" id="mobileFilterPopup">
+        <div class="mobile-filter-content">
+          <div class="mobile-filter-header">
+            <h3>SELECT FILTERS</h3>
+            <button class="mobile-filter-close" id="mobileFilterClose">&times;</button>
+          </div>
+          <div class="mobile-filter-options" id="mobileFilterOptions">
+            <button class="mobile-filter-option" data-tag="company">COMPANIES</button>
+            <button class="mobile-filter-option" data-tag="individual">INDIVIDUALS</button>
+            <button class="mobile-filter-option" data-tag="education">EDUCATION</button>
+            <button class="mobile-filter-option" data-tag="robotics">ROBOTICS</button>
+            <button class="mobile-filter-option" data-tag="software">SOFTWARE</button>
+            <button class="mobile-filter-option" data-tag="hardware">HARDWARE</button>
+          </div>
+        </div>
+      </div>
 
       <!-- Map Container (hidden for blog mode) -->
       <div id="mapContainer" style="display: none;">
