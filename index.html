@@ -28,7 +28,6 @@
         }
       })();
     </script>
-    <link rel="stylesheet" href="/style.css" />
   </head>
   
   <body>
@@ -131,10 +130,10 @@
  * Demonstrating various syntax features in C++
  */
 
-#include &lt;iostream&gt;
-#include &lt;vector&gt;
-#include &lt;cmath&gt;
-#include &lt;stdexcept&gt;
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <stdexcept>
 
 #define PI 3.14159
 
@@ -164,14 +163,14 @@ double divide(double a, double b) {
 }
 
 int main() {
-    std::vector&lt;Circle&gt; circles = { Circle(1.0), Circle(3.0) };
+    std::vector<Circle> circles = { Circle(1.0), Circle(3.0) };
 
     for (const auto& circle : circles) {
-        std::cout &lt;&lt; circle.describe() &lt;&lt; std::endl;
-        std::cout &lt;&lt; "Area: " &lt;&lt; circle.area() &lt;&lt; std::endl;
+        std::cout << circle.describe() << std::endl;
+        std::cout << "Area: " << circle.area() << std::endl;
 
-        if (circle.area() &gt; 20.0) {
-            std::cout &lt;&lt; "Large circle!" &lt;&lt; std::endl;
+        if (circle.area() > 20.0) {
+            std::cout << "Large circle!" << std::endl;
         }
     }
 
@@ -222,11 +221,11 @@ int main() {
   
 </div>
 
-    <script type="module" src="/js/theme.js"></script>
-    <script type="module" src="/js/sponsors.js"></script>
-    <script type="module" src="/js/auth.js"></script>
+    <script type="module" src="./js/theme.js"></script>
+    <script type="module" src="./js/sponsors.js"></script>
+    <script type="module" src="./js/auth.js"></script>
     <script type="module">
-      import { initAuth } from '/js/auth.js';
+      import { initAuth } from './js/auth.js';
       
       document.addEventListener('DOMContentLoaded', async () => {
         await initAuth();

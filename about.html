@@ -26,7 +26,6 @@
 })();
     </script>
 
-    <link rel="stylesheet" href="/style.css" />
     
   </head>
   <body>
@@ -165,10 +164,10 @@
       </footer>
       
     </div>
-    <script type="module" src="/js/theme.js"></script>
-    <script type="module" src="/js/auth.js"></script>
+    <script type="module" src="./js/theme.js"></script>
+    <script type="module" src="./js/auth.js"></script>
     <script type="module">
-      import { initAuth } from '/js/auth.js';
+      import { initAuth } from './js/auth.js';
       
       document.addEventListener('DOMContentLoaded', async () => {
         await initAuth();

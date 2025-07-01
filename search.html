@@ -30,7 +30,6 @@
     })();
     </script>
 
-    <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <div class="nav-container">
@@ -457,11 +456,11 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.js"></script>
-    <script type="module" src="/js/theme.js"></script>
-    <script type="module" src="/js/auth.js"></script>
-    <script type="module" src="/js/search.js"></script>
+    <script type="module" src="./js/theme.js"></script>
+    <script type="module" src="./js/auth.js"></script>
+    <script type="module" src="./js/search.js"></script>
     <script type="module">
-      import { initAuth } from '/js/auth.js';
+      import { initAuth } from './js/auth.js';
       
       document.addEventListener('DOMContentLoaded', async () => {
         await initAuth();
