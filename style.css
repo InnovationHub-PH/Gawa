@@ -1194,7 +1194,7 @@ input[type="radio"]:checked::before {
   right: 2rem;
   width: 100%;
   max-width: 400px;
-  height: calc(100vh - 1rem - var(--nav-element-height) - 200px);
+  height: calc(100vh - 1rem - var(--nav-element-height) - 200px - 150px);
   z-index: 50;
   pointer-events: auto;
 }
