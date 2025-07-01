@@ -899,7 +899,7 @@ input[type="radio"]:checked::before {
   font-family: var(--font-mono);
   font-size: 0.9rem;
   min-height: 100px;
-  transition: max-height 0.3s ease, opacity 0.3s ease;
+  transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, margin 0.3s ease, border-width 0.3s ease;
   overflow: hidden;
 }
 
@@ -1174,9 +1174,10 @@ footer {
   .dropdown-filter.collapsed .filter-dropdown {
     max-height: 0;
     opacity: 0;
-    padding: 0 0.5rem;
+    padding: 0;
     margin: 0;
     border-width: 0;
+    min-height: 0;
   }
 
   .remote-toggle {
