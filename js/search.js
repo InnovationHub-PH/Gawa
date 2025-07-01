@@ -29,6 +29,8 @@ let selectedCommunityFilters = new Set();
 let selectedBlogFilters = new Set();
 let selectedJobsFilters = new Set();
 let selectedFabricationFilters = new Set();
+let lastScrollY = 0;
+let scrollDirection = 'up';
 
 // Utility functions
 function truncateWords(text, wordCount) {
@@ -1199,6 +1201,39 @@ function updateResults() {
   }
 }
 
+// Scroll handler for hiding/showing search interface
+function handleScroll() {
+  const currentScrollY = window.scrollY;
+  const searchInterface = document.getElementById('searchInterface');
+  
+  if (currentScrollY > lastScrollY && currentScrollY > 100) {
+    // Scrolling down and past threshold
+    scrollDirection = 'down';
+    searchInterface.classList.add('hidden');
+  } else if (currentScrollY < lastScrollY) {
+    // Scrolling up
+    scrollDirection = 'up';
+    searchInterface.classList.remove('hidden');
+  }
+  
+  lastScrollY = currentScrollY;
+}
+
+// Throttled scroll handler for better performance
+function throttledScrollHandler() {
+  let ticking = false;
+  
+  return function() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        handleScroll();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
+}
+
 // Initialize
 function initialize() {
   // Initialize popup
@@ -1316,6 +1351,9 @@ function initialize() {
 
   // Initial render
   switchMode('blog');
+  
+  // Add scroll listener for hiding/showing search interface
+  window.addEventListener('scroll', throttledScrollHandler());
   
   // Initialize mobile dropdown collapse functionality
   initializeMobileDropdowns();

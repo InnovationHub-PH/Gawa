@@ -152,52 +152,54 @@
         </div>
       </section>
 
-      <!-- Search Mode Toggle -->
-      <section class="search-mode-toggle">
-        <h3>SEARCH MODE:</h3>
-        <div class="mode-buttons">
-          <button class="mode-btn active" data-mode="blog">BLOG POSTS</button>
-          <button class="mode-btn" data-mode="jobs">JOBS</button>
-          <button class="mode-btn" data-mode="community">COMMUNITY</button>
-          <button class="mode-btn" data-mode="fabrication">FABRICATION</button>
-        </div>
-      </section>
-
-      <!-- Search Input -->
-      <section class="search-section">
-        <input type="text" id="searchInput" placeholder="Search..." class="search-input">
-      </section>
-
-      <!-- Filter Section -->
-      <section class="filter-section">
-        <div id="blogFilters" class="filter-content active">
-          <!-- Mobile Filter Trigger -->
-          <button class="mobile-filter-trigger" id="blogFilterTrigger">
-            SELECT FILTERS
-          </button>
-          
-          <!-- Selected Filters Display -->
-          <div class="selected-filters" id="selectedBlogFilters">
-            <!-- Selected filter tags will appear here -->
+      <!-- Search Interface Container -->
+      <div class="search-interface" id="searchInterface">
+        <!-- Search Mode Toggle -->
+        <section class="search-mode-toggle">
+          <h3>SEARCH MODE:</h3>
+          <div class="mode-buttons">
+            <button class="mode-btn active" data-mode="blog">BLOG POSTS</button>
+            <button class="mode-btn" data-mode="jobs">JOBS</button>
+            <button class="mode-btn" data-mode="community">COMMUNITY</button>
+            <button class="mode-btn" data-mode="fabrication">FABRICATION</button>
           </div>
-          
-          <div class="tag-buttons" id="blogTags">
-            <!-- Blog tags will be populated by JavaScript -->
-          </div>
-        </div>
+        </section>
 
-        <div id="jobsFilters" class="filter-content">
-          <div class="filter-container">
+        <!-- Search Input -->
+        <section class="search-section">
+          <input type="text" id="searchInput" placeholder="Search..." class="search-input">
+        </section>
+
+        <!-- Filter Section -->
+        <section class="filter-section">
+          <div id="blogFilters" class="filter-content active">
             <!-- Mobile Filter Trigger -->
-            <button class="mobile-filter-trigger" id="jobsFilterTrigger">
+            <button class="mobile-filter-trigger" id="blogFilterTrigger">
               SELECT FILTERS
             </button>
             
             <!-- Selected Filters Display -->
-            <div class="selected-filters" id="selectedJobsFilters">
+            <div class="selected-filters" id="selectedBlogFilters">
               <!-- Selected filter tags will appear here -->
             </div>
             
+            <div class="tag-buttons" id="blogTags">
+              <!-- Blog tags will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <div id="jobsFilters" class="filter-content">
+            <div class="filter-container">
+              <!-- Mobile Filter Trigger -->
+              <button class="mobile-filter-trigger" id="jobsFilterTrigger">
+                SELECT FILTERS
+              </button>
+              
+              <!-- Selected Filters Display -->
+              <div class="selected-filters" id="selectedJobsFilters">
+                <!-- Selected filter tags will appear here -->
+              </div>
+              
               <div class="tag-buttons">
                 <button class="tag-btn" data-tag="robotics">ROBOTICS</button>
                 <button class="tag-btn" data-tag="software">SOFTWARE</button>
@@ -207,77 +209,78 @@
                 <button class="tag-btn" data-tag="manufacturing">MANUFACTURING</button>
                 <button class="tag-btn" data-tag="mechatronics">MECHATRONICS</button>
               </div>
-            <div class="remote-toggle">
-              <input type="radio" id="remoteToggle" name="remote">
-              <label for="remoteToggle">REMOTE ONLY</label>
+              <div class="remote-toggle">
+                <input type="radio" id="remoteToggle" name="remote">
+                <label for="remoteToggle">REMOTE ONLY</label>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div id="communityFilters" class="filter-content">
-          <!-- Mobile Filter Trigger -->
-          <button class="mobile-filter-trigger" id="communityFilterTrigger">
-            SELECT FILTERS
-          </button>
-          
-          <!-- Selected Filters Display -->
-          <div class="selected-filters" id="selectedFilters">
-            <!-- Selected filter tags will appear here -->
+          <div id="communityFilters" class="filter-content">
+            <!-- Mobile Filter Trigger -->
+            <button class="mobile-filter-trigger" id="communityFilterTrigger">
+              SELECT FILTERS
+            </button>
+            
+            <!-- Selected Filters Display -->
+            <div class="selected-filters" id="selectedFilters">
+              <!-- Selected filter tags will appear here -->
+            </div>
+            
+            <div class="tag-buttons">
+              <button class="tag-btn" data-tag="company">COMPANIES</button>
+              <button class="tag-btn" data-tag="individual">INDIVIDUALS</button>
+              <button class="tag-btn" data-tag="education">EDUCATION</button>
+              <button class="tag-btn" data-tag="robotics">ROBOTICS</button>
+              <button class="tag-btn" data-tag="software">SOFTWARE</button>
+              <button class="tag-btn" data-tag="hardware">HARDWARE</button>
+            </div>
           </div>
-          
-          <div class="tag-buttons">
-            <button class="tag-btn" data-tag="company">COMPANIES</button>
-            <button class="tag-btn" data-tag="individual">INDIVIDUALS</button>
-            <button class="tag-btn" data-tag="education">EDUCATION</button>
-            <button class="tag-btn" data-tag="robotics">ROBOTICS</button>
-            <button class="tag-btn" data-tag="software">SOFTWARE</button>
-            <button class="tag-btn" data-tag="hardware">HARDWARE</button>
-          </div>
-        </div>
 
-        <div id="fabricationFilters" class="filter-content">
-          <!-- Mobile Filter Trigger -->
-          <button class="mobile-filter-trigger" id="fabricationFilterTrigger">
-            SELECT FILTERS
-          </button>
-          
-          <!-- Selected Filters Display -->
-          <div class="selected-filters" id="selectedFabricationFilters">
-            <!-- Selected filter tags will appear here -->
-          </div>
-          
-          <div class="filter-container">
-            <div class="dropdown-filter">
-              <h3>MACHINES:</h3>
-              <select id="machineSelect" multiple class="filter-dropdown">
-                <option value="">All Machines</option>
-                <option value="3d-printer">3D Printers</option>
-                <option value="laser-cutter">Laser Cutters</option>
-                <option value="cnc-mill">CNC Mills</option>
-                <option value="cnc-router">CNC Routers</option>
-                <option value="vinyl-cutter">Vinyl Cutters</option>
-                <option value="soldering-station">Soldering Stations</option>
-                <option value="oscilloscope">Oscilloscopes</option>
-                <option value="multimeter">Multimeters</option>
-              </select>
+          <div id="fabricationFilters" class="filter-content">
+            <!-- Mobile Filter Trigger -->
+            <button class="mobile-filter-trigger" id="fabricationFilterTrigger">
+              SELECT FILTERS
+            </button>
+            
+            <!-- Selected Filters Display -->
+            <div class="selected-filters" id="selectedFabricationFilters">
+              <!-- Selected filter tags will appear here -->
             </div>
-            <div class="dropdown-filter">
-              <h3>MATERIALS:</h3>
-              <select id="materialSelect" multiple class="filter-dropdown">
-                <option value="">All Materials</option>
-                <option value="filament">Filaments</option>
-                <option value="acrylic">Acrylic Sheets</option>
-                <option value="wood">Wood</option>
-                <option value="metal">Metal Stock</option>
-                <option value="electronics">Electronics</option>
-                <option value="fabric">Fabric</option>
-                <option value="foam">Foam</option>
-                <option value="adhesives">Adhesives</option>
-              </select>
+            
+            <div class="filter-container">
+              <div class="dropdown-filter">
+                <h3>MACHINES:</h3>
+                <select id="machineSelect" multiple class="filter-dropdown">
+                  <option value="">All Machines</option>
+                  <option value="3d-printer">3D Printers</option>
+                  <option value="laser-cutter">Laser Cutters</option>
+                  <option value="cnc-mill">CNC Mills</option>
+                  <option value="cnc-router">CNC Routers</option>
+                  <option value="vinyl-cutter">Vinyl Cutters</option>
+                  <option value="soldering-station">Soldering Stations</option>
+                  <option value="oscilloscope">Oscilloscopes</option>
+                  <option value="multimeter">Multimeters</option>
+                </select>
+              </div>
+              <div class="dropdown-filter">
+                <h3>MATERIALS:</h3>
+                <select id="materialSelect" multiple class="filter-dropdown">
+                  <option value="">All Materials</option>
+                  <option value="filament">Filaments</option>
+                  <option value="acrylic">Acrylic Sheets</option>
+                  <option value="wood">Wood</option>
+                  <option value="metal">Metal Stock</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="fabric">Fabric</option>
+                  <option value="foam">Foam</option>
+                  <option value="adhesives">Adhesives</option>
+                </select>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       <!-- Mobile Filter Popup -->
       <div class="mobile-filter-popup" id="mobileFilterPopup">
