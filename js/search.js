@@ -1407,10 +1407,10 @@ function initializeMapToggle() {
     
     if (mapMinimized) {
       mapColumn.classList.add('minimized');
-      mapToggle.textContent = 'SHOW';
+      mapToggle.textContent = 'Show Map';
     } else {
       mapColumn.classList.remove('minimized');
-      mapToggle.textContent = 'MAP';
+      mapToggle.textContent = 'Hide Map';
       
       // Trigger map resize when showing
       if (map) {
