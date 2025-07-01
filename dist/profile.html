@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - Makers Club</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D'16'%20height%3D'16'%20viewBox%3D'0%200%2016%2016'%20fill%3D'none'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M8.99999%204.49994V11.5H7V4.49994H8.99999Z'%20fill%3D'%239700EF'%2F%3E%3Cpath%20d%3D'M16%204.50007L9%204.50011V11.5002L7.00024%2011.5003L7%2013.5001L16.0001%2013.5L16%204.50007Z'%20fill%3D'%23348F82'%2F%3E%3Cpath%20d%3D'M9%202.5H0V11.5H7V4.5H9V2.5Z'%20fill%3D'%23FEDE7D'%2F%3E%3C/svg%3E">
+
+    <script>
+    (function() {
+      const theme = localStorage.getItem('theme') || 'grey';
+      document.documentElement.setAttribute('data-theme', theme);
+      const themeColors = {
+        black: '#000000',
+        purple: '#160B26',
+        green: '#000000',
+        brown: '#111111',
+        grey: '#ffffff',
+        beige: '#fdf6e3'
+      };
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', themeColors[theme]);
+      }
+    })();
+    </script>
+
+    <script type="module" crossorigin src="./assets/profile-DBV-lInC.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/auth-DasK3Pgx.js">
+    <link rel="stylesheet" crossorigin href="./assets/auth-CQ35gr2n.css">
+  </head>
+  <body>
+    <div class="nav-container">
+      <button class="menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <a href="index.html" class="nav-link logo-link">
+        <svg width="24" height="24" viewBox="0 0 177 134" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+          <path d="M177 134H73V104H104V30H177V134ZM104 30H73V104H0V0H104V30Z"/>
+        </svg>Gawa
+      </a>
+      
+      <nav class="main-nav">
+        <a href="search.html" class="nav-link">COMMUNITY</a>
+        <a href="resources.html" class="nav-link">RESOURCES</a>
+        <a href="about.html" class="nav-link">ABOUT</a>
+      </nav>
+
+      <!-- Auth Button (shown when not logged in) -->
+      <button id="authButton" class="nav-link auth-hidden">SIGN IN</button>
+
+      <!-- User Menu (shown when logged in) -->
+      <div id="userMenu" class="user-menu auth-hidden">
+        <img id="userAvatar" src="" alt="User Avatar" class="user-avatar">
+        <span id="userName">User</span>
+        <div class="user-dropdown">
+          <a href="profile.html" class="dropdown-item" id="profileLink">MY PROFILE</a>
+          <button id="signOutButton" class="dropdown-item">SIGN OUT</button>
+        </div>
+      </div>
+
+      <button id="themeToggle" class="theme-toggle" aria-label="Switch theme">
+        <pre class="theme-icon">[LIGHT]</pre>
+      </button>
+    </div>
+
+    <div class="container">
+      <!-- Profile Header -->
+      <section class="profile-header">
+        <div class="profile-info">
+          <div class="profile-avatar-container">
+            <img id="profileAvatar" src="" alt="Profile Avatar" class="profile-avatar">
+            <button id="uploadProfilePictureBtn" class="upload-avatar-btn" style="display: none;">UPLOAD PICTURE</button>
+            <input type="file" id="profilePictureInput" accept="image/*" style="display: none;">
+          </div>
+          <div class="profile-details">
+            <h1 id="profileName">Loading...</h1>
+            <p id="profileUsername">@loading</p>
+            <p id="profileBio">Loading bio...</p>
+            <div class="profile-meta">
+              <span id="profileLocation"></span>
+              <a id="profileWebsite" href="#" target="_blank"></a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat">
+            <span id="postsCount">0</span>
+            <label>Posts</label>
+          </div>
+          <div class="stat">
+            <span id="followersCount">0</span>
+            <label>Followers</label>
+          </div>
+          <div class="stat">
+            <span id="followingCount">0</span>
+            <label>Following</label>
+          </div>
+          <div class="stat">
+            <div class="rating-display">
+              <div id="ratingStars" class="rating-stars"></div>
+              <span id="averageRating">0.0</span>
+              <span id="ratingCount" class="rating-count">(0 reviews)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="profile-actions">
+          <button id="followButton" class="sqr-btn" style="display: none;">FOLLOW</button>
+          <button id="editProfileButton" class="sqr-btn" style="display: none;">EDIT PROFILE</button>
+          <button id="rateUserButton" class="sqr-btn" style="display: none;">RATE USER</button>
+        </div>
+      </section>
+
+      <!-- Profile Content Tabs -->
+      <section class="profile-content">
+        <div class="content-tabs">
+          <button class="tab-btn active" data-tab="posts">POSTS</button>
+          <button class="tab-btn" data-tab="ratings">REVIEWS</button>
+        </div>
+        
+        <div class="tab-content">
+          <div id="postsTab" class="tab-panel active">
+            <div id="postsContainer" class="posts-container">
+              <!-- Posts will be loaded here -->
+            </div>
+          </div>
+          
+          <div id="ratingsTab" class="tab-panel">
+            <div id="ratingsContainer" class="ratings-container">
+              <!-- Ratings will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Rating Modal -->
+      <div id="ratingModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Rate This User</h3>
+            <button id="closeRatingModal" class="modal-close">&times;</button>
+          </div>
+          <form id="ratingForm" class="rating-form">
+            <div class="star-rating">
+              <span class="rating-star" data-rating="1">★</span>
+              <span class="rating-star" data-rating="2">★</span>
+              <span class="rating-star" data-rating="3">★</span>
+              <span class="rating-star" data-rating="4">★</span>
+              <span class="rating-star" data-rating="5">★</span>
+            </div>
+            <textarea name="comment" placeholder="Leave a comment (optional)" class="rating-comment"></textarea>
+            <button type="submit" class="sqr-btn">SUBMIT RATING</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Edit Profile Modal -->
+      <div id="editProfileModal" class="modal hidden">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Edit Profile</h3>
+            <button id="closeEditProfileModal" class="modal-close">&times;</button>
+          </div>
+          <form id="editProfileForm" class="edit-profile-form">
+            <div class="form-group">
+              <label for="editFullName">Full Name</label>
+              <input type="text" id="editFullName" name="fullName" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="editUsername">Username</label>
+              <input type="text" id="editUsername" name="username" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="editBio">Bio</label>
+              <textarea id="editBio" name="bio" class="form-input" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="editLocation">Location</label>
+              <input type="text" id="editLocation" name="location" class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="editWebsite">Website</label>
+              <input type="url" id="editWebsite" name="website" class="form-input">
+            </div>
+            <button type="submit" class="sqr-btn">SAVE CHANGES</button>
+          </form>
+        </div>
+      </div>
+
+      <footer>
+        <p>INNOVATION AT THE INTERSECTION OF DISCIPLINES</p>
+
+        <section class="socials">
+          <div class="social-links">
+            <a href="#" class="social-button">FACEBOOK</a>
+            <a href="#" class="social-button">ZULIP</a>
+            <a href="#" class="social-button">GITHUB</a>
+            <a href="#" class="social-button">LINKEDIN</a>
+          </div>
+        </section>
+      </footer>
+    </div>
+
+  </body>
+</html>
