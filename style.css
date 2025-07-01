@@ -1337,6 +1337,11 @@ footer {
     display: block;
   }
 
+  /* Show fabrication filters title on mobile */
+  #fabricationFilters h3 {
+    display: block;
+  }
+
   .dropdown-filter {
     min-width: 100%;
     margin-bottom: 1rem;

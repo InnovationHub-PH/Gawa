@@ -241,17 +241,19 @@
         </div>
 
         <div id="fabricationFilters" class="filter-content">
+          <!-- Mobile Filter Trigger -->
+          <button class="mobile-filter-trigger" id="fabricationFilterTrigger">
+            SELECT FILTERS
+          </button>
+          
+          <!-- Selected Filters Display -->
+          <div class="selected-filters" id="selectedFabricationFilters">
+            <!-- Selected filter tags will appear here -->
+          </div>
+          
+          <h3>FILTER BY CATEGORY:</h3>
+          
           <div class="filter-container">
-            <!-- Mobile Filter Trigger -->
-            <button class="mobile-filter-trigger" id="fabricationFilterTrigger">
-              SELECT FILTERS
-            </button>
-            
-            <!-- Selected Filters Display -->
-            <div class="selected-filters" id="selectedFabricationFilters">
-              <!-- Selected filter tags will appear here -->
-            </div>
-            
             <div class="dropdown-filter">
               <h3>MACHINES:</h3>
               <select id="machineSelect" multiple class="filter-dropdown">
