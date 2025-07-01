@@ -1,6 +1,7 @@
 import { blogPosts } from './blogData.js';
 import { jobs } from './jobs.js';
 import { communityMembers } from './community.js';
+import { fabricationItems, machineCategories, materialCategories } from './fabrication.js';
 
 // Import PDF.js for community member documents
 import * as pdfjsLib from 'pdfjs-dist';
@@ -11,6 +12,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 // Global state
 let currentMode = 'blog';
 let activeFilters = new Set();
+let activeMachineCategories = new Set();
+let activeMaterialCategories = new Set();
 let remoteOnly = false;
 let searchTerm = '';
 let currentPage = 0;
@@ -159,6 +162,11 @@ function addMarkersToMap(items, type) {
       coords = [item.location.lat, item.location.lng];
       popupContent = `<strong>${item.name}</strong><br>${item.location.address}`;
       itemId = item.name;
+    } else if (type === 'fabrication' && item.location) {
+      coords = [item.location.lat, item.location.lng];
+      const availability = item.availability === 'available' ? '✅' : '🔴';
+      popupContent = `<strong>${item.name}</strong><br>${item.owner}<br>${item.location.address}<br>${availability} ${item.availability.toUpperCase()}`;
+      itemId = item.name;
     }
     
     if (coords) {
@@ -183,6 +191,38 @@ function getAllBlogTags() {
     post.tags.forEach(tag => tags.add(tag));
   });
   return Array.from(tags);
+}
+
+// Fabrication functions
+function createFabricationCard(item) {
+  const isAvailable = item.availability === 'available';
+  const priceInfo = item.type === 'machine' 
+    ? `₱${item.hourlyRate}/hour` 
+    : `₱${item.price} ${item.unit}`;
+  
+  return `
+    <div class="card fabrication-card" data-item="${item.name}" data-tags="${item.tags.join(' ')}" data-type="${item.type}" data-category="${item.category}">
+      <div class="card-header">
+        <img src="${item.image}" alt="${item.name}" class="card-logo">
+        <div class="title-info">
+          <h3>${item.name}</h3>
+          <h4>${item.owner}</h4>
+          <p class="location">${item.location.address}</p>
+        </div>
+      </div>
+      <div class="fabrication-info">
+        <div class="availability-status ${isAvailable ? 'available' : 'busy'}">
+          ${isAvailable ? 'AVAILABLE' : 'BUSY'}
+        </div>
+        <div class="price-info">${priceInfo}</div>
+        <p class="description">${item.description}</p>
+        <p class="contact-info">Contact: <a href="mailto:${item.contact}">${item.contact}</a></p>
+      </div>
+      <div class="tags">
+        ${item.tags.map(tag => `<span class="tag">${tag.toUpperCase()}</span>`).join('')}
+      </div>
+    </div>
+  `;
 }
 
 function createBlogCard(post) {
@@ -576,6 +616,83 @@ function updateCommunityResults() {
   addMarkersToMap(filteredMembers, 'community');
 }
 
+function updateFabricationResults() {
+  // First filter by spatial area if one is drawn
+  let spatiallyFilteredItems = fabricationItems;
+  if (activeSpatialFilterLayer) {
+    spatiallyFilteredItems = fabricationItems.filter(item => {
+      if (!item.location) return false;
+      return isPointInDrawnArea(item.location.lat, item.location.lng);
+    });
+  }
+  
+  const filteredItems = spatiallyFilteredItems.filter(item => {
+    const matchesSearch = (
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.owner.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+    
+    if (!matchesSearch) return false;
+    
+    // Filter by machine categories
+    if (activeMachineCategories.size > 0 && item.type === 'machine') {
+      if (!activeMachineCategories.has(item.category)) return false;
+    }
+    
+    // Filter by material categories
+    if (activeMaterialCategories.size > 0 && item.type === 'material') {
+      if (!activeMaterialCategories.has(item.category)) return false;
+    }
+    
+    // If both filters are active but item doesn't match either type
+    if ((activeMachineCategories.size > 0 || activeMaterialCategories.size > 0)) {
+      if (item.type === 'machine' && activeMachineCategories.size === 0) return false;
+      if (item.type === 'material' && activeMaterialCategories.size === 0) return false;
+    }
+    
+    return true;
+  });
+
+  // Clear grids
+  document.querySelector('.machines-grid').innerHTML = '';
+  document.querySelector('.materials-grid').innerHTML = '';
+
+  filteredItems.forEach(item => {
+    let targetGrid;
+    if (item.type === 'machine') {
+      targetGrid = document.querySelector('.machines-grid');
+    } else if (item.type === 'material') {
+      targetGrid = document.querySelector('.materials-grid');
+    }
+    
+    if (targetGrid) {
+      targetGrid.insertAdjacentHTML('beforeend', createFabricationCard(item));
+    }
+  });
+
+  // Add click event listeners to fabrication cards for map highlighting
+  document.querySelectorAll('.fabrication-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      // Don't trigger if clicking on buttons or links
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button') || e.target.closest('a')) return;
+      
+      const itemName = card.dataset.item;
+      
+      // Highlight this card
+      document.querySelectorAll('.card.highlighted').forEach(c => c.classList.remove('highlighted'));
+      card.classList.add('highlighted');
+      
+      // Highlight corresponding marker
+      highlightMarker(itemName);
+    });
+  });
+
+  // Update map with fabrication markers
+  addMarkersToMap(filteredItems, 'fabrication');
+}
+
 // Popup functions
 function showAboutPopup() {
   if (!popupShown) {
@@ -742,6 +859,8 @@ function initializePdfPreviews() {
 function switchMode(mode) {
   currentMode = mode;
   activeFilters.clear();
+  activeMachineCategories.clear();
+  activeMaterialCategories.clear();
   currentPage = 0;
   
   // Update mode buttons
@@ -836,6 +955,9 @@ function updateResults() {
     case 'community':
       updateCommunityResults();
       break;
+    case 'fabrication':
+      updateFabricationResults();
+      break;
   }
 }
 
@@ -860,6 +982,8 @@ function initialize() {
   // Event listeners
   const searchInput = document.getElementById('searchInput');
   const remoteToggle = document.getElementById('remoteToggle');
+  const machineSelect = document.getElementById('machineSelect');
+  const materialSelect = document.getElementById('materialSelect');
 
   // Mode buttons
   document.querySelectorAll('.mode-btn').forEach(button => {
@@ -897,6 +1021,29 @@ function initialize() {
     remoteToggle.checked = remoteOnly;
     updateResults();
   });
+
+  // Dropdown change handlers
+  if (machineSelect) {
+    machineSelect.addEventListener('change', (e) => {
+      const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+      activeMachineCategories.clear();
+      selectedOptions.forEach(option => {
+        if (option) activeMachineCategories.add(option);
+      });
+      updateResults();
+    });
+  }
+
+  if (materialSelect) {
+    materialSelect.addEventListener('change', (e) => {
+      const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+      activeMaterialCategories.clear();
+      selectedOptions.forEach(option => {
+        if (option) activeMaterialCategories.add(option);
+      });
+      updateResults();
+    });
+  }
 
   // Blog navigation
   document.querySelector('.prev-btn').addEventListener('click', () => {

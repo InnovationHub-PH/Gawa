@@ -739,6 +739,56 @@ input[type="radio"]:checked::before {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* Fabrication Cards */
+.fabrication-card {
+  cursor: pointer;
+}
+
+.fabrication-card:hover {
+  transform: translateX(5px);
+}
+
+.fabrication-card.highlighted {
+  border-color: var(--accent-color);
+  border-width: 2px;
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.fabrication-info {
+  margin-bottom: 1rem;
+}
+
+.availability-status {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  border: 2px solid var(--border-color);
+}
+
+.availability-status.available {
+  background-color: var(--primary-color);
+  color: var(--bg-color);
+}
+
+.availability-status.busy {
+  background-color: var(--secondary-color);
+  color: var(--bg-color);
+}
+
+.price-info {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.contact-info {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
 /* Member Grid */
 .member-grid {
   display: grid;
@@ -815,6 +865,43 @@ input[type="radio"]:checked::before {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+/* Dropdown Filters */
+.dropdown-filter {
+  flex: 1;
+  min-width: 200px;
+}
+
+.dropdown-filter h3 {
+  margin-bottom: 0.5rem;
+}
+
+.filter-dropdown {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: var(--bg-color);
+  border: 2px solid var(--border-color);
+  color: var(--text-color);
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  min-height: 100px;
+}
+
+.filter-dropdown:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+}
+
+.filter-dropdown option {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 0.25rem;
+}
+
+.filter-dropdown option:checked {
+  background-color: var(--border-color);
+  color: var(--bg-color);
 }
 
 /* Results Section */
@@ -1062,6 +1149,10 @@ footer {
   .filter-container {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .dropdown-filter {
+    min-width: 100%;
   }
 
   .remote-toggle {

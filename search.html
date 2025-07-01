@@ -159,6 +159,7 @@
           <button class="mode-btn active" data-mode="blog">BLOG POSTS</button>
           <button class="mode-btn" data-mode="jobs">JOBS</button>
           <button class="mode-btn" data-mode="community">COMMUNITY</button>
+          <button class="mode-btn" data-mode="fabrication">FABRICATION</button>
         </div>
       </section>
 
@@ -206,6 +207,39 @@
             <button class="tag-btn" data-tag="robotics">ROBOTICS</button>
             <button class="tag-btn" data-tag="software">SOFTWARE</button>
             <button class="tag-btn" data-tag="hardware">HARDWARE</button>
+          </div>
+        </div>
+
+        <div id="fabricationFilters" class="filter-content">
+          <div class="filter-container">
+            <div class="dropdown-filter">
+              <h3>MACHINES:</h3>
+              <select id="machineSelect" multiple class="filter-dropdown">
+                <option value="">All Machines</option>
+                <option value="3d-printer">3D Printers</option>
+                <option value="laser-cutter">Laser Cutters</option>
+                <option value="cnc-mill">CNC Mills</option>
+                <option value="cnc-router">CNC Routers</option>
+                <option value="vinyl-cutter">Vinyl Cutters</option>
+                <option value="soldering-station">Soldering Stations</option>
+                <option value="oscilloscope">Oscilloscopes</option>
+                <option value="multimeter">Multimeters</option>
+              </select>
+            </div>
+            <div class="dropdown-filter">
+              <h3>MATERIALS:</h3>
+              <select id="materialSelect" multiple class="filter-dropdown">
+                <option value="">All Materials</option>
+                <option value="filament">Filaments</option>
+                <option value="acrylic">Acrylic Sheets</option>
+                <option value="wood">Wood</option>
+                <option value="metal">Metal Stock</option>
+                <option value="electronics">Electronics</option>
+                <option value="fabric">Fabric</option>
+                <option value="foam">Foam</option>
+                <option value="adhesives">Adhesives</option>
+              </select>
+            </div>
           </div>
         </div>
       </section>
@@ -256,6 +290,25 @@
               <h2>EDUCATIONAL INSTITUTIONS</h2>
               <div class="member-grid education-grid">
                 <!-- Educational institutions will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fabrication Results -->
+        <div id="fabricationResults" class="results-content">
+          <div class="fabrication-directory">
+            <div class="directory-category">
+              <h2>MACHINES</h2>
+              <div class="member-grid machines-grid">
+                <!-- Machines will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <div class="directory-category">
+              <h2>MATERIALS</h2>
+              <div class="member-grid materials-grid">
+                <!-- Materials will be populated by JavaScript -->
               </div>
             </div>
           </div>
