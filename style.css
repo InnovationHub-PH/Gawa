@@ -376,14 +376,17 @@ h2 {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0 1rem;
-  border: 2px solid var(--border-color);
-  border-right: none;
   height: var(--nav-element-height);
   color: var(--text-color);
   font-family: var(--font-mono);
   cursor: pointer;
   transition: all 0.3s ease;
+  text-decoration: none;
+  padding: 0 1rem;
+  border: 2px solid var(--border-color);
+  border-right: none;
+  text-align: center;
+  justify-content: center;
 }
 
 .user-menu:hover {
@@ -392,11 +395,10 @@ h2 {
 }
 
 .user-avatar {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   object-fit: cover;
-  border: 1px solid var(--border-color);
+  border: 2px solid var(--border-color);
 }
 
 .user-dropdown {
