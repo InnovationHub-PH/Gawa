@@ -45,10 +45,7 @@ async function loadUserProfile() {
     const profileData = {
       username: currentUser.email.split('@')[0],
       full_name: currentUser.user_metadata?.full_name || '',
-      email: currentUser.email,
       bio: '',
-      website: '',
-      location: '',
       avatar_url: currentUser.user_metadata?.avatar_url || ''
     };
     

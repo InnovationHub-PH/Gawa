@@ -62,7 +62,7 @@ export const db = {
       .from('profiles')
       .select('*')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
     return { data, error };
   },
 
