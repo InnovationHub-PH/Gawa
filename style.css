@@ -2179,6 +2179,11 @@ code[class*="language-"] {
   cursor: help;
 }
 
+/* Auth hidden class to prevent flash */
+.auth-hidden {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   /* Mobile: stack layout vertically */
   .content-layout {

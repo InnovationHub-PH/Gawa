@@ -62,11 +62,12 @@ function updateUIForAuthenticatedUser() {
   const userMenu = document.getElementById('userMenu');
   
   if (authButton) {
-    authButton.style.display = 'none';
+    authButton.classList.add('auth-hidden');
   }
   
   if (userMenu) {
-    userMenu.style.display = 'block';
+    userMenu.classList.remove('auth-hidden');
+    userMenu.style.display = 'flex';
     updateUserMenuContent();
   }
 }
@@ -77,11 +78,12 @@ function updateUIForUnauthenticatedUser() {
   const userMenu = document.getElementById('userMenu');
   
   if (authButton) {
-    authButton.style.display = 'block';
+    authButton.classList.remove('auth-hidden');
+    authButton.style.display = 'flex';
   }
   
   if (userMenu) {
-    userMenu.style.display = 'none';
+    userMenu.classList.add('auth-hidden');
   }
 }
 
