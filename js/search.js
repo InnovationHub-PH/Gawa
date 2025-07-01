@@ -31,6 +31,7 @@ let selectedJobsFilters = new Set();
 let selectedFabricationFilters = new Set();
 let lastScrollY = 0;
 let scrollDirection = 'up';
+let mapMinimized = false;
 
 // Utility functions
 function truncateWords(text, wordCount) {
@@ -1104,10 +1105,13 @@ function switchMode(mode) {
   
   // Show/hide map
   const mapContainer = document.getElementById('mapContainer');
+  const mapColumn = document.getElementById('mapColumn');
   if (mode === 'blog') {
     mapContainer.style.display = 'none';
+    mapColumn.style.display = 'none';
   } else {
     mapContainer.style.display = 'block';
+    mapColumn.style.display = 'block';
     if (!map) {
       initializeMap();
     }
@@ -1236,6 +1240,9 @@ function throttledScrollHandler() {
 
 // Initialize
 function initialize() {
+  // Initialize map toggle functionality
+  initializeMapToggle();
+  
   // Initialize popup
   initializePopup();
   
@@ -1387,6 +1394,29 @@ function initializeMobileDropdowns() {
         filter.classList.toggle('collapsed');
       }
     });
+  });
+}
+
+// Map toggle functionality
+function initializeMapToggle() {
+  const mapToggle = document.getElementById('mapToggle');
+  const mapColumn = document.getElementById('mapColumn');
+  
+  mapToggle.addEventListener('click', () => {
+    mapMinimized = !mapMinimized;
+    
+    if (mapMinimized) {
+      mapColumn.classList.add('minimized');
+      mapToggle.textContent = 'SHOW';
+    } else {
+      mapColumn.classList.remove('minimized');
+      mapToggle.textContent = 'MAP';
+      
+      // Trigger map resize when showing
+      if (map) {
+        setTimeout(() => map.invalidateSize(), 300);
+      }
+    }
   });
 }
 

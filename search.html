@@ -295,75 +295,84 @@
       </div>
 
       <!-- Map Container (hidden for blog mode) -->
-      <div id="mapContainer" style="display: none;">
-        <div id="searchMap"></div>
+      <!-- Two-column layout container -->
+      <div class="content-layout">
+        <!-- Map Column -->
+        <div class="map-column" id="mapColumn">
+          <button class="map-toggle" id="mapToggle">MAP</button>
+          <div id="mapContainer" style="display: none;">
+            <div id="searchMap"></div>
+          </div>
+        </div>
+
+        <!-- Results Column -->
+        <div class="results-column">
+          <section class="results-section">
+            <!-- Blog Results -->
+            <div id="blogResults" class="results-content active">
+              <div class="blog-nav">
+                <button class="nav-btn prev-btn">←</button>
+                <button class="nav-btn next-btn">→</button>
+              </div>
+              <div id="blogGrid" class="blog-grid">
+                <!-- Blog posts will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Jobs Results -->
+            <div id="jobsResults" class="results-content">
+              <div id="jobsList" class="jobs-list">
+                <!-- Jobs will be populated by JavaScript -->
+              </div>
+            </div>
+
+            <!-- Community Results -->
+            <div id="communityResults" class="results-content">
+              <div class="community-directory">
+                <div class="directory-category">
+                  <h2>COMPANIES</h2>
+                  <div class="member-grid companies-grid">
+                    <!-- Companies will be populated by JavaScript -->
+                  </div>
+                </div>
+
+                <div class="directory-category">
+                  <h2>INDIVIDUALS</h2>
+                  <div class="member-grid individuals-grid">
+                    <!-- Individuals will be populated by JavaScript -->
+                  </div>
+                </div>
+
+                <div class="directory-category">
+                  <h2>EDUCATIONAL INSTITUTIONS</h2>
+                  <div class="member-grid education-grid">
+                    <!-- Educational institutions will be populated by JavaScript -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fabrication Results -->
+            <div id="fabricationResults" class="results-content">
+              <div class="fabrication-directory">
+                <div class="directory-category">
+                  <h2>MACHINES</h2>
+                  <div class="member-grid machines-grid">
+                    <!-- Machines will be populated by JavaScript -->
+                  </div>
+                </div>
+
+                <div class="directory-category">
+                  <h2>MATERIALS</h2>
+                  <div class="member-grid materials-grid">
+                    <!-- Materials will be populated by JavaScript -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
-
-      <!-- Results Container -->
-      <section class="results-section">
-        <!-- Blog Results -->
-        <div id="blogResults" class="results-content active">
-          <div class="blog-nav">
-            <button class="nav-btn prev-btn">←</button>
-            <button class="nav-btn next-btn">→</button>
-          </div>
-          <div id="blogGrid" class="blog-grid">
-            <!-- Blog posts will be populated by JavaScript -->
-          </div>
-        </div>
-
-        <!-- Jobs Results -->
-        <div id="jobsResults" class="results-content">
-          <div id="jobsList" class="jobs-list">
-            <!-- Jobs will be populated by JavaScript -->
-          </div>
-        </div>
-
-        <!-- Community Results -->
-        <div id="communityResults" class="results-content">
-          <div class="community-directory">
-            <div class="directory-category">
-              <h2>COMPANIES</h2>
-              <div class="member-grid companies-grid">
-                <!-- Companies will be populated by JavaScript -->
-              </div>
-            </div>
-
-            <div class="directory-category">
-              <h2>INDIVIDUALS</h2>
-              <div class="member-grid individuals-grid">
-                <!-- Individuals will be populated by JavaScript -->
-              </div>
-            </div>
-
-            <div class="directory-category">
-              <h2>EDUCATIONAL INSTITUTIONS</h2>
-              <div class="member-grid education-grid">
-                <!-- Educational institutions will be populated by JavaScript -->
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Fabrication Results -->
-        <div id="fabricationResults" class="results-content">
-          <div class="fabrication-directory">
-            <div class="directory-category">
-              <h2>MACHINES</h2>
-              <div class="member-grid machines-grid">
-                <!-- Machines will be populated by JavaScript -->
-              </div>
-            </div>
-
-            <div class="directory-category">
-              <h2>MATERIALS</h2>
-              <div class="member-grid materials-grid">
-                <!-- Materials will be populated by JavaScript -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
       <footer>
         <p>INNOVATION AT THE INTERSECTION OF DISCIPLINES</p>
