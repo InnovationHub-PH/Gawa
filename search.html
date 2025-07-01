@@ -171,6 +171,16 @@
       <!-- Filter Section -->
       <section class="filter-section">
         <div id="blogFilters" class="filter-content active">
+          <!-- Mobile Filter Trigger -->
+          <button class="mobile-filter-trigger" id="blogFilterTrigger">
+            SELECT FILTERS
+          </button>
+          
+          <!-- Selected Filters Display -->
+          <div class="selected-filters" id="selectedBlogFilters">
+            <!-- Selected filter tags will appear here -->
+          </div>
+          
           <h3>FILTER BY TAGS:</h3>
           <div class="tag-buttons" id="blogTags">
             <!-- Blog tags will be populated by JavaScript -->
@@ -179,6 +189,16 @@
 
         <div id="jobsFilters" class="filter-content">
           <div class="filter-container">
+            <!-- Mobile Filter Trigger -->
+            <button class="mobile-filter-trigger" id="jobsFilterTrigger">
+              SELECT FILTERS
+            </button>
+            
+            <!-- Selected Filters Display -->
+            <div class="selected-filters" id="selectedJobsFilters">
+              <!-- Selected filter tags will appear here -->
+            </div>
+            
             <div class="tags-filter">
               <h3>FILTER BY TAGS:</h3>
               <div class="tag-buttons">
@@ -222,6 +242,16 @@
 
         <div id="fabricationFilters" class="filter-content">
           <div class="filter-container">
+            <!-- Mobile Filter Trigger -->
+            <button class="mobile-filter-trigger" id="fabricationFilterTrigger">
+              SELECT FILTERS
+            </button>
+            
+            <!-- Selected Filters Display -->
+            <div class="selected-filters" id="selectedFabricationFilters">
+              <!-- Selected filter tags will appear here -->
+            </div>
+            
             <div class="dropdown-filter">
               <h3>MACHINES:</h3>
               <select id="machineSelect" multiple class="filter-dropdown">
@@ -258,16 +288,11 @@
       <div class="mobile-filter-popup" id="mobileFilterPopup">
         <div class="mobile-filter-content">
           <div class="mobile-filter-header">
-            <h3>SELECT FILTERS</h3>
+            <h3 id="mobileFilterTitle">SELECT FILTERS</h3>
             <button class="mobile-filter-close" id="mobileFilterClose">&times;</button>
           </div>
           <div class="mobile-filter-options" id="mobileFilterOptions">
-            <button class="mobile-filter-option" data-tag="company">COMPANIES</button>
-            <button class="mobile-filter-option" data-tag="individual">INDIVIDUALS</button>
-            <button class="mobile-filter-option" data-tag="education">EDUCATION</button>
-            <button class="mobile-filter-option" data-tag="robotics">ROBOTICS</button>
-            <button class="mobile-filter-option" data-tag="software">SOFTWARE</button>
-            <button class="mobile-filter-option" data-tag="hardware">HARDWARE</button>
+            <!-- Filter options will be populated by JavaScript based on current mode -->
           </div>
         </div>
       </div>

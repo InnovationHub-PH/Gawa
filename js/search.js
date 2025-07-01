@@ -26,6 +26,9 @@ let drawnItems = null;
 let drawControl = null;
 let activeSpatialFilterLayer = null;
 let selectedCommunityFilters = new Set();
+let selectedBlogFilters = new Set();
+let selectedJobsFilters = new Set();
+let selectedFabricationFilters = new Set();
 
 // Utility functions
 function truncateWords(text, wordCount) {
@@ -419,8 +422,8 @@ function updateBlogResults() {
       post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesTags = 
-      activeFilters.size === 0 || 
-      post.tags.some(tag => activeFilters.has(tag));
+      (window.innerWidth <= 768 && currentMode === 'blog' ? selectedBlogFilters : activeFilters).size === 0 || 
+      post.tags.some(tag => (window.innerWidth <= 768 && currentMode === 'blog' ? selectedBlogFilters : activeFilters).has(tag));
 
     return matchesSearch && matchesTags;
   });
@@ -486,8 +489,13 @@ function updateJobsResults() {
     
     if (!matchesSearch) return false;
     if (remoteOnly && !job.remote) return false;
-    if (activeFilters.size === 0) return true;
-    return job.tags.some(tag => activeFilters.has(tag));
+    
+    const filtersToUse = window.innerWidth <= 768 && currentMode === 'jobs' 
+      ? selectedJobsFilters 
+      : activeFilters;
+    
+    if (filtersToUse.size === 0) return true;
+    return job.tags.some(tag => filtersToUse.has(tag));
   });
 
   document.getElementById('jobsList').innerHTML = filteredJobs.map(createJobCard).join('');
@@ -536,16 +544,176 @@ function updateJobsResults() {
 
 // Mobile filter popup functionality
 function initializeMobileFilterPopup() {
-  const filterTrigger = document.getElementById('communityFilterTrigger');
+  const communityFilterTrigger = document.getElementById('communityFilterTrigger');
+  const blogFilterTrigger = document.getElementById('blogFilterTrigger');
+  const jobsFilterTrigger = document.getElementById('jobsFilterTrigger');
+  const fabricationFilterTrigger = document.getElementById('fabricationFilterTrigger');
   const filterPopup = document.getElementById('mobileFilterPopup');
   const filterClose = document.getElementById('mobileFilterClose');
   const filterOptions = document.getElementById('mobileFilterOptions');
-  const selectedFiltersContainer = document.getElementById('selectedFilters');
+  const filterTitle = document.getElementById('mobileFilterTitle');
+  
+  let currentFilterMode = '';
 
-  // Show popup
-  filterTrigger.addEventListener('click', () => {
+  // Show popup functions
+  communityFilterTrigger.addEventListener('click', () => {
+    currentFilterMode = 'community';
+    filterTitle.textContent = 'SELECT COMMUNITY FILTERS';
+    showFilterPopup();
+  });
+
+  blogFilterTrigger.addEventListener('click', () => {
+    currentFilterMode = 'blog';
+    filterTitle.textContent = 'SELECT BLOG FILTERS';
+    showFilterPopup();
+  });
+
+  jobsFilterTrigger.addEventListener('click', () => {
+    currentFilterMode = 'jobs';
+    filterTitle.textContent = 'SELECT JOB FILTERS';
+    showFilterPopup();
+  });
+
+  fabricationFilterTrigger.addEventListener('click', () => {
+    currentFilterMode = 'fabrication';
+    filterTitle.textContent = 'SELECT FABRICATION FILTERS';
+    showFilterPopup();
+  });
+
+  function showFilterPopup() {
     filterPopup.classList.add('active');
-    updateMobileFilterOptions();
+    updateMobileFilterOptions(currentFilterMode);
+  }
+
+  function getFilterOptions(mode) {
+    switch (mode) {
+      case 'community':
+        return [
+          { tag: 'company', label: 'COMPANIES' },
+          { tag: 'individual', label: 'INDIVIDUALS' },
+          { tag: 'education', label: 'EDUCATION' },
+          { tag: 'robotics', label: 'ROBOTICS' },
+          { tag: 'software', label: 'SOFTWARE' },
+          { tag: 'hardware', label: 'HARDWARE' }
+        ];
+      case 'blog':
+        return getAllBlogTags().map(tag => ({ tag, label: tag.toUpperCase() }));
+      case 'jobs':
+        return [
+          { tag: 'robotics', label: 'ROBOTICS' },
+          { tag: 'software', label: 'SOFTWARE' },
+          { tag: 'hardware', label: 'HARDWARE' },
+          { tag: 'internship', label: 'INTERNSHIP' },
+          { tag: 'industrial-design', label: 'INDUSTRIAL DESIGN' },
+          { tag: 'manufacturing', label: 'MANUFACTURING' },
+          { tag: 'mechatronics', label: 'MECHATRONICS' }
+        ];
+      case 'fabrication':
+        return [
+          { tag: '3d-printer', label: '3D PRINTERS' },
+          { tag: 'laser-cutter', label: 'LASER CUTTERS' },
+          { tag: 'cnc-mill', label: 'CNC MILLS' },
+          { tag: 'cnc-router', label: 'CNC ROUTERS' },
+          { tag: 'filament', label: 'FILAMENTS' },
+          { tag: 'acrylic', label: 'ACRYLIC' },
+          { tag: 'wood', label: 'WOOD' },
+          { tag: 'electronics', label: 'ELECTRONICS' }
+        ];
+      default:
+        return [];
+    }
+  }
+
+  function getCurrentFilters(mode) {
+    switch (mode) {
+      case 'community': return selectedCommunityFilters;
+      case 'blog': return selectedBlogFilters;
+      case 'jobs': return selectedJobsFilters;
+      case 'fabrication': return selectedFabricationFilters;
+      default: return new Set();
+    }
+  }
+
+  function getCurrentFiltersContainer(mode) {
+    switch (mode) {
+      case 'community': return document.getElementById('selectedFilters');
+      case 'blog': return document.getElementById('selectedBlogFilters');
+      case 'jobs': return document.getElementById('selectedJobsFilters');
+      case 'fabrication': return document.getElementById('selectedFabricationFilters');
+      default: return null;
+    }
+  }
+
+  // Update mobile filter options to show current mode's filters
+  function updateMobileFilterOptions(mode) {
+    const options = getFilterOptions(mode);
+    const currentFilters = getCurrentFilters(mode);
+    
+    filterOptions.innerHTML = options.map(option => `
+      <button class="mobile-filter-option ${currentFilters.has(option.tag) ? 'selected' : ''}" data-tag="${option.tag}">
+        ${option.label}
+      </button>
+    `).join('');
+  }
+
+  // Update selected filters display
+  function updateSelectedFiltersDisplay(mode) {
+    const selectedFiltersContainer = getCurrentFiltersContainer(mode);
+    const currentFilters = getCurrentFilters(mode);
+    
+    if (!selectedFiltersContainer) return;
+    
+    selectedFiltersContainer.innerHTML = '';
+    
+    currentFilters.forEach(tag => {
+      const filterTag = document.createElement('div');
+      filterTag.className = 'selected-filter-tag';
+      filterTag.innerHTML = `
+        ${tag.toUpperCase()}
+        <button class="remove-filter" data-tag="${tag}" data-mode="${mode}">×</button>
+      `;
+      selectedFiltersContainer.appendChild(filterTag);
+    });
+
+    // Add event listeners to remove buttons
+    selectedFiltersContainer.querySelectorAll('.remove-filter').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const tag = e.target.dataset.tag;
+        const mode = e.target.dataset.mode;
+        const filters = getCurrentFilters(mode);
+        
+        filters.delete(tag);
+        updateSelectedFiltersDisplay(mode);
+        updateResults();
+      });
+    });
+  }
+
+  // Initialize all selected filters displays
+  function initializeAllSelectedFiltersDisplays() {
+    updateSelectedFiltersDisplay('community');
+    updateSelectedFiltersDisplay('blog');
+    updateSelectedFiltersDisplay('jobs');
+    updateSelectedFiltersDisplay('fabrication');
+  }
+
+  // Handle filter option clicks
+  filterOptions.addEventListener('click', (e) => {
+    if (e.target.classList.contains('mobile-filter-option')) {
+      const tag = e.target.dataset.tag;
+      const currentFilters = getCurrentFilters(currentFilterMode);
+      
+      if (currentFilters.has(tag)) {
+        currentFilters.delete(tag);
+        e.target.classList.remove('selected');
+      } else {
+        currentFilters.add(tag);
+        e.target.classList.add('selected');
+      }
+      
+      updateSelectedFiltersDisplay(currentFilterMode);
+      updateResults();
+    }
   });
 
   // Close popup
@@ -560,64 +728,8 @@ function initializeMobileFilterPopup() {
     }
   });
 
-  // Handle filter option clicks
-  filterOptions.addEventListener('click', (e) => {
-    if (e.target.classList.contains('mobile-filter-option')) {
-      const tag = e.target.dataset.tag;
-      
-      if (selectedCommunityFilters.has(tag)) {
-        selectedCommunityFilters.delete(tag);
-        e.target.classList.remove('selected');
-      } else {
-        selectedCommunityFilters.add(tag);
-        e.target.classList.add('selected');
-      }
-      
-      updateSelectedFiltersDisplay();
-      updateResults();
-    }
-  });
-
-  // Update selected filters display
-  function updateSelectedFiltersDisplay() {
-    selectedFiltersContainer.innerHTML = '';
-    
-    selectedCommunityFilters.forEach(tag => {
-      const filterTag = document.createElement('div');
-      filterTag.className = 'selected-filter-tag';
-      filterTag.innerHTML = `
-        ${tag.toUpperCase()}
-        <button class="remove-filter" data-tag="${tag}">×</button>
-      `;
-      selectedFiltersContainer.appendChild(filterTag);
-    });
-
-    // Add event listeners to remove buttons
-    selectedFiltersContainer.querySelectorAll('.remove-filter').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const tag = e.target.dataset.tag;
-        selectedCommunityFilters.delete(tag);
-        updateSelectedFiltersDisplay();
-        updateMobileFilterOptions();
-        updateResults();
-      });
-    });
-  }
-
-  // Update mobile filter options to reflect current selection
-  function updateMobileFilterOptions() {
-    filterOptions.querySelectorAll('.mobile-filter-option').forEach(option => {
-      const tag = option.dataset.tag;
-      if (selectedCommunityFilters.has(tag)) {
-        option.classList.add('selected');
-      } else {
-        option.classList.remove('selected');
-      }
-    });
-  }
-
-  // Initial display update
-  updateSelectedFiltersDisplay();
+  // Initial display update for all modes
+  initializeAllSelectedFiltersDisplays();
 }
 
 function updateCommunityResults() {
@@ -729,20 +841,33 @@ function updateFabricationResults() {
     
     if (!matchesSearch) return false;
     
+    // Use mobile filters if on mobile and fabrication mode
+    const filtersToUse = window.innerWidth <= 768 && currentMode === 'fabrication' 
+      ? selectedFabricationFilters 
+      : new Set([...activeMachineCategories, ...activeMaterialCategories]);
+    
     // Filter by machine categories
-    if (activeMachineCategories.size > 0 && item.type === 'machine') {
-      if (!activeMachineCategories.has(item.category)) return false;
-    }
-    
-    // Filter by material categories
-    if (activeMaterialCategories.size > 0 && item.type === 'material') {
-      if (!activeMaterialCategories.has(item.category)) return false;
-    }
-    
-    // If both filters are active but item doesn't match either type
-    if ((activeMachineCategories.size > 0 || activeMaterialCategories.size > 0)) {
-      if (item.type === 'machine' && activeMachineCategories.size === 0) return false;
-      if (item.type === 'material' && activeMaterialCategories.size === 0) return false;
+    if (window.innerWidth <= 768 && currentMode === 'fabrication') {
+      // Mobile: use selected fabrication filters
+      if (filtersToUse.size > 0) {
+        const matchesCategory = filtersToUse.has(item.category);
+        const matchesTags = item.tags.some(tag => filtersToUse.has(tag));
+        if (!matchesCategory && !matchesTags) return false;
+      }
+    } else {
+      // Desktop: use dropdown filters
+      if (activeMachineCategories.size > 0 && item.type === 'machine') {
+        if (!activeMachineCategories.has(item.category)) return false;
+      }
+      
+      if (activeMaterialCategories.size > 0 && item.type === 'material') {
+        if (!activeMaterialCategories.has(item.category)) return false;
+      }
+      
+      if ((activeMachineCategories.size > 0 || activeMaterialCategories.size > 0)) {
+        if (item.type === 'machine' && activeMachineCategories.size === 0) return false;
+        if (item.type === 'material' && activeMaterialCategories.size === 0) return false;
+      }
     }
     
     return true;
@@ -953,6 +1078,9 @@ function switchMode(mode) {
   currentMode = mode;
   activeFilters.clear();
   selectedCommunityFilters.clear();
+  selectedBlogFilters.clear();
+  selectedJobsFilters.clear();
+  selectedFabricationFilters.clear();
   activeMachineCategories.clear();
   activeMaterialCategories.clear();
   currentPage = 0;
@@ -991,15 +1119,25 @@ function switchMode(mode) {
   });
   
   // Clear selected community filters display
-  const selectedFiltersContainer = document.getElementById('selectedFilters');
-  if (selectedFiltersContainer) {
-    selectedFiltersContainer.innerHTML = '';
+  const filterContainers = [
+    'selectedFilters',
+    'selectedBlogFilters', 
+    'selectedJobsFilters',
+    'selectedFabricationFilters'
+  ];
+  
+  filterContainers.forEach(containerId => {
+    const container = document.getElementById(containerId);
+    if (container) {
+      container.innerHTML = '';
+    }
+  });
+  
+  // Clear active tag filters on desktop
+  document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.classList.remove('active');
   }
-  
-  // Reset remote toggle
-  document.getElementById('remoteToggle').checked = false;
-  remoteOnly = false;
-  
+  );
   // Update results
   updateResults();
 }

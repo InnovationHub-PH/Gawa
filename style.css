@@ -1310,6 +1310,33 @@ footer {
     display: block;
   }
 
+  /* Show mobile filter trigger and hide desktop filters for blog */
+  #blogFilters .tag-buttons {
+    display: none;
+  }
+
+  #blogFilters .mobile-filter-trigger {
+    display: block;
+  }
+
+  /* Show mobile filter trigger and hide desktop filters for jobs */
+  #jobsFilters .tag-buttons {
+    display: none;
+  }
+
+  #jobsFilters .mobile-filter-trigger {
+    display: block;
+  }
+
+  /* Show mobile filter trigger and hide desktop filters for fabrication */
+  #fabricationFilters .filter-container {
+    display: none;
+  }
+
+  #fabricationFilters .mobile-filter-trigger {
+    display: block;
+  }
+
   .dropdown-filter {
     min-width: 100%;
     margin-bottom: 1rem;
