@@ -398,3 +398,9 @@ function showSuccess(message) {
   // You can implement a toast notification system here
   alert(message);
 }
+
+// Auto-initialize profile page when module loads
+document.addEventListener('DOMContentLoaded', async () => {
+  initProfilePage();
+  initProfileInteractions();
+});

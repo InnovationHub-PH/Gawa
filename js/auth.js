@@ -34,6 +34,11 @@ export async function initAuth() {
   initAuthModal();
 }
 
+// Auto-initialize auth when module loads
+document.addEventListener('DOMContentLoaded', async () => {
+  await initAuth();
+});
+
 // Load user profile
 async function loadUserProfile() {
   if (!currentUser) return;

@@ -203,15 +203,5 @@
     <script type="module" src="./js/theme.js"></script>
     <script type="module" src="./js/auth.js"></script>
     <script type="module" src="./js/profile.js"></script>
-    <script type="module">
-      import { initAuth } from './js/auth.js';
-      import { initProfilePage, initProfileInteractions } from './js/profile.js';
-      
-      document.addEventListener('DOMContentLoaded', async () => {
-        await initAuth();
-        initProfilePage();
-        initProfileInteractions();
-      });
-    </script>
   </body>
 </html>
