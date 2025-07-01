@@ -30,6 +30,12 @@ async function loadUserProfile(userId) {
     const { data: profile, error: profileError } = await db.getProfile(userId);
     if (profileError) throw profileError;
     
+    // Check if profile exists
+    if (!profile) {
+      showError('Profile not found');
+      return;
+    }
+    
     // Load user posts
     const { data: posts, error: postsError } = await db.getUserPosts(userId);
     if (postsError) throw postsError;
