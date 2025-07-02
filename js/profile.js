@@ -1,6 +1,8 @@
 import { db, auth } from './supabase.js';
 import { getCurrentUser, getUserProfile } from './auth.js';
-import { ProfileCertification } from './certification.js';
+
+// Global certification instance
+let certification = null;
 
 // Initialize profile page
 export function initProfilePage() {
@@ -74,6 +76,11 @@ async function loadUserProfile(userId) {
     
     // Update UI
     updateProfileUI(profile, posts, ratings, average, count, followers?.length || 0, following?.length || 0, isOwnProfile, isFollowing);
+    
+    // Render certification widget if this is the user's own profile
+    if (isOwnProfile) {
+      await renderCertificationWidget();
+    }
     
   } catch (error) {
     console.error('Error loading profile:', error);
@@ -547,13 +554,41 @@ function showSuccess(message) {
   alert(message);
 }
 
+// Render certification widget
+async function renderCertificationWidget() {
+  try {
+    // Import certification module dynamically
+    const { ProfileCertification } = await import('./certification.js');
+    
+    // Initialize certification if not already done
+    if (!certification) {
+      certification = new ProfileCertification();
+    }
+    
+    // Ensure certification data is loaded
+    await certification.initialize();
+    
+    // Get the container and render the widget
+    const container = document.getElementById('certificationWidgetContainer');
+    if (container) {
+      container.innerHTML = certification.createCertificationWidget();
+      
+      // Add event listener to the certification button
+      const startBtn = container.querySelector('.certification-start-btn');
+      if (startBtn) {
+        startBtn.addEventListener('click', () => {
+          certification.showCertificationModal();
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error rendering certification widget:', error);
+  }
+}
+
 // Auto-initialize profile page when module loads
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('Profile page initializing...');
   initProfilePage();
   initProfileInteractions();
-  
-  // Initialize certification system
-  const certification = new ProfileCertification();
-  certification.initialize();
 });
