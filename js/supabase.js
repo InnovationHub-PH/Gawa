@@ -121,67 +121,32 @@ export const db = {
 
   // Profile pictures database operations
   async saveProfilePictureRecord(userId, imageData, contentType, fileSize) {
-    try {
-      const { data, error } = await supabase
-        .from('profile_pictures')
-        .upsert([{
-          user_id: userId,
-          image_data: imageData,
-          content_type: contentType,
-          file_size: fileSize
-        }], {
-          onConflict: 'user_id'
-        });
-      
-      if (error) {
-        console.error('Database upsert error:', error);
-        throw error;
-      }
-      
-      return { data, error: null };
-    } catch (error) {
-      console.error('Error saving profile picture record:', error);
-      return { data: null, error };
-    }
+    const { data, error } = await supabase
+      .from('profile_pictures')
+      .upsert([{
+        user_id: userId,
+        image_data: imageData,
+        content_type: contentType,
+        file_size: fileSize
+      }]);
+    return { data, error };
   },
 
   async getProfilePictureRecord(userId) {
-    try {
-      const { data, error } = await supabase
-        .from('profile_pictures')
-        .select('*')
-        .eq('user_id', userId)
-        .maybeSingle();
-      
-      if (error) {
-        console.error('Database select error:', error);
-        throw error;
-      }
-      
-      return { data, error: null };
-    } catch (error) {
-      console.error('Error getting profile picture record:', error);
-      return { data: null, error };
-    }
+    const { data, error } = await supabase
+      .from('profile_pictures')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    return { data, error };
   },
 
   async deleteProfilePictureRecord(userId) {
-    try {
-      const { data, error } = await supabase
-        .from('profile_pictures')
-        .delete()
-        .eq('user_id', userId);
-      
-      if (error) {
-        console.error('Database delete error:', error);
-        throw error;
-      }
-      
-      return { data, error: null };
-    } catch (error) {
-      console.error('Error deleting profile picture record:', error);
-      return { data: null, error };
-    }
+    const { data, error } = await supabase
+      .from('profile_pictures')
+      .delete()
+      .eq('user_id', userId);
+    return { data, error };
   },
 
   // Posts
