@@ -1,6 +1,6 @@
 import { db, auth } from './supabase.js';
 import { getCurrentUser, getUserProfile } from './auth.js';
-import { initializeCertificationSystem } from './certification.js';
+import { ProfileCertification } from './certification.js';
 
 // Initialize profile page
 export function initProfilePage() {
@@ -552,4 +552,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Profile page initializing...');
   initProfilePage();
   initProfileInteractions();
+  
+  // Initialize certification system
+  const certification = new ProfileCertification();
+  certification.initialize();
 });
