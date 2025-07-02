@@ -4,6 +4,7 @@ import { auth, db } from './supabase.js';
 let currentUser = null;
 let userProfile = null;
 let authInitialized = false;
+let isModalOpening = false;
 
 // Initialize authentication
 export async function initAuth() {
@@ -32,7 +33,12 @@ export async function initAuth() {
       currentUser = session.user;
       await loadUserProfile();
       updateUIForAuthenticatedUser();
-      hideAuthModal();
+      
+      // Check if this is a new user (just signed up)
+      const isNewUser = session.user.user_metadata?.is_new_user || 
+                       (userProfile && !userProfile.username);
+      
+      showSuccessMessage(isNewUser);
     } else if (event === 'SIGNED_OUT') {
       currentUser = null;
       userProfile = null;
@@ -165,7 +171,12 @@ function initAuthModal() {
   // Show auth modal
   if (authButton) {
     authButton.addEventListener('click', () => {
+      isModalOpening = true;
       authModal.classList.remove('hidden');
+      // Reset flag after a short delay
+      setTimeout(() => {
+        isModalOpening = false;
+      }, 100);
     });
   }
   
@@ -177,7 +188,7 @@ function initAuthModal() {
   // Close on background click
   if (authModal) {
     authModal.addEventListener('click', (e) => {
-      if (e.target === authModal) {
+      if (e.target === authModal && !isModalOpening) {
         hideAuthModal();
       }
     });
@@ -221,7 +232,27 @@ function hideAuthModal() {
   const authModal = document.getElementById('authModal');
   if (authModal) {
     authModal.classList.add('hidden');
+    // Clear any success messages
+    clearAuthMessages();
   }
+}
+
+// Show success message with personalized welcome
+function showSuccessMessage(isNewUser = false) {
+  const firstName = userProfile?.full_name?.split(' ')[0] || 
+                   userProfile?.username || 
+                   'there';
+  
+  const welcomeMessage = isNewUser 
+    ? `♡ Welcome to Gawa, ${firstName}! Let's get you started.`
+    : `♡ Welcome back, ${firstName}!`;
+  
+  showAuthSuccess('Login Success!', welcomeMessage);
+  
+  // Hide modal after showing success message
+  setTimeout(() => {
+    hideAuthModal();
+  }, 2500);
 }
 
 // Handle sign in
@@ -236,6 +267,8 @@ async function handleSignIn(e) {
   
   if (error) {
     showAuthError(error.message);
+  } else {
+    // Success will be handled by auth state change listener
   }
 }
 
@@ -257,7 +290,11 @@ async function handleSignUp(e) {
   if (error) {
     showAuthError(error.message);
   } else {
-    showAuthSuccess('Account created! Please check your email to verify your account.');
+    // Mark as new user for welcome message
+    if (data.user) {
+      data.user.user_metadata = { ...data.user.user_metadata, is_new_user: true };
+    }
+    // Success will be handled by auth state change listener
   }
 }
 
@@ -273,24 +310,55 @@ async function handleSignOut() {
 // Show auth error
 function showAuthError(message) {
   const errorElement = document.getElementById('authError');
+  const successElement = document.getElementById('authSuccess');
+  
+  // Hide success message if showing
+  if (successElement) {
+    successElement.style.display = 'none';
+  }
+  
   if (errorElement) {
     errorElement.textContent = message;
     errorElement.style.display = 'block';
-    setTimeout(() => {
-      errorElement.style.display = 'none';
-    }, 5000);
   }
 }
 
 // Show auth success
-function showAuthSuccess(message) {
+function showAuthSuccess(title, subtitle = '') {
   const successElement = document.getElementById('authSuccess');
+  const errorElement = document.getElementById('authError');
+  
+  // Hide error message if showing
+  if (errorElement) {
+    errorElement.style.display = 'none';
+  }
+  
   if (successElement) {
-    successElement.textContent = message;
+    if (subtitle) {
+      successElement.innerHTML = `
+        <div style="text-align: center;">
+          <div style="font-weight: bold; margin-bottom: 0.5rem;">${title}</div>
+          <div>${subtitle}</div>
+        </div>
+      `;
+    } else {
+      successElement.textContent = title;
+    }
     successElement.style.display = 'block';
-    setTimeout(() => {
-      successElement.style.display = 'none';
-    }, 5000);
+  }
+}
+
+// Clear auth messages
+function clearAuthMessages() {
+  const errorElement = document.getElementById('authError');
+  const successElement = document.getElementById('authSuccess');
+  
+  if (errorElement) {
+    errorElement.style.display = 'none';
+  }
+  
+  if (successElement) {
+    successElement.style.display = 'none';
   }
 }
 

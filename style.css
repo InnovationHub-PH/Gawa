@@ -576,6 +576,11 @@ h2 {
 .auth-success {
   background: var(--primary-color);
   color: var(--bg-color);
+  text-align: center;
+}
+
+.auth-success div {
+  line-height: 1.4;
 }
 
 /* Theme Toggle */
