@@ -395,6 +395,7 @@ export const db = {
     const { data, error } = await supabase
       .from('profiles')
       .select('id, username, full_name, avatar_url, bio, created_at')
+      .select('id, username, full_name, avatar_url, bio, account_type, created_at')
       .order('created_at', { ascending: false });
     return { data, error };
   }

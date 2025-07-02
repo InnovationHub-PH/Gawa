@@ -792,6 +792,9 @@ function updateCommunityResults() {
     });
   }
   
+  // Use real community members if available, otherwise use static data
+  const membersToShow = window.realCommunityMembers || spatiallyFilteredMembers;
+  
   // Load real user profiles from database and merge with static data
   loadAndMergeUserProfiles(spatiallyFilteredMembers);
 }
@@ -909,7 +912,7 @@ async function fetchAndMergeProfiles(staticMembers) {
 
 // Filter and render community members
 function filterAndRenderCommunity(members) {
-  const filteredMembers = members.filter(member => {
+  const filteredMembers = membersToShow.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     
@@ -931,11 +934,14 @@ function filterAndRenderCommunity(members) {
 
   filteredMembers.forEach(member => {
     let targetGrid;
-    if (member.category === 'COMPANIES') {
+    // Determine category based on account_type if available, otherwise use existing category
+    const category = member.account_type ? ACCOUNT_TYPE_CATEGORIES[member.account_type] : member.category;
+    
+    if (category === 'COMPANIES') {
       targetGrid = document.querySelector('.companies-grid');
-    } else if (member.category === 'INDIVIDUALS') {
+    } else if (category === 'INDIVIDUALS') {
       targetGrid = document.querySelector('.individuals-grid');
-    } else if (member.category === 'EDUCATIONAL INSTITUTIONS') {
+    } else if (category === 'EDUCATIONAL INSTITUTIONS') {
       targetGrid = document.querySelector('.education-grid');
     }
     

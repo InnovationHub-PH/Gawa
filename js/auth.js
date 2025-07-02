@@ -299,10 +299,18 @@ async function handleSignUp(e) {
   const password = formData.get('password');
   const fullName = formData.get('fullName');
   const username = formData.get('username');
+  const accountType = formData.get('accountType');
+  
+  // Validate account type is selected
+  if (!accountType) {
+    showAuthError('Please select an account type');
+    return;
+  }
   
   const { data, error } = await auth.signUp(email, password, {
     full_name: fullName,
-    username: username
+    username: username,
+    account_type: accountType
   });
   
   if (error) {
