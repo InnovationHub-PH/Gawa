@@ -565,22 +565,16 @@ h2 {
   padding: 1rem;
   margin: 1rem 2rem;
   font-family: var(--font-mono);
-  border: 2px solid var(--border-color);
+  background: transparent;
+  color: var(--text-color);
+  border: none;
+  text-align: center;
 }
 
 .auth-error {
   background: var(--secondary-color);
   color: var(--bg-color);
-}
-
-.auth-success {
-  background: var(--primary-color);
-  color: var(--bg-color);
-  text-align: center;
-}
-
-.auth-success div {
-  line-height: 1.4;
+  border: 2px solid var(--border-color);
 }
 
 /* Theme Toggle */

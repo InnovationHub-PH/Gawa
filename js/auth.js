@@ -247,12 +247,30 @@ function showSuccessMessage(isNewUser = false) {
     ? `♡ Welcome to Gawa, ${firstName}! Let's get you started.`
     : `♡ Welcome back, ${firstName}!`;
   
-  showAuthSuccess('Login Success!', welcomeMessage);
+  showSuccessModal('Login Success!', welcomeMessage);
   
   // Hide modal after showing success message
   setTimeout(() => {
     hideAuthModal();
   }, 2500);
+}
+
+// Show success modal with plain content
+function showSuccessModal(title, subtitle = '') {
+  const authModal = document.getElementById('authModal');
+  const modalContent = authModal.querySelector('.auth-modal-content');
+  
+  // Hide all existing content and show only success message
+  modalContent.innerHTML = `
+    <div class="success-modal-content">
+      <div style="text-align: center; padding: 3rem 2rem;">
+        <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem; color: var(--text-color);">${title}</div>
+        <div style="font-size: 1.2rem; color: var(--text-color);">${subtitle}</div>
+      </div>
+    </div>
+  `;
+  
+  authModal.classList.remove('hidden');
 }
 
 // Handle sign in
