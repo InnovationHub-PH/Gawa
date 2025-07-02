@@ -969,12 +969,6 @@ input[type="radio"]:checked::before {
 .member-card:hover {
   transform: translateX(5px);
   cursor: pointer;
-  border-color: var(--primary-color);
-}
-
-.member-card[data-user-id]:hover {
-  border-color: var(--accent-color);
-  transform: scale(1.02);
 }
 
 .member-card.selected {
