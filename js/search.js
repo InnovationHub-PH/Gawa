@@ -1,3 +1,4 @@
+import { db } from './supabase.js';
 import { blogPosts } from './blogData.js';
 import { jobs } from './jobs.js';
 import { communityMembers } from './community.js';
@@ -352,6 +353,10 @@ function createMemberCard(member) {
     </div>
   ` : '';
 
+  // Add View Profile button for individuals
+  const viewProfileButton = member.category === 'INDIVIDUALS' && member.profileId ? `
+    <a href="profile.html?id=${member.profileId}" class="sqr-btn view-profile-btn">VIEW PROFILE</a>
+  ` : '';
   // Add a visual indicator for dynamic users
   const dynamicIndicator = member.isDynamic ? `
     <div style="font-size: 0.7rem; color: var(--primary-color); margin-top: 0.5rem;">
@@ -411,6 +416,7 @@ function createMemberCard(member) {
         ` : ''}
       </div>
       ${pdfPreview}
+      ${viewProfileButton}
       <div class="tags">
         ${member.tags.map(tag => `<span class="tag">${tag.toUpperCase()}</span>`).join('')}
       </div>
@@ -787,6 +793,47 @@ function updateCommunityResults() {
     });
   }
   
+  // Load real user profiles from database and merge with static data
+  loadAndMergeUserProfiles(spatiallyFilteredMembers);
+}
+
+// Load user profiles from database and merge with community data
+async function loadAndMergeUserProfiles(staticMembers) {
+  try {
+    // Get all profiles from database
+    const { data: profiles, error } = await db.getAllProfiles();
+    
+    if (!error && profiles) {
+      // Convert database profiles to community member format
+      const dbMembers = profiles.map(profile => ({
+        name: profile.full_name || profile.username || 'Unknown User',
+        category: 'INDIVIDUALS',
+        profileId: profile.id, // Add profile ID for linking
+        website: null,
+        email: null,
+        phone: null,
+        facebook: null,
+        tags: ['individual', 'member'],
+        profileImage: profile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
+        location: null // We don't have location data from profiles yet
+      }));
+      
+      // Merge database members with static members
+      const allMembers = [...staticMembers, ...dbMembers];
+      filterAndDisplayMembers(allMembers);
+    } else {
+      // Fallback to static members only
+      filterAndDisplayMembers(staticMembers);
+    }
+  } catch (error) {
+    console.warn('Failed to load user profiles:', error);
+    // Fallback to static members only
+    filterAndDisplayMembers(staticMembers);
+  }
+}
+
+// Filter and display members
+function filterAndDisplayMembers(allMembers) {
   // Fetch dynamic profiles from Supabase and merge with static data
   fetchAndMergeProfiles(spatiallyFilteredMembers);
 }

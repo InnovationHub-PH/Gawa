@@ -1032,6 +1032,14 @@ input[type="radio"]:checked::before {
   margin-top: 0.5rem;
 }
 
+/* View Profile Button */
+.view-profile-btn {
+  margin-top: 1rem;
+  display: block;
+  text-align: center;
+  width: 100%;
+}
+
 /* Member Grid */
 .member-grid {
   display: grid;
