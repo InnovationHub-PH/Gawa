@@ -460,23 +460,27 @@ function createCommunityCard(member) {
   const category = categoryMap[member.account_type] || 'INDIVIDUALS';
   const displayName = member.full_name || member.username || 'Unknown User';
   const bio = member.bio || 'No bio available';
-  const location = member.location || '';
+  const location = member.city || '';
   
   // Create basic tags based on account type
   const tags = [member.account_type];
+  
+  // Add certified badge if applicable
+  const certifiedBadge = member.is_certified ? '<span class="profile-certified-badge">CERTIFIED</span>' : '';
   
   return `
     <div class="card member-card" data-member="${displayName}" data-tags="${tags.join(' ')}" data-category="${category}">
       <div class="card-header">
         <img src="${member.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png'}" alt="${displayName}" class="card-logo">
         <div class="title-info">
-          <h3>${displayName}</h3>
+          <h3>${displayName}${certifiedBadge}</h3>
           ${member.username ? `<h4>@${member.username}</h4>` : ''}
           ${location ? `<p class="member-location">${location}</p>` : ''}
         </div>
       </div>
       <div class="member-info">
         <p class="bio">${bio}</p>
+        ${member.website ? `<p class="website"><a href="${member.website}" target="_blank">${member.website}</a></p>` : ''}
         <p class="member-since">Member since: ${new Date(member.created_at).toLocaleDateString()}</p>
       </div>
       <div class="tags">

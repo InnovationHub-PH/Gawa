@@ -393,10 +393,88 @@ export const db = {
       console.warn('Supabase not configured, returning empty array');
       return { data: [], error: null };
     }
+    // Only return certified profiles for public display
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, account_type, created_at')
+      .select('id, username, full_name, avatar_url, bio, account_type, created_at, is_certified, city, website, phone, facebook, instagram, linkedin')
+      .eq('is_certified', true)
       .order('created_at', { ascending: false });
+    return { data, error };
+  },
+
+  // Profile completion and certification functions
+  async getProfileCompletionSteps(userId) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase
+      .from('profile_completion_steps')
+      .select('*')
+      .eq('user_id', userId)
+      .order('step_number');
+    return { data, error };
+  },
+
+  async updateProfileCompletionStep(userId, stepNumber, isCompleted) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase
+      .from('profile_completion_steps')
+      .upsert([{
+        user_id: userId,
+        step_number: stepNumber,
+        is_completed: isCompleted,
+        completed_at: isCompleted ? new Date().toISOString() : null
+      }]);
+    return { data, error };
+  },
+
+  async getProfileCategories(userId) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase
+      .from('profile_categories')
+      .select('*')
+      .eq('user_id', userId);
+    return { data, error };
+  },
+
+  async saveProfileCategories(userId, categories) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const categoriesToInsert = categories.map(cat => ({
+      user_id: userId,
+      category_group: cat.category_group,
+      category_name: cat.category_name
+    }));
+    
+    const { data, error } = await supabase
+      .from('profile_categories')
+      .insert(categoriesToInsert);
+    return { data, error };
+  },
+
+  async clearProfileCategories(userId) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase
+      .from('profile_categories')
+      .delete()
+      .eq('user_id', userId);
+    return { data, error };
+  },
+
+  async updateCertificationStatus(userId) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase.rpc('update_certification_status', {
+      user_uuid: userId
+    });
     return { data, error };
   }
 };
