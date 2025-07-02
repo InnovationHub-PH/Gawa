@@ -95,6 +95,23 @@
         
         <form id="signUpForm" class="auth-form">
           <div class="form-group">
+            <label>Are you a: (Required)</label>
+            <div class="account-type-options">
+              <label class="radio-option">
+                <input type="radio" name="accountType" value="person" required>
+                <span class="radio-label">Person</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="accountType" value="business" required>
+                <span class="radio-label">Business/Company</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="accountType" value="education" required>
+                <span class="radio-label">Educational Institution</span>
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
             <label for="signUpFullName">Full Name</label>
             <input type="text" id="signUpFullName" name="fullName" class="form-input" required>
           </div>
