@@ -3,6 +3,7 @@ import { blogPosts } from './blogData.js';
 import { jobs } from './jobs.js';
 import { communityMembers } from './community.js';
 import { fabricationItems, machineCategories, materialCategories } from './fabrication.js';
+import { db } from './supabase.js';
 
 // Import PDF.js for community member documents
 let pdfjsLib = null;
@@ -48,6 +49,7 @@ let selectedFabricationFilters = new Set();
 let lastScrollY = 0;
 let scrollDirection = 'up';
 let mapMinimized = false;
+let realCommunityMembers = [];
 
 // Utility functions
 function truncateWords(text, wordCount) {
@@ -784,9 +786,9 @@ function initializeMobileFilterPopup() {
 
 function updateCommunityResults() {
   // First filter by spatial area if one is drawn
-  let spatiallyFilteredMembers = communityMembers;
+  let spatiallyFilteredMembers = realCommunityMembers.length > 0 ? realCommunityMembers : communityMembers;
   if (activeSpatialFilterLayer) {
-    spatiallyFilteredMembers = communityMembers.filter(member => {
+    spatiallyFilteredMembers = spatiallyFilteredMembers.filter(member => {
       if (!member.location) return false;
       return isPointInDrawnArea(member.location.lat, member.location.lng);
     });
@@ -934,7 +936,8 @@ function filterAndRenderCommunity(members) {
 
   filteredMembers.forEach(member => {
     let targetGrid;
-    // Determine category based on account_type if available, otherwise use existing category
+    const category = getDisplayCategory(member);
+    if (category === 'COMPANIES') {
     const category = member.account_type ? ACCOUNT_TYPE_CATEGORIES[member.account_type] : member.category;
     
     if (category === 'COMPANIES') {
@@ -992,6 +995,55 @@ function filterAndRenderCommunity(members) {
 
   // Update map with community markers
   addMarkersToMap(filteredMembers, 'community');
+}
+
+// Helper function to get display category from account type
+function getDisplayCategory(member) {
+  if (member.account_type) {
+    const categoryMap = {
+      'person': 'INDIVIDUALS',
+      'business': 'COMPANIES',
+      'education': 'EDUCATIONAL INSTITUTIONS'
+    };
+    return categoryMap[member.account_type] || 'INDIVIDUALS';
+  }
+  return member.category || 'INDIVIDUALS';
+}
+
+// Load real community members from database
+async function loadCommunityMembers() {
+  try {
+    const { data: profiles, error } = await db.getAllProfiles();
+    
+    if (error) {
+      console.warn('Failed to load community members from database:', error);
+      return;
+    }
+    
+    if (profiles && profiles.length > 0) {
+      // Transform database profiles to match expected format
+      realCommunityMembers = profiles.map(profile => ({
+        name: profile.full_name || profile.username || 'Unknown User',
+        category: getDisplayCategory(profile),
+        account_type: profile.account_type,
+        website: '', // These would need to be added to profiles table if needed
+        email: '', // Not exposed for privacy
+        phone: '',
+        facebook: '',
+        tags: [profile.account_type || 'individual'], // Basic tag based on account type
+        profileImage: profile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
+        location: {
+          lat: 14.5547 + (Math.random() - 0.5) * 0.1, // Random location around Manila for demo
+          lng: 120.9947 + (Math.random() - 0.5) * 0.1,
+          address: 'Manila, Philippines' // Default location
+        }
+      }));
+      
+      console.log(`Loaded ${realCommunityMembers.length} community members from database`);
+    }
+  } catch (error) {
+    console.warn('Error loading community members:', error);
+  }
 }
 
 function updateFabricationResults() {
@@ -1422,6 +1474,9 @@ function throttledScrollHandler() {
 
 // Initialize
 function initialize() {
+  // Load real community members first
+  loadCommunityMembers();
+  
   // Initialize map toggle functionality
   initializeMapToggle();
   

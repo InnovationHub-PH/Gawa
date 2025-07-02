@@ -129,12 +129,6 @@ let currentPdf = null;
 let currentPage = 1;
 let activeFilters = new Set();
 
-// Account type to category mapping
-const ACCOUNT_TYPE_CATEGORIES = {
-  'person': 'INDIVIDUALS',
-  'business': 'COMPANIES', 
-  'education': 'EDUCATIONAL INSTITUTIONS'
-};
 function initializeCommunityPage() {
   // Check if we're on the community page
   const mapContainer = document.getElementById('communityMap');
@@ -405,21 +399,15 @@ function updateDirectory() {
     grid.innerHTML = '';
   });
 
-  // If we have real user data from Supabase, use that instead of static data
-  const membersToShow = window.realCommunityMembers || communityMembers;
-  
-  membersToShow.forEach(member => {
+  communityMembers.forEach(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm) ||
                          member.tags.some(tag => tag.toLowerCase().includes(searchTerm));
     const matchesFilters = activeFilters.size === 0 || 
                           member.tags.some(tag => activeFilters.has(tag));
 
     if (matchesSearch && matchesFilters) {
-      // Determine category based on account_type if available, otherwise use existing category
-      const category = member.account_type ? ACCOUNT_TYPE_CATEGORIES[member.account_type] : member.category;
-      
       const categoryDiv = Array.from(document.querySelectorAll('.directory-category')).find(
-        categoryDiv => categoryDiv.querySelector('h2').textContent === category
+        categoryDiv => categoryDiv.querySelector('h2').textContent === member.category
       );
       if (categoryDiv) {
         const memberGrid = categoryDiv.querySelector('.member-grid');

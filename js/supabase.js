@@ -390,11 +390,11 @@ export const db = {
   // Get all profiles for community directory
   async getAllProfiles() {
     if (!supabase) {
-      throw new Error('Supabase not configured');
+      console.warn('Supabase not configured, returning empty array');
+      return { data: [], error: null };
     }
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, created_at')
       .select('id, username, full_name, avatar_url, bio, account_type, created_at')
       .order('created_at', { ascending: false });
     return { data, error };
