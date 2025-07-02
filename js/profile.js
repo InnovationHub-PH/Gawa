@@ -290,7 +290,7 @@ async function handleProfilePictureUpload(e) {
     uploadBtn.textContent = 'UPLOADING...';
     uploadBtn.disabled = true;
     
-    // Convert image to base64 as fallback if Supabase Storage isn't available
+    // Convert image to base64
     const reader = new FileReader();
     reader.onload = async function(event) {
       try {
@@ -298,9 +298,8 @@ async function handleProfilePictureUpload(e) {
         
         let avatarUrl;
         
-        // Check if Supabase is configured for storage
-        if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY) {
-          // Try Supabase Storage first
+        // Try Supabase Storage first, then fallback to database
+        try {
           const fileExt = file.name.split('.').pop();
           const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
           
@@ -319,8 +318,9 @@ async function handleProfilePictureUpload(e) {
             // Also save record to database for consistency
             await db.saveProfilePictureRecord(currentUser.id, avatarUrl, file.type, file.size);
           }
-        } else {
-          // No Supabase configuration, save directly to database
+        } catch (storageError) {
+          console.warn('Storage operation failed, using database fallback:', storageError);
+          // Save to database as fallback
           await db.saveProfilePictureRecord(currentUser.id, base64Image, file.type, file.size);
           avatarUrl = base64Image;
         }
@@ -352,7 +352,7 @@ async function handleProfilePictureUpload(e) {
       showError('Failed to read the image file');
       // Reset button state
       const uploadBtn = document.getElementById('uploadProfilePictureBtn');
-      uploadBtn.textContent = 'UPLOAD PICTURE';
+      uploadBtn.textContent = originalText;
       uploadBtn.disabled = false;
     };
     

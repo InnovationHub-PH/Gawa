@@ -82,6 +82,10 @@ export const db = {
   // Profile picture upload
   async uploadProfilePicture(fileName, file) {
     try {
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase not configured');
+      }
+      
       const { data, error } = await supabase.storage
         .from('profile-pictures')
         .upload(fileName, file, {
@@ -91,12 +95,16 @@ export const db = {
       return { data, error };
     } catch (error) {
       console.error('Upload error:', error);
-      return { data: null, error };
+      return { data: null, error: error };
     }
   },
 
   async getProfilePictureUrl(fileName) {
     try {
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase not configured');
+      }
+      
       const { data } = supabase.storage
         .from('profile-pictures')
         .getPublicUrl(fileName);
@@ -109,44 +117,75 @@ export const db = {
 
   async deleteProfilePicture(fileName) {
     try {
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase not configured');
+      }
+      
       const { data, error } = await supabase.storage
         .from('profile-pictures')
         .remove([fileName]);
       return { data, error };
     } catch (error) {
       console.error('Delete error:', error);
-      return { data: null, error };
+      return { data: null, error: error };
     }
   },
 
   // Profile pictures database operations
   async saveProfilePictureRecord(userId, imageData, contentType, fileSize) {
-    const { data, error } = await supabase
-      .from('profile_pictures')
-      .upsert([{
-        user_id: userId,
-        image_data: imageData,
-        content_type: contentType,
-        file_size: fileSize
-      }]);
-    return { data, error };
+    try {
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase not configured');
+      }
+      
+      const { data, error } = await supabase
+        .from('profile_pictures')
+        .upsert([{
+          user_id: userId,
+          image_data: imageData,
+          content_type: contentType,
+          file_size: fileSize
+        }]);
+      return { data, error };
+    } catch (error) {
+      console.error('Save profile picture record error:', error);
+      return { data: null, error: error };
+    }
   },
 
   async getProfilePictureRecord(userId) {
-    const { data, error } = await supabase
-      .from('profile_pictures')
-      .select('*')
-      .eq('user_id', userId)
-      .maybeSingle();
-    return { data, error };
+    try {
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase not configured');
+      }
+      
+      const { data, error } = await supabase
+        .from('profile_pictures')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+      return { data, error };
+    } catch (error) {
+      console.error('Get profile picture record error:', error);
+      return { data: null, error: error };
+    }
   },
 
   async deleteProfilePictureRecord(userId) {
-    const { data, error } = await supabase
-      .from('profile_pictures')
-      .delete()
-      .eq('user_id', userId);
-    return { data, error };
+    try {
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase not configured');
+      }
+      
+      const { data, error } = await supabase
+        .from('profile_pictures')
+        .delete()
+        .eq('user_id', userId);
+      return { data, error };
+    } catch (error) {
+      console.error('Delete profile picture record error:', error);
+      return { data: null, error: error };
+    }
   },
 
   // Posts
