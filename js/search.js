@@ -3,7 +3,6 @@ import { blogPosts } from './blogData.js';
 import { jobs } from './jobs.js';
 import { communityMembers } from './community.js';
 import { fabricationItems, machineCategories, materialCategories } from './fabrication.js';
-import { db } from './supabase.js';
 
 // Import PDF.js for community member documents
 let pdfjsLib = null;
