@@ -49,6 +49,14 @@ async function loadUserProfile(userId) {
       return;
     }
     
+    // Try to load profile picture from database if avatar_url is not set or is a placeholder
+    if (!profile.avatar_url || profile.avatar_url.includes('Stealth_No_Image.png')) {
+      const { data: pictureRecord } = await db.getProfilePictureRecord(userId);
+      if (pictureRecord && pictureRecord.image_data) {
+        profile.avatar_url = pictureRecord.image_data;
+      }
+    }
+    
     // Load user posts
     const { data: posts, error: postsError } = await db.getUserPosts(userId);
     if (postsError) throw postsError;
