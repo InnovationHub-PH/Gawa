@@ -3,7 +3,6 @@ import { blogPosts } from './blogData.js';
 import { jobs } from './jobs.js';
 import { communityMembers } from './community.js';
 import { fabricationItems, machineCategories, materialCategories } from './fabrication.js';
-import { db } from './supabase.js';
 
 // Import PDF.js for community member documents
 let pdfjsLib = null;
@@ -914,7 +913,7 @@ async function fetchAndMergeProfiles(staticMembers) {
 
 // Filter and render community members
 function filterAndRenderCommunity(members) {
-  const filteredMembers = membersToShow.filter(member => {
+  const filteredMembers = members.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     
@@ -937,9 +936,6 @@ function filterAndRenderCommunity(members) {
   filteredMembers.forEach(member => {
     let targetGrid;
     const category = getDisplayCategory(member);
-    if (category === 'COMPANIES') {
-    }
-    const category = member.account_type ? ACCOUNT_TYPE_CATEGORIES[member.account_type] : member.category;
     
     if (category === 'COMPANIES') {
       targetGrid = document.querySelector('.companies-grid');
@@ -1377,8 +1373,8 @@ function switchMode(mode) {
   // Clear active tag filters on desktop
   document.querySelectorAll('.tag-btn').forEach(btn => {
     btn.classList.remove('active');
-  }
-  );
+  });
+  
   // Update results
   updateResults();
 }
@@ -1660,9 +1656,7 @@ function initializeMapToggle() {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById('searchInterface')) {
-    initializeSearchPage();
-  }
+  // Check if we're on the search page before initializing
   if (document.getElementById('searchInterface')) {
     initialize();
   }
