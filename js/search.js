@@ -938,6 +938,7 @@ function filterAndRenderCommunity(members) {
     let targetGrid;
     const category = getDisplayCategory(member);
     if (category === 'COMPANIES') {
+    }
     const category = member.account_type ? ACCOUNT_TYPE_CATEGORIES[member.account_type] : member.category;
     
     if (category === 'COMPANIES') {
