@@ -1660,7 +1660,9 @@ function initializeMapToggle() {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Check if we're on the search page before initializing
+  if (document.getElementById('searchInterface')) {
+    initializeSearchPage();
+  }
   if (document.getElementById('searchInterface')) {
     initialize();
   }
