@@ -181,6 +181,7 @@ let selectedArea = null;
 let communityMembers = []; // Will be populated from Supabase
 let currentScrollY = 0;
 let isMapMinimized = false;
+let aboutPopupShown = false;
 
 // Initialize PDF.js
 let pdfjsLib = null;
@@ -480,8 +481,6 @@ function createCommunityCard(member) {
       </div>
       <div class="member-info">
         <p class="bio">${bio}</p>
-        ${member.website ? `<p class="website"><a href="${member.website}" target="_blank">${member.website}</a></p>` : ''}
-        ${member.phone ? `<p class="phone">Phone: ${member.phone}</p>` : ''}
         <p class="member-since">Member since: ${new Date(member.created_at).toLocaleDateString()}</p>
       </div>
       <div class="tags">

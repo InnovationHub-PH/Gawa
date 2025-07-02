@@ -396,7 +396,7 @@ export const db = {
     // Only return certified profiles for public display
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, account_type, created_at, is_certified, city, website, phone, facebook, instagram, linkedin')
+      .select('id, username, full_name, avatar_url, bio, account_type, created_at, is_certified, city')
       .eq('is_certified', true)
       .order('created_at', { ascending: false });
     return { data, error };
