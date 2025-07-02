@@ -315,8 +315,8 @@ async function handleProfilePictureUpload(e) {
             const { data: urlData } = await db.getProfilePictureUrl(fileName);
             avatarUrl = urlData?.publicUrl || base64Image;
             
-            // Also save record to database for consistency
-            await db.saveProfilePictureRecord(currentUser.id, avatarUrl, file.type, file.size);
+            // Save record to database with both storage path and data
+            await db.saveProfilePictureWithStorage(currentUser.id, base64Image, fileName, file.type, file.size);
           }
         } catch (storageError) {
           console.warn('Storage operation failed, using database fallback:', storageError);

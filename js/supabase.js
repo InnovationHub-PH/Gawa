@@ -153,6 +153,28 @@ export const db = {
     }
   },
 
+  async saveProfilePictureWithStorage(userId, imageData, storagePath, contentType, fileSize) {
+    try {
+      if (!supabaseUrl || !supabaseAnonKey) {
+        throw new Error('Supabase not configured');
+      }
+      
+      const { data, error } = await supabase
+        .from('profile_pictures')
+        .upsert([{
+          user_id: userId,
+          image_data: imageData,
+          storage_path: storagePath,
+          content_type: contentType,
+          file_size: fileSize
+        }]);
+      return { data, error };
+    } catch (error) {
+      console.error('Save profile picture with storage error:', error);
+      return { data: null, error: error };
+    }
+  },
+
   async getProfilePictureRecord(userId) {
     try {
       if (!supabaseUrl || !supabaseAnonKey) {
