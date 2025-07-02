@@ -1,14 +1,191 @@
 import { db } from './supabase.js';
 import { blogPosts } from './blogData.js';
-import { jobs } from './jobs.js';
-import { communityMembers } from './community.js';
-import { fabricationItems, machineCategories, materialCategories } from './fabrication.js';
 
-// Import PDF.js for community member documents
+// Job data (keeping existing structure)
+const jobs = [
+  {
+    title: 'Job Title',
+    company: 'Company Name',
+    logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
+    location: 'Makati, MNL',
+    coordinates: { lat: 14.5547, lng: 120.9947 },
+    remote: false,
+    tags: ['robotics', 'hardware'],
+    description: 'Describe the Job openning here...'
+  },
+  {
+    title: 'Software Developer',
+    company: 'Remote Robotics',
+    logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
+    location: 'Remote',
+    coordinates: { lat: 14.5995, lng: 120.9842 },
+    remote: true,
+    tags: ['software', 'robotics'],
+    description: 'Developing control systems for autonomous robots. We are looking for a skilled software developer with experience in robotics and control systems. The ideal candidate will have a strong background in Python, C++, and ROS. You will be working with a team of engineers to develop and implement control algorithms for our autonomous robot fleet. Key responsibilities include: developing and maintaining robot control software, implementing new features and functionality, debugging and troubleshooting issues, and collaborating with the hardware team.'
+  },
+  {
+    title: 'Mechatronics Intern',
+    company: 'Innovation Labs',
+    logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
+    location: 'Boston, MA',
+    coordinates: { lat: 14.558, lng: 120.989 },
+    remote: false,
+    tags: ['internship', 'hardware', 'software'],
+    description: 'Summer internship opportunity in our robotics division. Join our team of experts and gain hands-on experience in robotics development.'
+  },
+  {
+    title: 'Control Systems Engineer',
+    company: 'Virtual Mechanics',
+    logo: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
+    location: 'Remote',
+    coordinates: { lat: 14.5648, lng: 120.9932 },
+    remote: true,
+    tags: ['software', 'hardware'],
+    description: 'Design and implement control systems for industrial robots. Work with cutting-edge technology and collaborate with a global team.'
+  }
+];
+
+// Fabrication data (keeping existing structure)
+const fabricationItems = [
+  {
+    id: 1,
+    name: '3D Printer - Prusa i3 MK3S+',
+    type: 'machine',
+    category: '3d-printer',
+    owner: 'TechLabs Manila',
+    location: {
+      lat: 14.5547,
+      lng: 120.9947,
+      address: 'Makati City, Philippines'
+    },
+    availability: 'available',
+    hourlyRate: 150,
+    description: 'High-quality FDM 3D printer capable of printing PLA, PETG, and ABS materials. Build volume: 250×210×210mm.',
+    contact: 'contact@techlabs.ph',
+    image: 'https://images.pexels.com/photos/3862132/pexels-photo-3862132.jpeg',
+    tags: ['3d-printing', 'prototyping', 'fdm']
+  },
+  {
+    id: 2,
+    name: 'Laser Cutter - Epilog Zing 24',
+    type: 'machine',
+    category: 'laser-cutter',
+    owner: 'Innovation Labs',
+    location: {
+      lat: 14.5580,
+      lng: 120.9890,
+      address: 'BGC, Taguig City, Philippines'
+    },
+    availability: 'available',
+    hourlyRate: 300,
+    description: 'CO2 laser cutter for wood, acrylic, paper, and fabric. Cutting area: 610×305mm, 30W laser.',
+    contact: 'info@innovationlabs.ph',
+    image: 'https://images.pexels.com/photos/5691659/pexels-photo-5691659.jpeg',
+    tags: ['laser-cutting', 'engraving', 'prototyping']
+  },
+  {
+    id: 3,
+    name: 'CNC Mill - Haas Mini Mill',
+    type: 'machine',
+    category: 'cnc-mill',
+    owner: 'Precision Works',
+    location: {
+      lat: 14.5648,
+      lng: 120.9932,
+      address: 'Manila, Philippines'
+    },
+    availability: 'busy',
+    hourlyRate: 500,
+    description: 'Precision CNC milling machine for aluminum, steel, and plastic parts. 3-axis machining.',
+    contact: 'orders@precisionworks.ph',
+    image: 'https://images.pexels.com/photos/162553/keys-workshop-mechanic-tools-162553.jpeg',
+    tags: ['cnc', 'machining', 'metal-working']
+  },
+  {
+    id: 4,
+    name: 'PLA Filament - Various Colors',
+    type: 'material',
+    category: 'filament',
+    owner: 'Maker Supply Co.',
+    location: {
+      lat: 14.5695,
+      lng: 120.9822,
+      address: 'Quezon City, Philippines'
+    },
+    availability: 'available',
+    price: 25,
+    unit: 'per kg',
+    description: 'High-quality PLA filament in multiple colors. Diameter: 1.75mm. Perfect for 3D printing.',
+    contact: 'sales@makersupply.ph',
+    image: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg',
+    tags: ['3d-printing', 'filament', 'pla']
+  },
+  {
+    id: 5,
+    name: 'Acrylic Sheets - Clear & Colored',
+    type: 'material',
+    category: 'acrylic',
+    owner: 'Plastic Solutions',
+    location: {
+      lat: 14.5542,
+      lng: 120.9965,
+      address: 'Pasig City, Philippines'
+    },
+    availability: 'available',
+    price: 120,
+    unit: 'per sheet',
+    description: 'High-grade acrylic sheets, 3mm thickness. Available in clear and various colors. Perfect for laser cutting.',
+    contact: 'info@plasticsolutions.ph',
+    image: 'https://images.pexels.com/photos/6069112/pexels-photo-6069112.jpeg',
+    tags: ['laser-cutting', 'acrylic', 'sheets']
+  },
+  {
+    id: 6,
+    name: 'Arduino Starter Kit',
+    type: 'material',
+    category: 'electronics',
+    owner: 'Electronics Hub',
+    location: {
+      lat: 14.5907,
+      lng: 120.9748,
+      address: 'Manila, Philippines'
+    },
+    availability: 'available',
+    price: 1500,
+    unit: 'per kit',
+    description: 'Complete Arduino starter kit with Uno R3, breadboard, sensors, LEDs, resistors, and jumper wires.',
+    contact: 'support@electronicshub.ph',
+    image: 'https://images.pexels.com/photos/163100/circuit-circuit-board-resistor-computer-163100.jpeg',
+    tags: ['electronics', 'arduino', 'prototyping']
+  }
+];
+
+// Global variables
+let map = null;
+let markers = new Map();
+let currentMode = 'blog';
+let activeFilters = new Set();
+let mobileActiveFilters = new Set();
+let mobileBlogFilters = new Set();
+let mobileJobsFilters = new Set();
+let mobileFabricationFilters = new Set();
+let machineFilters = new Set();
+let materialFilters = new Set();
+let remoteOnly = false;
+let searchTerm = '';
+let currentPage = 0;
+let drawingLayer = null;
+let drawControl = null;
+let drawnItems = null;
+let selectedArea = null;
+let communityMembers = []; // Will be populated from Supabase
+let currentScrollY = 0;
+let isMapMinimized = false;
+
+// Initialize PDF.js
 let pdfjsLib = null;
 let pdfWorkerLoaded = false;
 
-// Dynamically load PDF.js only when needed
 async function loadPdfJs() {
   if (!pdfjsLib) {
     try {
@@ -25,31 +202,6 @@ async function loadPdfJs() {
   return pdfjsLib;
 }
 
-// Global state
-let currentMode = 'blog';
-let activeFilters = new Set();
-let activeMachineCategories = new Set();
-let activeMaterialCategories = new Set();
-let remoteOnly = false;
-let searchTerm = '';
-let currentPage = 0;
-let map = null;
-let markers = new Map();
-let currentSlide = 0;
-const totalSlides = 2;
-let popupShown = false;
-let drawnItems = null;
-let drawControl = null;
-let activeSpatialFilterLayer = null;
-let selectedCommunityFilters = new Set();
-let selectedBlogFilters = new Set();
-let selectedJobsFilters = new Set();
-let selectedFabricationFilters = new Set();
-let lastScrollY = 0;
-let scrollDirection = 'up';
-let mapMinimized = false;
-let realCommunityMembers = [];
-
 // Utility functions
 function truncateWords(text, wordCount) {
   const words = text.split(' ');
@@ -57,37 +209,25 @@ function truncateWords(text, wordCount) {
   return words.slice(0, wordCount).join(' ') + '...';
 }
 
-function processCodeBlocks(content) {
-  return content.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
-    const language = lang || 'plaintext';
-    const highlighted = Prism.highlight(
-      code.trim(),
-      Prism.languages[language] || Prism.languages.plaintext,
-      language
-    );
-    return `<pre class="language-${language}"><code class="language-${language}">${highlighted}</code></pre>`;
-  });
-}
-
 // Initialize map
 function initializeMap() {
   if (!map) {
-    // Check if Leaflet is available
     if (typeof L === 'undefined') {
       console.error('Leaflet library not loaded');
       return;
     }
-    
+
     map = L.map('searchMap').setView([14.5995, 120.9842], 12);
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
-    
-    // Initialize drawing functionality
+
+    // Initialize drawing controls if Leaflet Draw is available
     if (typeof L.Draw !== 'undefined') {
       drawnItems = new L.FeatureGroup();
       map.addLayer(drawnItems);
-      
+
       drawControl = new L.Control.Draw({
         edit: {
           featureGroup: drawnItems
@@ -101,9 +241,9 @@ function initializeMap() {
           circlemarker: false
         }
       });
+
       map.addControl(drawControl);
-      
-      // Event listeners for drawing
+
       map.on(L.Draw.Event.CREATED, handleDrawCreated);
       map.on(L.Draw.Event.DELETED, handleDrawDeleted);
       map.on(L.Draw.Event.EDITED, handleDrawEdited);
@@ -113,43 +253,34 @@ function initializeMap() {
   }
 }
 
-// Handle draw events
 function handleDrawCreated(e) {
   const layer = e.layer;
-  
-  // Clear any existing layers to ensure only one spatial filter is active
   drawnItems.clearLayers();
-  
-  // Add the new layer
   drawnItems.addLayer(layer);
-  activeSpatialFilterLayer = layer;
-  
-  // Update results with spatial filter
+  selectedArea = layer;
   updateResults();
 }
 
 function handleDrawDeleted(e) {
-  activeSpatialFilterLayer = null;
+  selectedArea = null;
   updateResults();
 }
 
 function handleDrawEdited(e) {
-  // Update results when shape is edited
   updateResults();
 }
 
-// Check if a point is within the drawn area
-function isPointInDrawnArea(lat, lng) {
-  if (!activeSpatialFilterLayer) return true;
-  
+// Check if point is within selected area
+function isPointInSelectedArea(lat, lng) {
+  if (!selectedArea) return true;
+
   const point = L.latLng(lat, lng);
   
-  if (activeSpatialFilterLayer instanceof L.Rectangle) {
-    return activeSpatialFilterLayer.getBounds().contains(point);
-  } else if (activeSpatialFilterLayer instanceof L.Polygon) {
-    // For polygons, we need to check if point is inside the polygon
-    const latLngs = activeSpatialFilterLayer.getLatLngs()[0];
-    return isPointInPolygon(point, latLngs);
+  if (selectedArea instanceof L.Rectangle) {
+    return selectedArea.getBounds().contains(point);
+  } else if (selectedArea instanceof L.Polygon) {
+    const polygonPoints = selectedArea.getLatLngs()[0];
+    return isPointInPolygon(point, polygonPoints);
   }
   
   return true;
@@ -157,21 +288,21 @@ function isPointInDrawnArea(lat, lng) {
 
 // Point in polygon algorithm
 function isPointInPolygon(point, polygon) {
-  const x = point.lat;
-  const y = point.lng;
+  const lat = point.lat;
+  const lng = point.lng;
   let inside = false;
-  
+
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const xi = polygon[i].lat;
     const yi = polygon[i].lng;
     const xj = polygon[j].lat;
     const yj = polygon[j].lng;
-    
-    if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+
+    if (((yi > lng) !== (yj > lng)) && (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)) {
       inside = !inside;
     }
   }
-  
+
   return inside;
 }
 
@@ -186,31 +317,30 @@ function addMarkersToMap(items, type) {
   clearMapMarkers();
   
   items.forEach(item => {
-    let coords, popupContent, itemId;
+    let coordinates, popupContent, itemId;
     
     if (type === 'jobs' && item.coordinates) {
-      coords = [item.coordinates.lat, item.coordinates.lng];
+      coordinates = [item.coordinates.lat, item.coordinates.lng];
       popupContent = `<strong>${item.title}</strong><br>${item.company}<br>${item.location}`;
       itemId = `${item.title}-${item.company}`;
     } else if (type === 'community' && item.location) {
-      coords = [item.location.lat, item.location.lng];
-      popupContent = `<strong>${item.name}</strong><br>${item.location.address}`;
-      itemId = item.name;
+      // For community members from Supabase, we don't have coordinates
+      // Skip adding markers since we only have text location
+      return;
     } else if (type === 'fabrication' && item.location) {
-      coords = [item.location.lat, item.location.lng];
-      const availability = item.availability === 'available' ? '✅' : '🔴';
-      popupContent = `<strong>${item.name}</strong><br>${item.owner}<br>${item.location.address}<br>${availability} ${item.availability.toUpperCase()}`;
+      coordinates = [item.location.lat, item.location.lng];
+      const statusIcon = item.availability === 'available' ? '✅' : '🔴';
+      popupContent = `<strong>${item.name}</strong><br>${item.owner}<br>${item.location.address}<br>${statusIcon} ${item.availability.toUpperCase()}`;
       itemId = item.name;
     }
     
-    if (coords) {
-      const marker = L.marker(coords)
+    if (coordinates) {
+      const marker = L.marker(coordinates)
         .bindPopup(popupContent)
         .addTo(map);
       
-      // Add click event to highlight corresponding card
       marker.on('click', () => {
-        highlightCard(itemId, type);
+        highlightItem(itemId, type);
       });
       
       markers.set(itemId, marker);
@@ -218,8 +348,8 @@ function addMarkersToMap(items, type) {
   });
 }
 
-// Blog functions
-function getAllBlogTags() {
+// Get unique blog tags
+function getBlogTags() {
   const tags = new Set();
   blogPosts.forEach(post => {
     post.tags.forEach(tag => tags.add(tag));
@@ -227,13 +357,13 @@ function getAllBlogTags() {
   return Array.from(tags);
 }
 
-// Fabrication functions
+// Create fabrication card
 function createFabricationCard(item) {
   const isAvailable = item.availability === 'available';
-  const priceInfo = item.type === 'machine' 
+  const priceText = item.type === 'machine' 
     ? `₱${item.hourlyRate}/hour` 
     : `₱${item.price} ${item.unit}`;
-  
+
   return `
     <div class="card fabrication-card" data-item="${item.name}" data-tags="${item.tags.join(' ')}" data-type="${item.type}" data-category="${item.category}">
       <div class="card-header">
@@ -248,7 +378,7 @@ function createFabricationCard(item) {
         <div class="availability-status ${isAvailable ? 'available' : 'busy'}">
           ${isAvailable ? 'AVAILABLE' : 'BUSY'}
         </div>
-        <div class="price-info">${priceInfo}</div>
+        <div class="price-info">${priceText}</div>
         <p class="description">${item.description}</p>
         <p class="contact-info">Contact: <a href="mailto:${item.contact}">${item.contact}</a></p>
       </div>
@@ -259,6 +389,7 @@ function createFabricationCard(item) {
   `;
 }
 
+// Create blog card
 function createBlogCard(post) {
   const excerpt = post.excerpt || post.content.split('\n')[0];
   const truncatedExcerpt = truncateWords(excerpt, 11);
@@ -288,7 +419,7 @@ function createBlogCard(post) {
   `;
 }
 
-// Job functions
+// Create job card
 function createJobCard(job) {
   const truncatedDescription = truncateWords(job.description, 11);
   const fullDescription = job.description;
@@ -310,143 +441,69 @@ function createJobCard(job) {
       <div class="description-container">
         <p class="description truncated">${truncatedDescription}</p>
         <p class="description full" style="display: none;">${fullDescription}</p>
-        ${!isExpanded ? `<button class="read-more">READ MORE</button>` : ''}
+        ${!isExpanded ? '<button class="read-more">READ MORE</button>' : ''}
       </div>
       <a href="#" class="sqr-btn">APPLY NOW</a>
     </div>
   `;
 }
 
-// Community functions
-function createMemberCard(member) {
-  const processedInfo = {};
-  if (member.website) {
-    const websiteText = member.website.replace('https://', '').replace('http://', '');
-    processedInfo.website = {
-      full: member.website,
-      truncated: truncateWords(websiteText, 11),
-      needsReadMore: websiteText.split(' ').length > 11
-    };
-  }
+// Create community member card
+function createCommunityCard(member) {
+  // Map account_type to category for display
+  const categoryMap = {
+    'person': 'INDIVIDUALS',
+    'business': 'COMPANIES', 
+    'education': 'EDUCATIONAL INSTITUTIONS'
+  };
   
-  if (member.email) {
-    processedInfo.email = {
-      full: member.email,
-      truncated: truncateWords(member.email, 11),
-      needsReadMore: member.email.split(' ').length > 11
-    };
-  }
+  const category = categoryMap[member.account_type] || 'INDIVIDUALS';
+  const displayName = member.full_name || member.username || 'Unknown User';
+  const bio = member.bio || 'No bio available';
+  const location = member.location || '';
   
-  if (member.facebook) {
-    const facebookText = member.facebook.replace('https://facebook.com/', '@');
-    processedInfo.facebook = {
-      full: member.facebook,
-      truncated: truncateWords(facebookText, 11),
-      needsReadMore: facebookText.split(' ').length > 11
-    };
-  }
-
-  const pdfPreview = member.pdfDocument ? `
-    <div class="pdf-preview" data-pdf-url="${member.pdfDocument}">
-      <canvas class="pdf-thumbnail"></canvas>
-      <button class="view-pdf-btn">View Document</button>
-    </div>
-  ` : '';
-
-  // Add View Profile button for individuals
-  const viewProfileButton = member.category === 'INDIVIDUALS' && member.profileId ? `
-    <a href="profile.html?id=${member.profileId}" class="sqr-btn view-profile-btn">VIEW PROFILE</a>
-  ` : '';
-  // Add a visual indicator for dynamic users
-  const dynamicIndicator = member.isDynamic ? `
-    <div style="font-size: 0.7rem; color: var(--primary-color); margin-top: 0.5rem;">
-      ● Active User
-    </div>
-  ` : '';
-
-  // Show bio for dynamic users if available
-  const bioSection = member.isDynamic && member.bio ? `
-    <div class="info-item">
-      <span class="info-label">Bio: </span>
-      <span class="info-content">${truncateWords(member.bio, 15)}</span>
-    </div>
-  ` : '';
+  // Create basic tags based on account type
+  const tags = [member.account_type];
+  
   return `
-    <div class="card member-card" data-member="${member.name}" data-tags="${member.tags.join(' ')}">
+    <div class="card member-card" data-member="${displayName}" data-tags="${tags.join(' ')}" data-category="${category}">
       <div class="card-header">
-        <img src="${member.profileImage}" alt="${member.name}" class="card-logo">
+        <img src="${member.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png'}" alt="${displayName}" class="card-logo">
         <div class="title-info">
-          <h3>${member.name}</h3>
-          ${member.location ? `<p class="member-location">${member.location.address}</p>` : ''}
-          ${dynamicIndicator}
+          <h3>${displayName}</h3>
+          ${member.username ? `<h4>@${member.username}</h4>` : ''}
+          ${location ? `<p class="member-location">${location}</p>` : ''}
         </div>
       </div>
       <div class="member-info">
-        ${bioSection}
-        ${member.website ? `
-          <div class="info-item">
-            <span class="info-label">Website: </span>
-            <span class="info-content">
-              <span class="truncated"><a href="${processedInfo.website.full}" target="_blank">${processedInfo.website.truncated}</a></span>
-              <span class="full" style="display: none;"><a href="${processedInfo.website.full}" target="_blank">${processedInfo.website.full}</a></span>
-              ${processedInfo.website.needsReadMore ? '<button class="read-more-info">READ MORE</button>' : ''}
-            </span>
-          </div>
-        ` : ''}
-        ${member.email ? `
-          <div class="info-item">
-            <span class="info-label">Email: </span>
-            <span class="info-content">
-              <span class="truncated"><a href="mailto:${processedInfo.email.full}">${processedInfo.email.truncated}</a></span>
-              <span class="full" style="display: none;"><a href="mailto:${processedInfo.email.full}">${processedInfo.email.full}</a></span>
-              ${processedInfo.email.needsReadMore ? '<button class="read-more-info">READ MORE</button>' : ''}
-            </span>
-          </div>
-        ` : ''}
-        ${member.phone ? `<p>Phone: <a href="tel:${member.phone}">${member.phone}</a></p>` : ''}
-        ${member.facebook ? `
-          <div class="info-item">
-            <span class="info-label">Facebook: </span>
-            <span class="info-content">
-              <span class="truncated"><a href="${processedInfo.facebook.full}" target="_blank">${processedInfo.facebook.truncated}</a></span>
-              <span class="full" style="display: none;"><a href="${processedInfo.facebook.full}" target="_blank">${processedInfo.facebook.full}</a></span>
-              ${processedInfo.facebook.needsReadMore ? '<button class="read-more-info">READ MORE</button>' : ''}
-            </span>
-          </div>
-        ` : ''}
+        <p class="bio">${bio}</p>
+        <p class="member-since">Member since: ${new Date(member.created_at).toLocaleDateString()}</p>
       </div>
-      ${pdfPreview}
-      ${viewProfileButton}
       <div class="tags">
-        ${member.tags.map(tag => `<span class="tag">${tag.toUpperCase()}</span>`).join('')}
+        ${tags.map(tag => `<span class="tag">${tag.toUpperCase()}</span>`).join('')}
       </div>
+      <a href="profile.html?id=${member.id}" class="sqr-btn view-profile-btn">VIEW PROFILE</a>
     </div>
   `;
 }
 
-// Update functions
-// Highlight functions
-function highlightCard(itemId, type) {
+// Highlight item on map and in results
+function highlightItem(itemId, type) {
   // Remove previous highlights
   document.querySelectorAll('.card.highlighted').forEach(card => {
     card.classList.remove('highlighted');
   });
   
-  let selector;
   if (type === 'jobs') {
-    // For jobs, we need to find by title and company
-    const cards = document.querySelectorAll('#jobsList .card');
-    cards.forEach(card => {
+    document.querySelectorAll('#jobsList .card').forEach(card => {
       const title = card.querySelector('h3').textContent;
       const company = card.querySelector('h4').textContent;
-      const cardId = `${title}-${company}`;
-      if (cardId === itemId) {
+      if (`${title}-${company}` === itemId) {
         card.classList.add('highlighted');
         card.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     });
   } else if (type === 'community') {
-    // For community, find by member name
     const memberCard = document.querySelector(`.member-card[data-member="${itemId}"]`);
     if (memberCard) {
       memberCard.classList.add('highlighted');
@@ -455,15 +512,41 @@ function highlightCard(itemId, type) {
   }
 }
 
-function highlightMarker(itemId) {
+// Focus on map marker
+function focusMapMarker(itemId) {
   const marker = markers.get(itemId);
   if (marker) {
     marker.openPopup();
-    // Center map on marker
     map.setView(marker.getLatLng(), map.getZoom());
   }
 }
 
+// Load community members from Supabase
+async function loadCommunityMembers() {
+  try {
+    console.log('Loading community members from Supabase...');
+    const { data, error } = await db.getAllProfiles();
+    
+    if (error) {
+      console.error('Error loading community members:', error);
+      communityMembers = []; // Fallback to empty array
+      return;
+    }
+    
+    communityMembers = data || [];
+    console.log(`Loaded ${communityMembers.length} community members from Supabase`);
+    
+    // Update community results if we're currently viewing community
+    if (currentMode === 'community') {
+      updateCommunityResults();
+    }
+  } catch (error) {
+    console.error('Failed to load community members:', error);
+    communityMembers = []; // Fallback to empty array
+  }
+}
+
+// Update blog results
 function updateBlogResults() {
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = 
@@ -473,8 +556,8 @@ function updateBlogResults() {
       post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesTags = 
-      (window.innerWidth <= 768 && currentMode === 'blog' ? selectedBlogFilters : activeFilters).size === 0 || 
-      post.tags.some(tag => (window.innerWidth <= 768 && currentMode === 'blog' ? selectedBlogFilters : activeFilters).has(tag));
+      (window.innerWidth <= 768 && currentMode === 'blog' ? mobileBlogFilters : activeFilters).size === 0 || 
+      post.tags.some(tag => (window.innerWidth <= 768 && currentMode === 'blog' ? mobileBlogFilters : activeFilters).has(tag));
 
     return matchesSearch && matchesTags;
   });
@@ -491,12 +574,13 @@ function updateBlogResults() {
 
   const prevBtn = document.querySelector('.prev-btn');
   const nextBtn = document.querySelector('.next-btn');
+  
   prevBtn.disabled = currentPage === 0;
   nextBtn.disabled = currentPage >= totalPages - 1;
 
   document.getElementById('blogGrid').innerHTML = visiblePosts.map(createBlogCard).join('');
   
-  // Add read more event listeners
+  // Add event listeners to read more buttons
   document.querySelectorAll('.read-more-blog').forEach(button => {
     button.addEventListener('click', function(e) {
       e.preventDefault();
@@ -517,41 +601,42 @@ function updateBlogResults() {
     });
   });
 
-  Prism.highlightAll();
+  // Highlight code blocks
+  if (typeof Prism !== 'undefined') {
+    Prism.highlightAll();
+  }
 }
 
-function updateJobsResults() {
-  // First filter by spatial area if one is drawn
-  let spatiallyFilteredJobs = jobs;
-  if (activeSpatialFilterLayer) {
-    spatiallyFilteredJobs = jobs.filter(job => {
-      if (!job.coordinates) return false;
-      return isPointInDrawnArea(job.coordinates.lat, job.coordinates.lng);
-    });
+// Update job results
+function updateJobResults() {
+  let filteredJobs = jobs;
+  
+  // Apply area filter if selected
+  if (selectedArea) {
+    filteredJobs = jobs.filter(job => 
+      job.coordinates ? isPointInSelectedArea(job.coordinates.lat, job.coordinates.lng) : false
+    );
   }
   
-  const filteredJobs = spatiallyFilteredJobs.filter(job => {
-    const matchesSearch = (
+  filteredJobs = filteredJobs.filter(job => {
+    const matchesSearch = 
       job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
       job.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      job.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+      job.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     
     if (!matchesSearch) return false;
     if (remoteOnly && !job.remote) return false;
     
-    const filtersToUse = window.innerWidth <= 768 && currentMode === 'jobs' 
-      ? selectedJobsFilters 
-      : activeFilters;
+    const matchesTags = (window.innerWidth <= 768 && currentMode === 'jobs' ? mobileJobsFilters : activeFilters).size === 0 || 
+                       job.tags.some(tag => (window.innerWidth <= 768 && currentMode === 'jobs' ? mobileJobsFilters : activeFilters).has(tag));
     
-    if (filtersToUse.size === 0) return true;
-    return job.tags.some(tag => filtersToUse.has(tag));
+    return matchesTags;
   });
 
   document.getElementById('jobsList').innerHTML = filteredJobs.map(createJobCard).join('');
   
-  // Add read more event listeners
+  // Add event listeners to read more buttons
   document.querySelectorAll('.read-more').forEach(button => {
     button.addEventListener('click', function(e) {
       const container = this.closest('.description-container');
@@ -570,85 +655,76 @@ function updateJobsResults() {
     });
   });
 
-  // Add click event listeners to job cards for map highlighting
+  // Add click handlers for job cards
   document.querySelectorAll('#jobsList .card').forEach(card => {
     card.addEventListener('click', (e) => {
-      // Don't trigger if clicking on buttons or links
       if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A') return;
       
       const title = card.querySelector('h3').textContent;
       const company = card.querySelector('h4').textContent;
       const itemId = `${title}-${company}`;
       
-      // Highlight this card
       document.querySelectorAll('.card.highlighted').forEach(c => c.classList.remove('highlighted'));
       card.classList.add('highlighted');
-      
-      // Highlight corresponding marker
-      highlightMarker(itemId);
+      focusMapMarker(itemId);
     });
   });
 
-  // Update map with job markers
   addMarkersToMap(filteredJobs, 'jobs');
 }
 
-// Mobile filter popup functionality
+// Initialize mobile filter popup
 function initializeMobileFilterPopup() {
-  const communityFilterTrigger = document.getElementById('communityFilterTrigger');
-  const blogFilterTrigger = document.getElementById('blogFilterTrigger');
-  const jobsFilterTrigger = document.getElementById('jobsFilterTrigger');
-  const fabricationFilterTrigger = document.getElementById('fabricationFilterTrigger');
-  const filterPopup = document.getElementById('mobileFilterPopup');
-  const filterClose = document.getElementById('mobileFilterClose');
-  const filterOptions = document.getElementById('mobileFilterOptions');
-  const filterTitle = document.getElementById('mobileFilterTitle');
-  
+  const communityTrigger = document.getElementById('communityFilterTrigger');
+  const blogTrigger = document.getElementById('blogFilterTrigger');
+  const jobsTrigger = document.getElementById('jobsFilterTrigger');
+  const fabricationTrigger = document.getElementById('fabricationFilterTrigger');
+  const popup = document.getElementById('mobileFilterPopup');
+  const closeBtn = document.getElementById('mobileFilterClose');
+  const optionsContainer = document.getElementById('mobileFilterOptions');
+  const titleElement = document.getElementById('mobileFilterTitle');
+
   let currentFilterMode = '';
 
-  // Show popup functions
-  communityFilterTrigger.addEventListener('click', () => {
+  communityTrigger.addEventListener('click', () => {
     currentFilterMode = 'community';
-    filterTitle.textContent = 'SELECT COMMUNITY FILTERS';
-    showFilterPopup();
+    titleElement.textContent = 'SELECT COMMUNITY FILTERS';
+    showMobileFilterPopup();
   });
 
-  blogFilterTrigger.addEventListener('click', () => {
+  blogTrigger.addEventListener('click', () => {
     currentFilterMode = 'blog';
-    filterTitle.textContent = 'SELECT BLOG FILTERS';
-    showFilterPopup();
+    titleElement.textContent = 'SELECT BLOG FILTERS';
+    showMobileFilterPopup();
   });
 
-  jobsFilterTrigger.addEventListener('click', () => {
+  jobsTrigger.addEventListener('click', () => {
     currentFilterMode = 'jobs';
-    filterTitle.textContent = 'SELECT JOB FILTERS';
-    showFilterPopup();
+    titleElement.textContent = 'SELECT JOB FILTERS';
+    showMobileFilterPopup();
   });
 
-  fabricationFilterTrigger.addEventListener('click', () => {
+  fabricationTrigger.addEventListener('click', () => {
     currentFilterMode = 'fabrication';
-    filterTitle.textContent = 'SELECT FABRICATION FILTERS';
-    showFilterPopup();
+    titleElement.textContent = 'SELECT FABRICATION FILTERS';
+    showMobileFilterPopup();
   });
 
-  function showFilterPopup() {
-    filterPopup.classList.add('active');
-    updateMobileFilterOptions(currentFilterMode);
+  function showMobileFilterPopup() {
+    popup.classList.add('active');
+    populateMobileFilterOptions(currentFilterMode);
   }
 
   function getFilterOptions(mode) {
     switch (mode) {
       case 'community':
         return [
-          { tag: 'company', label: 'COMPANIES' },
-          { tag: 'individual', label: 'INDIVIDUALS' },
-          { tag: 'education', label: 'EDUCATION' },
-          { tag: 'robotics', label: 'ROBOTICS' },
-          { tag: 'software', label: 'SOFTWARE' },
-          { tag: 'hardware', label: 'HARDWARE' }
+          { tag: 'business', label: 'COMPANIES' },
+          { tag: 'person', label: 'INDIVIDUALS' },
+          { tag: 'education', label: 'EDUCATION' }
         ];
       case 'blog':
-        return getAllBlogTags().map(tag => ({ tag, label: tag.toUpperCase() }));
+        return getBlogTags().map(tag => ({ tag, label: tag.toUpperCase() }));
       case 'jobs':
         return [
           { tag: 'robotics', label: 'ROBOTICS' },
@@ -675,90 +751,93 @@ function initializeMobileFilterPopup() {
     }
   }
 
-  function getCurrentFilters(mode) {
+  function getActiveFiltersForMode(mode) {
     switch (mode) {
-      case 'community': return selectedCommunityFilters;
-      case 'blog': return selectedBlogFilters;
-      case 'jobs': return selectedJobsFilters;
-      case 'fabrication': return selectedFabricationFilters;
-      default: return new Set();
+      case 'community':
+        return mobileActiveFilters;
+      case 'blog':
+        return mobileBlogFilters;
+      case 'jobs':
+        return mobileJobsFilters;
+      case 'fabrication':
+        return mobileFabricationFilters;
+      default:
+        return new Set();
     }
   }
 
-  function getCurrentFiltersContainer(mode) {
+  function getSelectedFiltersContainer(mode) {
     switch (mode) {
-      case 'community': return document.getElementById('selectedFilters');
-      case 'blog': return document.getElementById('selectedBlogFilters');
-      case 'jobs': return document.getElementById('selectedJobsFilters');
-      case 'fabrication': return document.getElementById('selectedFabricationFilters');
-      default: return null;
+      case 'community':
+        return document.getElementById('selectedFilters');
+      case 'blog':
+        return document.getElementById('selectedBlogFilters');
+      case 'jobs':
+        return document.getElementById('selectedJobsFilters');
+      case 'fabrication':
+        return document.getElementById('selectedFabricationFilters');
+      default:
+        return null;
     }
   }
 
-  // Update mobile filter options to show current mode's filters
-  function updateMobileFilterOptions(mode) {
+  function populateMobileFilterOptions(mode) {
     const options = getFilterOptions(mode);
-    const currentFilters = getCurrentFilters(mode);
+    const activeFilters = getActiveFiltersForMode(mode);
     
-    filterOptions.innerHTML = options.map(option => `
-      <button class="mobile-filter-option ${currentFilters.has(option.tag) ? 'selected' : ''}" data-tag="${option.tag}">
+    optionsContainer.innerHTML = options.map(option => `
+      <button class="mobile-filter-option ${activeFilters.has(option.tag) ? 'selected' : ''}" data-tag="${option.tag}">
         ${option.label}
       </button>
     `).join('');
   }
 
-  // Update selected filters display
   function updateSelectedFiltersDisplay(mode) {
-    const selectedFiltersContainer = getCurrentFiltersContainer(mode);
-    const currentFilters = getCurrentFilters(mode);
+    const container = getSelectedFiltersContainer(mode);
+    const activeFilters = getActiveFiltersForMode(mode);
     
-    if (!selectedFiltersContainer) return;
-    
-    selectedFiltersContainer.innerHTML = '';
-    
-    currentFilters.forEach(tag => {
-      const filterTag = document.createElement('div');
-      filterTag.className = 'selected-filter-tag';
-      filterTag.innerHTML = `
-        ${tag.toUpperCase()}
-        <button class="remove-filter" data-tag="${tag}" data-mode="${mode}">×</button>
-      `;
-      selectedFiltersContainer.appendChild(filterTag);
-    });
-
-    // Add event listeners to remove buttons
-    selectedFiltersContainer.querySelectorAll('.remove-filter').forEach(button => {
-      button.addEventListener('click', (e) => {
-        const tag = e.target.dataset.tag;
-        const mode = e.target.dataset.mode;
-        const filters = getCurrentFilters(mode);
-        
-        filters.delete(tag);
-        updateSelectedFiltersDisplay(mode);
-        updateResults();
+    if (container) {
+      container.innerHTML = '';
+      activeFilters.forEach(tag => {
+        const filterTag = document.createElement('div');
+        filterTag.className = 'selected-filter-tag';
+        filterTag.innerHTML = `
+          ${tag.toUpperCase()}
+          <button class="remove-filter" data-tag="${tag}" data-mode="${mode}">×</button>
+        `;
+        container.appendChild(filterTag);
       });
-    });
+
+      // Add event listeners to remove buttons
+      container.querySelectorAll('.remove-filter').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const tag = e.target.dataset.tag;
+          const mode = e.target.dataset.mode;
+          getActiveFiltersForMode(mode).delete(tag);
+          updateSelectedFiltersDisplay(mode);
+          updateResults();
+        });
+      });
+    }
   }
 
-  // Initialize all selected filters displays
-  function initializeAllSelectedFiltersDisplays() {
+  function updateAllSelectedFiltersDisplays() {
     updateSelectedFiltersDisplay('community');
     updateSelectedFiltersDisplay('blog');
     updateSelectedFiltersDisplay('jobs');
     updateSelectedFiltersDisplay('fabrication');
   }
 
-  // Handle filter option clicks
-  filterOptions.addEventListener('click', (e) => {
+  optionsContainer.addEventListener('click', (e) => {
     if (e.target.classList.contains('mobile-filter-option')) {
       const tag = e.target.dataset.tag;
-      const currentFilters = getCurrentFilters(currentFilterMode);
+      const activeFilters = getActiveFiltersForMode(currentFilterMode);
       
-      if (currentFilters.has(tag)) {
-        currentFilters.delete(tag);
+      if (activeFilters.has(tag)) {
+        activeFilters.delete(tag);
         e.target.classList.remove('selected');
       } else {
-        currentFilters.add(tag);
+        activeFilters.add(tag);
         e.target.classList.add('selected');
       }
       
@@ -767,445 +846,215 @@ function initializeMobileFilterPopup() {
     }
   });
 
-  // Close popup
-  filterClose.addEventListener('click', () => {
-    filterPopup.classList.remove('active');
+  closeBtn.addEventListener('click', () => {
+    popup.classList.remove('active');
   });
 
-  // Close on background click
-  filterPopup.addEventListener('click', (e) => {
-    if (e.target === filterPopup) {
-      filterPopup.classList.remove('active');
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+      popup.classList.remove('active');
     }
   });
 
-  // Initial display update for all modes
-  initializeAllSelectedFiltersDisplays();
+  // Initialize selected filters display
+  updateAllSelectedFiltersDisplays();
 }
 
+// Update community results
 function updateCommunityResults() {
-  // First filter by spatial area if one is drawn
-  let spatiallyFilteredMembers = realCommunityMembers.length > 0 ? realCommunityMembers : communityMembers;
-  if (activeSpatialFilterLayer) {
-    spatiallyFilteredMembers = spatiallyFilteredMembers.filter(member => {
-      if (!member.location) return false;
-      return isPointInDrawnArea(member.location.lat, member.location.lng);
-    });
-  }
+  let filteredMembers = communityMembers;
   
-  // Use real community members if available, otherwise use static data
-  const membersToShow = window.realCommunityMembers || spatiallyFilteredMembers;
-  
-  // Load real user profiles from database and merge with static data
-  loadAndMergeUserProfiles(spatiallyFilteredMembers);
-}
-
-// Load user profiles from database and merge with community data
-async function loadAndMergeUserProfiles(staticMembers) {
-  try {
-    // Get all profiles from database
-    const { data: profiles, error } = await db.getAllProfiles();
+  // Apply search filter
+  filteredMembers = filteredMembers.filter(member => {
+    const searchableText = [
+      member.full_name || '',
+      member.username || '',
+      member.bio || '',
+      member.account_type || ''
+    ].join(' ').toLowerCase();
     
-    if (!error && profiles) {
-      // Convert database profiles to community member format
-      const dbMembers = profiles.map(profile => ({
-        name: profile.full_name || profile.username || 'Unknown User',
-        category: 'INDIVIDUALS',
-        profileId: profile.id, // Add profile ID for linking
-        website: null,
-        email: null,
-        phone: null,
-        facebook: null,
-        tags: ['individual', 'member'],
-        profileImage: profile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-        location: null // We don't have location data from profiles yet
-      }));
-      
-      // Merge database members with static members
-      const allMembers = [...staticMembers, ...dbMembers];
-      filterAndDisplayMembers(allMembers);
-    } else {
-      // Fallback to static members only
-      filterAndDisplayMembers(staticMembers);
-    }
-  } catch (error) {
-    console.warn('Failed to load user profiles:', error);
-    // Fallback to static members only
-    filterAndDisplayMembers(staticMembers);
-  }
-}
-
-// Filter and display members
-function filterAndDisplayMembers(allMembers) {
-  // Fetch dynamic profiles from Supabase and merge with static data
-  fetchAndMergeProfiles(spatiallyFilteredMembers);
-}
-
-// Fetch profiles from Supabase and merge with static community data
-async function fetchAndMergeProfiles(staticMembers) {
-  try {
-    // Fetch all profiles from Supabase
-    const { data: profiles, error } = await db.getAllProfiles();
-    
-    if (error) {
-      console.warn('Failed to fetch profiles from Supabase:', error);
-      // Fall back to static data only
-      filterAndRenderCommunity(staticMembers);
-      return;
-    }
-    
-    // Create a Map to store unique community members (name as key)
-    const communityMap = new Map();
-    
-    // First, add all static members to the map
-    staticMembers.forEach(member => {
-      communityMap.set(member.name, member);
-    });
-    
-    // Then add/override with dynamic profiles from Supabase
-    if (profiles && profiles.length > 0) {
-      profiles.forEach(profile => {
-        // Create a community member object from the profile
-        const memberName = profile.full_name || profile.username || `User ${profile.id.slice(0, 8)}`;
-        
-        const dynamicMember = {
-          name: memberName,
-          category: 'INDIVIDUALS',
-          website: '', // Not available in profiles table
-          email: '', // Not available in profiles table  
-          phone: '', // Not available in profiles table
-          facebook: '', // Not available in profiles table
-          tags: ['individual', 'user'], // Default tags for dynamic users
-          profileImage: profile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-          pdfDocument: null, // Not available for dynamic users
-          location: null, // Not available in profiles table
-          isDynamic: true, // Flag to identify dynamic members
-          profileId: profile.id, // Store the profile ID for linking
-          bio: profile.bio || ''
-        };
-        
-        // Add to map (this will override static members with same name)
-        communityMap.set(memberName, dynamicMember);
-      });
-    }
-    
-    // Convert map values back to array
-    const mergedMembers = Array.from(communityMap.values());
-    
-    // Apply spatial filtering to merged data
-    let spatiallyFilteredMerged = mergedMembers;
-    if (activeSpatialFilterLayer) {
-      spatiallyFilteredMerged = mergedMembers.filter(member => {
-        if (!member.location) return false;
-        return isPointInDrawnArea(member.location.lat, member.location.lng);
-      });
-    }
-    
-    // Filter and render the merged community data
-    filterAndRenderCommunity(spatiallyFilteredMerged);
-    
-  } catch (error) {
-    console.warn('Error fetching profiles:', error);
-    // Fall back to static data only
-    filterAndRenderCommunity(staticMembers);
-  }
-}
-
-// Filter and render community members
-function filterAndRenderCommunity(members) {
-  const filteredMembers = members.filter(member => {
-    const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         member.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
-    
-    // Use mobile filters if on mobile and community mode, otherwise use desktop filters
-    const filtersToUse = window.innerWidth <= 768 && currentMode === 'community' 
-      ? selectedCommunityFilters 
-      : activeFilters;
-    
-    const matchesFilters = filtersToUse.size === 0 || 
-                          member.tags.some(tag => filtersToUse.has(tag));
-
-    return matchesSearch && matchesFilters;
+    return searchableText.includes(searchTerm.toLowerCase());
   });
+  
+  // Apply tag filters
+  const activeTagFilters = window.innerWidth <= 768 && currentMode === 'community' ? mobileActiveFilters : activeFilters;
+  if (activeTagFilters.size > 0) {
+    filteredMembers = filteredMembers.filter(member => {
+      return activeTagFilters.has(member.account_type);
+    });
+  }
 
-  // Clear all grids
+  // Clear existing content
   document.querySelector('.companies-grid').innerHTML = '';
   document.querySelector('.individuals-grid').innerHTML = '';
   document.querySelector('.education-grid').innerHTML = '';
 
+  // Group members by category and render
   filteredMembers.forEach(member => {
-    let targetGrid;
-    const category = getDisplayCategory(member);
+    const categoryMap = {
+      'business': '.companies-grid',
+      'person': '.individuals-grid', 
+      'education': '.education-grid'
+    };
     
-    if (category === 'COMPANIES') {
-      targetGrid = document.querySelector('.companies-grid');
-    } else if (category === 'INDIVIDUALS') {
-      targetGrid = document.querySelector('.individuals-grid');
-    } else if (category === 'EDUCATIONAL INSTITUTIONS') {
-      targetGrid = document.querySelector('.education-grid');
-    }
+    const gridSelector = categoryMap[member.account_type] || '.individuals-grid';
+    const grid = document.querySelector(gridSelector);
     
-    if (targetGrid) {
-      targetGrid.insertAdjacentHTML('beforeend', createMemberCard(member));
+    if (grid) {
+      grid.insertAdjacentHTML('beforeend', createCommunityCard(member));
     }
   });
 
-  // Add read more event listeners
-  document.querySelectorAll('.read-more-info').forEach(button => {
-    button.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const container = this.closest('.info-content');
-      const truncated = container.querySelector('.truncated');
-      const full = container.querySelector('.full');
-      
-      if (truncated.style.display !== 'none') {
-        truncated.style.display = 'none';
-        full.style.display = 'inline';
-        this.textContent = 'READ LESS';
-      } else {
-        truncated.style.display = 'inline';
-        full.style.display = 'none';
-        this.textContent = 'READ MORE';
-      }
-    });
-  });
-
-  // Initialize PDF previews
-  initializePdfPreviews();
-
-  // Add click event listeners to community cards for map highlighting
+  // Add click handlers for member cards
   document.querySelectorAll('.member-card').forEach(card => {
     card.addEventListener('click', (e) => {
-      // Don't trigger if clicking on buttons or links
       if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button') || e.target.closest('a')) return;
       
       const memberName = card.dataset.member;
-      
-      // Highlight this card
       document.querySelectorAll('.card.highlighted').forEach(c => c.classList.remove('highlighted'));
       card.classList.add('highlighted');
-      
-      // Highlight corresponding marker
-      highlightMarker(memberName);
+      focusMapMarker(memberName);
     });
   });
 
-  // Update map with community markers
-  addMarkersToMap(filteredMembers, 'community');
+  // Since community members from Supabase don't have coordinates, we don't add map markers
+  // addMarkersToMap(filteredMembers, 'community');
 }
 
-// Helper function to get display category from account type
-function getDisplayCategory(member) {
-  if (member.account_type) {
-    const categoryMap = {
-      'person': 'INDIVIDUALS',
-      'business': 'COMPANIES',
-      'education': 'EDUCATIONAL INSTITUTIONS'
-    };
-    return categoryMap[member.account_type] || 'INDIVIDUALS';
-  }
-  return member.category || 'INDIVIDUALS';
-}
-
-// Load real community members from database
-async function loadCommunityMembers() {
-  try {
-    const { data: profiles, error } = await db.getAllProfiles();
-    
-    if (error) {
-      console.warn('Failed to load community members from database:', error);
-      return;
-    }
-    
-    if (profiles && profiles.length > 0) {
-      // Transform database profiles to match expected format
-      realCommunityMembers = profiles.map(profile => ({
-        name: profile.full_name || profile.username || 'Unknown User',
-        category: getDisplayCategory(profile),
-        account_type: profile.account_type,
-        website: '', // These would need to be added to profiles table if needed
-        email: '', // Not exposed for privacy
-        phone: '',
-        facebook: '',
-        tags: [profile.account_type || 'individual'], // Basic tag based on account type
-        profileImage: profile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-        location: {
-          lat: 14.5547 + (Math.random() - 0.5) * 0.1, // Random location around Manila for demo
-          lng: 120.9947 + (Math.random() - 0.5) * 0.1,
-          address: 'Manila, Philippines' // Default location
-        }
-      }));
-      
-      console.log(`Loaded ${realCommunityMembers.length} community members from database`);
-    }
-  } catch (error) {
-    console.warn('Error loading community members:', error);
-  }
-}
-
+// Update fabrication results
 function updateFabricationResults() {
-  // First filter by spatial area if one is drawn
-  let spatiallyFilteredItems = fabricationItems;
-  if (activeSpatialFilterLayer) {
-    spatiallyFilteredItems = fabricationItems.filter(item => {
-      if (!item.location) return false;
-      return isPointInDrawnArea(item.location.lat, item.location.lng);
-    });
+  let filteredItems = fabricationItems;
+  
+  // Apply area filter if selected
+  if (selectedArea) {
+    filteredItems = fabricationItems.filter(item => 
+      item.location ? isPointInSelectedArea(item.location.lat, item.location.lng) : false
+    );
   }
   
-  const filteredItems = spatiallyFilteredItems.filter(item => {
-    const matchesSearch = (
+  filteredItems = filteredItems.filter(item => {
+    const matchesSearch = 
       item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.owner.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+      item.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     
     if (!matchesSearch) return false;
     
-    // Use mobile filters if on mobile and fabrication mode
-    const filtersToUse = window.innerWidth <= 768 && currentMode === 'fabrication' 
-      ? selectedFabricationFilters 
-      : new Set([...activeMachineCategories, ...activeMaterialCategories]);
-    
-    // Filter by machine categories
+    // Apply mobile or desktop filters
     if (window.innerWidth <= 768 && currentMode === 'fabrication') {
-      // Mobile: use selected fabrication filters
-      if (filtersToUse.size > 0) {
-        const matchesCategory = filtersToUse.has(item.category);
-        const matchesTags = item.tags.some(tag => filtersToUse.has(tag));
+      if (mobileFabricationFilters.size > 0) {
+        const matchesCategory = mobileFabricationFilters.has(item.category);
+        const matchesTags = item.tags.some(tag => mobileFabricationFilters.has(tag));
         if (!matchesCategory && !matchesTags) return false;
       }
     } else {
-      // Desktop: use dropdown filters
-      if (activeMachineCategories.size > 0 && item.type === 'machine') {
-        if (!activeMachineCategories.has(item.category)) return false;
-      }
-      
-      if (activeMaterialCategories.size > 0 && item.type === 'material') {
-        if (!activeMaterialCategories.has(item.category)) return false;
-      }
-      
-      if ((activeMachineCategories.size > 0 || activeMaterialCategories.size > 0)) {
-        if (item.type === 'machine' && activeMachineCategories.size === 0) return false;
-        if (item.type === 'material' && activeMaterialCategories.size === 0) return false;
-      }
+      // Desktop filters
+      const combinedFilters = new Set([...machineFilters, ...materialFilters]);
+      if (machineFilters.size > 0 && item.type === 'machine' && !machineFilters.has(item.category)) return false;
+      if (materialFilters.size > 0 && item.type === 'material' && !materialFilters.has(item.category)) return false;
+      if ((machineFilters.size > 0 || materialFilters.size > 0) && 
+          ((item.type === 'machine' && machineFilters.size === 0) || 
+           (item.type === 'material' && materialFilters.size === 0))) return false;
     }
     
     return true;
   });
 
-  // Clear grids
+  // Clear existing content
   document.querySelector('.machines-grid').innerHTML = '';
   document.querySelector('.materials-grid').innerHTML = '';
 
+  // Group items by type and render
   filteredItems.forEach(item => {
-    let targetGrid;
-    if (item.type === 'machine') {
-      targetGrid = document.querySelector('.machines-grid');
-    } else if (item.type === 'material') {
-      targetGrid = document.querySelector('.materials-grid');
-    }
+    const grid = item.type === 'machine' 
+      ? document.querySelector('.machines-grid')
+      : document.querySelector('.materials-grid');
     
-    if (targetGrid) {
-      targetGrid.insertAdjacentHTML('beforeend', createFabricationCard(item));
+    if (grid) {
+      grid.insertAdjacentHTML('beforeend', createFabricationCard(item));
     }
   });
 
-  // Add click event listeners to fabrication cards for map highlighting
+  // Add click handlers for fabrication cards
   document.querySelectorAll('.fabrication-card').forEach(card => {
     card.addEventListener('click', (e) => {
-      // Don't trigger if clicking on buttons or links
       if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button') || e.target.closest('a')) return;
       
       const itemName = card.dataset.item;
-      
-      // Highlight this card
       document.querySelectorAll('.card.highlighted').forEach(c => c.classList.remove('highlighted'));
       card.classList.add('highlighted');
-      
-      // Highlight corresponding marker
-      highlightMarker(itemName);
+      focusMapMarker(itemName);
     });
   });
 
-  // Update map with fabrication markers
   addMarkersToMap(filteredItems, 'fabrication');
 }
 
-// Popup functions
+// Show about popup
 function showAboutPopup() {
-  if (!popupShown) {
-    const popup = document.getElementById('aboutPopup');
-    popup.classList.remove('hidden');
-    popupShown = true;
+  if (!aboutPopupShown) {
+    document.getElementById('aboutPopup').classList.remove('hidden');
+    aboutPopupShown = true;
   }
 }
 
+// Hide about popup
 function hideAboutPopup() {
-  const popup = document.getElementById('aboutPopup');
-  popup.classList.add('hidden');
+  document.getElementById('aboutPopup').classList.add('hidden');
 }
 
-function initializePopup() {
+// Initialize about popup
+function initializeAboutPopup() {
   const closeBtn = document.getElementById('closePopup');
   const popup = document.getElementById('aboutPopup');
   
-  // Close button event
   closeBtn.addEventListener('click', hideAboutPopup);
-  
-  // Close on background click
   popup.addEventListener('click', (e) => {
     if (e.target === popup) {
       hideAboutPopup();
     }
   });
   
-  // Close on escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !popup.classList.contains('hidden')) {
       hideAboutPopup();
     }
   });
+
+  // Carousel functionality
+  const indicators = popup.querySelectorAll('.indicator');
+  const slides = popup.querySelectorAll('.carousel-slide');
   
-  // Popup carousel functionality
-  const popupIndicators = popup.querySelectorAll('.indicator');
-  const popupSlides = popup.querySelectorAll('.carousel-slide');
-  
-  popupIndicators.forEach((indicator, index) => {
+  indicators.forEach((indicator, index) => {
     indicator.addEventListener('click', () => {
-      // Hide all slides
-      popupSlides.forEach(slide => slide.classList.remove('active'));
-      popupIndicators.forEach(ind => ind.classList.remove('active'));
-      
-      // Show selected slide
-      popupSlides[index].classList.add('active');
+      slides.forEach(slide => slide.classList.remove('active'));
+      indicators.forEach(ind => ind.classList.remove('active'));
+      slides[index].classList.add('active');
       indicator.classList.add('active');
     });
   });
-  
-  // Auto-advance popup carousel every 8 seconds
+
+  // Auto-advance carousel
   setInterval(() => {
     if (!popup.classList.contains('hidden')) {
-      const activeIndex = Array.from(popupSlides).findIndex(slide => slide.classList.contains('active'));
-      const nextIndex = (activeIndex + 1) % popupSlides.length;
-      
-      popupSlides.forEach(slide => slide.classList.remove('active'));
-      popupIndicators.forEach(ind => ind.classList.remove('active'));
-      
-      popupSlides[nextIndex].classList.add('active');
-      popupIndicators[nextIndex].classList.add('active');
+      const currentIndex = Array.from(slides).findIndex(slide => slide.classList.contains('active'));
+      const nextIndex = (currentIndex + 1) % slides.length;
+      slides.forEach(slide => slide.classList.remove('active'));
+      indicators.forEach(ind => ind.classList.remove('active'));
+      slides[nextIndex].classList.add('active');
+      indicators[nextIndex].classList.add('active');
     }
   }, 8000);
-  
-  // Show popup on page load
+
+  // Show popup after a delay
   setTimeout(showAboutPopup, 500);
 }
 
-// PDF Preview functionality
-const modal = document.createElement('div');
-modal.className = 'pdf-modal';
-modal.innerHTML = `
+// PDF modal functionality
+const pdfModal = document.createElement('div');
+pdfModal.className = 'pdf-modal';
+pdfModal.innerHTML = `
   <div class="pdf-modal-content">
     <button class="close-modal">&times;</button>
     <button class="nav-btn prev-page">←</button>
@@ -1214,7 +1063,7 @@ modal.innerHTML = `
     <div class="page-info">Page <span id="current-page">1</span> of <span id="total-pages">1</span></div>
   </div>
 `;
-document.body.appendChild(modal);
+document.body.appendChild(pdfModal);
 
 let currentPdf = null;
 let currentPdfPage = 1;
@@ -1247,15 +1096,14 @@ async function showPdfPreview(pdfUrl, pageNumber = 1) {
 
     document.getElementById('current-page').textContent = pageNumber;
     document.getElementById('total-pages').textContent = currentPdf.numPages;
-    modal.style.display = 'flex';
+    pdfModal.style.display = 'flex';
   } catch (error) {
     console.error('Error loading PDF:', error);
   }
 }
 
-// Event listeners for modal navigation
 document.querySelector('.close-modal').addEventListener('click', () => {
-  modal.style.display = 'none';
+  pdfModal.style.display = 'none';
   currentPdf = null;
   currentPdfPage = 1;
 });
@@ -1274,6 +1122,7 @@ document.querySelector('.next-page').addEventListener('click', () => {
   }
 });
 
+// Initialize PDF previews
 function initializePdfPreviews() {
   document.querySelectorAll('.pdf-preview').forEach(async (preview) => {
     const pdfUrl = preview.dataset.pdfUrl;
@@ -1307,36 +1156,39 @@ function initializePdfPreviews() {
   });
 }
 
-// Mode switching
+// Switch between different modes
 function switchMode(mode) {
   currentMode = mode;
-  activeFilters.clear();
-  selectedCommunityFilters.clear();
-  selectedBlogFilters.clear();
-  selectedJobsFilters.clear();
-  selectedFabricationFilters.clear();
-  activeMachineCategories.clear();
-  activeMaterialCategories.clear();
-  currentPage = 0;
   
+  // Clear all filters
+  activeFilters.clear();
+  mobileActiveFilters.clear();
+  mobileBlogFilters.clear();
+  mobileJobsFilters.clear();
+  mobileFabricationFilters.clear();
+  machineFilters.clear();
+  materialFilters.clear();
+  currentPage = 0;
+
   // Update mode buttons
   document.querySelectorAll('.mode-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.mode === mode);
   });
-  
-  // Update filter sections
-  document.querySelectorAll('.filter-content').forEach(section => {
-    section.classList.toggle('active', section.id === `${mode}Filters`);
+
+  // Show/hide filter content
+  document.querySelectorAll('.filter-content').forEach(content => {
+    content.classList.toggle('active', content.id === `${mode}Filters`);
   });
-  
-  // Update results sections
-  document.querySelectorAll('.results-content').forEach(section => {
-    section.classList.toggle('active', section.id === `${mode}Results`);
+
+  // Show/hide results content
+  document.querySelectorAll('.results-content').forEach(content => {
+    content.classList.toggle('active', content.id === `${mode}Results`);
   });
-  
-  // Show/hide map
+
+  // Handle map visibility
   const mapContainer = document.getElementById('mapContainer');
   const mapColumn = document.getElementById('mapColumn');
+  
   if (mode === 'blog') {
     mapContainer.style.display = 'none';
     mapColumn.style.display = 'none';
@@ -1346,53 +1198,45 @@ function switchMode(mode) {
     if (!map) {
       initializeMap();
     }
-    // Trigger map resize
     setTimeout(() => map.invalidateSize(), 100);
   }
-  
-  // Clear active tag filters
+
+  // Clear tag button states
   document.querySelectorAll('.tag-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-  
-  // Clear selected community filters display
-  const filterContainers = [
-    'selectedFilters',
-    'selectedBlogFilters', 
-    'selectedJobsFilters',
-    'selectedFabricationFilters'
-  ];
-  
-  filterContainers.forEach(containerId => {
-    const container = document.getElementById(containerId);
-    if (container) {
-      container.innerHTML = '';
+
+  // Clear selected filters displays
+  ['selectedFilters', 'selectedBlogFilters', 'selectedJobsFilters', 'selectedFabricationFilters'].forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.innerHTML = '';
     }
   });
-  
-  // Clear active tag filters on desktop
+
+  // Clear tag button states
   document.querySelectorAll('.tag-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-  
-  // Update results
+
   updateResults();
 }
 
-// Carousel functions
-function showSlide(slideIndex) {
+// Carousel functionality
+let currentSlide = 0;
+const totalSlides = 2;
+
+function showSlide(index) {
   const slides = document.querySelectorAll('.carousel-slide');
   const indicators = document.querySelectorAll('.indicator');
   
-  // Hide all slides
   slides.forEach(slide => slide.classList.remove('active'));
   indicators.forEach(indicator => indicator.classList.remove('active'));
   
-  // Show current slide
-  slides[slideIndex].classList.add('active');
-  indicators[slideIndex].classList.add('active');
+  slides[index].classList.add('active');
+  indicators[index].classList.add('active');
   
-  currentSlide = slideIndex;
+  currentSlide = index;
 }
 
 function nextSlide() {
@@ -1406,26 +1250,25 @@ function prevSlide() {
 }
 
 function initializeCarousel() {
-  // Carousel navigation buttons
   document.querySelector('.prev-carousel').addEventListener('click', prevSlide);
   document.querySelector('.next-carousel').addEventListener('click', nextSlide);
   
-  // Carousel indicators
   document.querySelectorAll('.indicator').forEach((indicator, index) => {
     indicator.addEventListener('click', () => showSlide(index));
   });
-  
-  // Auto-advance carousel every 8 seconds
+
+  // Auto-advance carousel
   setInterval(nextSlide, 8000);
 }
 
+// Update results based on current mode
 function updateResults() {
   switch (currentMode) {
     case 'blog':
       updateBlogResults();
       break;
     case 'jobs':
-      updateJobsResults();
+      updateJobResults();
       break;
     case 'community':
       updateCommunityResults();
@@ -1436,25 +1279,21 @@ function updateResults() {
   }
 }
 
-// Scroll handler for hiding/showing search interface
+// Handle scroll to hide/show search interface
 function handleScroll() {
-  const currentScrollY = window.scrollY;
+  const scrollY = window.scrollY;
   const searchInterface = document.getElementById('searchInterface');
   
-  if (currentScrollY > lastScrollY && currentScrollY > 100) {
-    // Scrolling down and past threshold
-    scrollDirection = 'down';
+  if (scrollY > currentScrollY && scrollY > 100) {
     searchInterface.classList.add('hidden');
-  } else if (currentScrollY < lastScrollY) {
-    // Scrolling up
-    scrollDirection = 'up';
+  } else if (scrollY < currentScrollY) {
     searchInterface.classList.remove('hidden');
   }
   
-  lastScrollY = currentScrollY;
+  currentScrollY = scrollY;
 }
 
-// Throttled scroll handler for better performance
+// Throttled scroll handler
 function throttledScrollHandler() {
   let ticking = false;
   
@@ -1469,26 +1308,37 @@ function throttledScrollHandler() {
   };
 }
 
-// Initialize
-function initialize() {
-  // Load real community members first
-  loadCommunityMembers();
+// Initialize map toggle functionality
+function initializeMapToggle() {
+  const mapToggle = document.getElementById('mapToggle');
+  const mapColumn = document.getElementById('mapColumn');
   
-  // Initialize map toggle functionality
+  mapToggle.addEventListener('click', () => {
+    isMapMinimized = !isMapMinimized;
+    
+    if (isMapMinimized) {
+      mapColumn.classList.add('minimized');
+      mapToggle.textContent = 'Show Map';
+    } else {
+      mapColumn.classList.remove('minimized');
+      mapToggle.textContent = 'Hide Map';
+      if (map) {
+        setTimeout(() => map.invalidateSize(), 300);
+      }
+    }
+  });
+}
+
+// Main initialization function
+function initializeSearchPage() {
   initializeMapToggle();
-  
-  // Initialize popup
-  initializePopup();
-  
-  // Initialize mobile filter popup
+  initializeAboutPopup();
   initializeMobileFilterPopup();
-  
-  // Initialize carousel
   initializeCarousel();
-  
-  // Populate blog tags
+
+  // Add blog tags
   const blogTagsContainer = document.getElementById('blogTags');
-  getAllBlogTags().forEach(tag => {
+  getBlogTags().forEach(tag => {
     const button = document.createElement('button');
     button.className = 'tag-btn';
     button.textContent = tag.toUpperCase();
@@ -1502,10 +1352,10 @@ function initialize() {
   const machineSelect = document.getElementById('machineSelect');
   const materialSelect = document.getElementById('materialSelect');
 
-  // Mode buttons
-  document.querySelectorAll('.mode-btn').forEach(button => {
-    button.addEventListener('click', () => {
-      switchMode(button.dataset.mode);
+  // Mode switching
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchMode(btn.dataset.mode);
     });
   });
 
@@ -1539,24 +1389,25 @@ function initialize() {
     updateResults();
   });
 
-  // Dropdown change handlers
+  // Machine select
   if (machineSelect) {
     machineSelect.addEventListener('change', (e) => {
       const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
-      activeMachineCategories.clear();
+      machineFilters.clear();
       selectedOptions.forEach(option => {
-        if (option) activeMachineCategories.add(option);
+        if (option) machineFilters.add(option);
       });
       updateResults();
     });
   }
 
+  // Material select
   if (materialSelect) {
     materialSelect.addEventListener('change', (e) => {
       const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
-      activeMaterialCategories.clear();
+      materialFilters.clear();
       selectedOptions.forEach(option => {
-        if (option) activeMaterialCategories.add(option);
+        if (option) materialFilters.add(option);
       });
       updateResults();
     });
@@ -1590,25 +1441,24 @@ function initialize() {
     }, 250);
   });
 
-  // Initial render
+  // Load community members from Supabase
+  loadCommunityMembers();
+
+  // Initialize with blog mode
   switchMode('blog');
-  
-  // Add scroll listener for hiding/showing search interface
+
+  // Add scroll handler
   window.addEventListener('scroll', throttledScrollHandler());
-  
-  // Initialize mobile dropdown collapse functionality
-  initializeMobileDropdowns();
+
+  // Initialize dropdown collapse functionality
+  initializeDropdownCollapse();
 }
 
-// Mobile dropdown collapse functionality
-function initializeMobileDropdowns() {
-  const dropdownFilters = document.querySelectorAll('.dropdown-filter');
-  
-  dropdownFilters.forEach(filter => {
+function initializeDropdownCollapse() {
+  document.querySelectorAll('.dropdown-filter').forEach(filter => {
     const header = filter.querySelector('h3');
     
-    // Set initial collapsed state on mobile
-    function updateCollapseState() {
+    function updateCollapsedState() {
       if (window.innerWidth <= 768) {
         filter.classList.add('collapsed');
       } else {
@@ -1616,13 +1466,9 @@ function initializeMobileDropdowns() {
       }
     }
     
-    // Initial state
-    updateCollapseState();
+    updateCollapsedState();
+    window.addEventListener('resize', updateCollapsedState);
     
-    // Handle window resize
-    window.addEventListener('resize', updateCollapseState);
-    
-    // Handle click to toggle
     header.addEventListener('click', () => {
       if (window.innerWidth <= 768) {
         filter.classList.toggle('collapsed');
@@ -1631,33 +1477,9 @@ function initializeMobileDropdowns() {
   });
 }
 
-// Map toggle functionality
-function initializeMapToggle() {
-  const mapToggle = document.getElementById('mapToggle');
-  const mapColumn = document.getElementById('mapColumn');
-  
-  mapToggle.addEventListener('click', () => {
-    mapMinimized = !mapMinimized;
-    
-    if (mapMinimized) {
-      mapColumn.classList.add('minimized');
-      mapToggle.textContent = 'Show Map';
-    } else {
-      mapColumn.classList.remove('minimized');
-      mapToggle.textContent = 'Hide Map';
-      
-      // Trigger map resize when showing
-      if (map) {
-        setTimeout(() => map.invalidateSize(), 300);
-      }
-    }
-  });
-}
-
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // Check if we're on the search page before initializing
   if (document.getElementById('searchInterface')) {
-    initialize();
+    initializeSearchPage();
   }
 });
