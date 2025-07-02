@@ -2,6 +2,7 @@ import { blogPosts } from './blogData.js';
 import { jobs } from './jobs.js';
 import { communityMembers } from './community.js';
 import { fabricationItems, machineCategories, materialCategories } from './fabrication.js';
+import { db } from './supabase.js';
 
 // Import PDF.js for community member documents
 let pdfjsLib = null;
@@ -351,6 +352,20 @@ function createMemberCard(member) {
     </div>
   ` : '';
 
+  // Add a visual indicator for dynamic users
+  const dynamicIndicator = member.isDynamic ? `
+    <div style="font-size: 0.7rem; color: var(--primary-color); margin-top: 0.5rem;">
+      ● Active User
+    </div>
+  ` : '';
+
+  // Show bio for dynamic users if available
+  const bioSection = member.isDynamic && member.bio ? `
+    <div class="info-item">
+      <span class="info-label">Bio: </span>
+      <span class="info-content">${truncateWords(member.bio, 15)}</span>
+    </div>
+  ` : '';
   return `
     <div class="card member-card" data-member="${member.name}" data-tags="${member.tags.join(' ')}">
       <div class="card-header">
@@ -358,9 +373,11 @@ function createMemberCard(member) {
         <div class="title-info">
           <h3>${member.name}</h3>
           ${member.location ? `<p class="member-location">${member.location.address}</p>` : ''}
+          ${dynamicIndicator}
         </div>
       </div>
       <div class="member-info">
+        ${bioSection}
         ${member.website ? `
           <div class="info-item">
             <span class="info-label">Website: </span>
@@ -770,7 +787,83 @@ function updateCommunityResults() {
     });
   }
   
-  const filteredMembers = spatiallyFilteredMembers.filter(member => {
+  // Fetch dynamic profiles from Supabase and merge with static data
+  fetchAndMergeProfiles(spatiallyFilteredMembers);
+}
+
+// Fetch profiles from Supabase and merge with static community data
+async function fetchAndMergeProfiles(staticMembers) {
+  try {
+    // Fetch all profiles from Supabase
+    const { data: profiles, error } = await db.getAllProfiles();
+    
+    if (error) {
+      console.warn('Failed to fetch profiles from Supabase:', error);
+      // Fall back to static data only
+      filterAndRenderCommunity(staticMembers);
+      return;
+    }
+    
+    // Create a Map to store unique community members (name as key)
+    const communityMap = new Map();
+    
+    // First, add all static members to the map
+    staticMembers.forEach(member => {
+      communityMap.set(member.name, member);
+    });
+    
+    // Then add/override with dynamic profiles from Supabase
+    if (profiles && profiles.length > 0) {
+      profiles.forEach(profile => {
+        // Create a community member object from the profile
+        const memberName = profile.full_name || profile.username || `User ${profile.id.slice(0, 8)}`;
+        
+        const dynamicMember = {
+          name: memberName,
+          category: 'INDIVIDUALS',
+          website: '', // Not available in profiles table
+          email: '', // Not available in profiles table  
+          phone: '', // Not available in profiles table
+          facebook: '', // Not available in profiles table
+          tags: ['individual', 'user'], // Default tags for dynamic users
+          profileImage: profile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
+          pdfDocument: null, // Not available for dynamic users
+          location: null, // Not available in profiles table
+          isDynamic: true, // Flag to identify dynamic members
+          profileId: profile.id, // Store the profile ID for linking
+          bio: profile.bio || ''
+        };
+        
+        // Add to map (this will override static members with same name)
+        communityMap.set(memberName, dynamicMember);
+      });
+    }
+    
+    // Convert map values back to array
+    const mergedMembers = Array.from(communityMap.values());
+    
+    // Apply spatial filtering to merged data
+    let spatiallyFilteredMerged = mergedMembers;
+    if (activeSpatialFilterLayer) {
+      spatiallyFilteredMerged = mergedMembers.filter(member => {
+        if (!member.location) return false;
+        return isPointInDrawnArea(member.location.lat, member.location.lng);
+      });
+    }
+    
+    // Filter and render the merged community data
+    filterAndRenderCommunity(spatiallyFilteredMerged);
+    
+  } catch (error) {
+    console.warn('Error fetching profiles:', error);
+    // Fall back to static data only
+    filterAndRenderCommunity(staticMembers);
+  }
+}
+
+// Filter and render community members
+function filterAndRenderCommunity(members) {
+  const filteredMembers = members.filter(member => {
     const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          member.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
     

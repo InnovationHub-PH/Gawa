@@ -376,11 +376,26 @@ export const db = {
 
   // Search users
   async searchUsers(query) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .or(`username.ilike.%${query}%,full_name.ilike.%${query}%,bio.ilike.%${query}%`)
       .limit(20);
+    return { data, error };
+  },
+
+  // Get all profiles for community directory
+  async getAllProfiles() {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, username, full_name, avatar_url, bio, created_at')
+      .order('created_at', { ascending: false });
     return { data, error };
   }
 };
