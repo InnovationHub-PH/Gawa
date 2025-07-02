@@ -462,8 +462,8 @@ function createCommunityCard(member) {
   const bio = member.bio || 'No bio available';
   const location = member.city || '';
   
-  // Create basic tags based on account type
-  const tags = [member.account_type];
+  // Create basic tags based on account type and categories
+  const tags = [member.account_type || 'person'];
   
   // Add certified badge if applicable
   const certifiedBadge = member.is_certified ? '<span class="profile-certified-badge">CERTIFIED</span>' : '';
@@ -481,6 +481,7 @@ function createCommunityCard(member) {
       <div class="member-info">
         <p class="bio">${bio}</p>
         ${member.website ? `<p class="website"><a href="${member.website}" target="_blank">${member.website}</a></p>` : ''}
+        ${member.phone ? `<p class="phone">Phone: ${member.phone}</p>` : ''}
         <p class="member-since">Member since: ${new Date(member.created_at).toLocaleDateString()}</p>
       </div>
       <div class="tags">

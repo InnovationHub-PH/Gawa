@@ -552,10 +552,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Profile page initializing...');
   initProfilePage();
   initProfileInteractions();
-  
-  // Initialize certification system after a short delay to ensure auth is ready
-  setTimeout(() => {
-    console.log('Initializing certification system...');
-    initializeCertificationSystem();
-  }, 500);
 });

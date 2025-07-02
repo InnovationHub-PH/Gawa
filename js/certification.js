@@ -115,7 +115,9 @@ export class ProfileCertification {
     
     const user = getCurrentUser();
     if (!user) {
-      console.log('No user found for certification initialization');
+      console.log('No user found for certification initialization, retrying...');
+      // Retry after a short delay
+      setTimeout(() => this.initialize(), 500);
       return;
     }
 
@@ -465,6 +467,7 @@ export class ProfileCertification {
   }
 
   showCertificationModal() {
+    console.log('Showing certification modal for step:', this.currentStep);
     const modal = document.createElement('div');
     modal.className = 'certification-modal';
     modal.innerHTML = `
@@ -496,6 +499,9 @@ export class ProfileCertification {
     document.body.appendChild(modal);
     this.initializeModalEvents(modal);
     this.loadCurrentStepData();
+    
+    // Prevent body scroll when modal is open
+    document.body.style.overflow = 'hidden';
   }
 
   initializeModalEvents(modal) {
@@ -504,6 +510,7 @@ export class ProfileCertification {
     const nextBtn = modal.querySelector('.certification-next-btn');
 
     closeBtn.addEventListener('click', () => {
+      document.body.style.overflow = '';
       document.body.removeChild(modal);
     });
 
@@ -522,6 +529,7 @@ export class ProfileCertification {
         } else {
           // Complete certification
           await this.completeCertification();
+          document.body.style.overflow = '';
           document.body.removeChild(modal);
           this.showCertificationCompleteMessage();
         }
@@ -837,6 +845,7 @@ export class ProfileCertification {
   }
 
   showCertificationCompleteMessage() {
+    console.log('Showing certification complete message');
     const message = document.createElement('div');
     message.className = 'certification-complete-message';
     message.innerHTML = `
@@ -852,9 +861,13 @@ export class ProfileCertification {
     
     message.querySelector('.certification-complete-close').addEventListener('click', () => {
       document.body.removeChild(message);
+      document.body.style.overflow = '';
       // Refresh the page to show updated certification status
       window.location.reload();
     });
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
   }
 
   showError(message) {
@@ -883,13 +896,13 @@ export class ProfileCertification {
 
 // Initialize certification system
 export function initializeCertificationSystem() {
+  console.log('Starting certification system initialization...');
   const certification = new ProfileCertification();
   
-  // Initialize immediately since DOM is already loaded when this is called
   const initWidget = async () => {
     const user = getCurrentUser();
     if (!user) {
-      console.log('No current user found for certification widget');
+      console.log('No current user found for certification widget, will retry...');
       return;
     }
     
@@ -897,10 +910,89 @@ export function initializeCertificationSystem() {
     
     await certification.initialize();
     
-    // Add widget to profile page if it exists
-    const profileHeader = document.querySelector('.profile-header');
-    if (profileHeader) {
-      console.log('Profile header found, adding certification widget');
+    // Check if we're on a profile page and if it's the user's own profile
+    const urlParams = new URLSearchParams(window.location.search);
+    const profileId = urlParams.get('id');
+    const isOwnProfile = !profileId || profileId === user.id;
+    
+    if (isOwnProfile) {
+      // Add widget to profile page
+      const profileHeader = document.querySelector('.profile-header');
+      if (profileHeader) {
+        console.log('Profile header found, adding certification widget');
+        const widget = document.createElement('div');
+        widget.innerHTML = certification.createCertificationWidget();
+        profileHeader.appendChild(widget);
+        
+        // Add click handler for certification button
+        const startBtn = widget.querySelector('.certification-start-btn');
+        if (startBtn) {
+          startBtn.addEventListener('click', () => {
+            console.log('Certification button clicked');
+            certification.showCertificationModal();
+          });
+        }
+        
+        console.log('Certification widget added to profile');
+      } else {
+        console.log('Profile header not found, will retry...');
+        // Retry after a short delay in case the profile page is still loading
+        setTimeout(() => {
+          const retryHeader = document.querySelector('.profile-header');
+          if (retryHeader && !retryHeader.querySelector('.certification-widget')) {
+            console.log('Retrying widget creation...');
+            initWidget();
+          }
+        }, 1000);
+      }
+    } else {
+      console.log('Not user\'s own profile, skipping certification widget');
+    }
+  };
+  
+  // Multiple initialization attempts to ensure it works
+  const tryInitialization = (attempt = 1, maxAttempts = 5) => {
+    console.log(`Certification initialization attempt ${attempt}/${maxAttempts}`);
+    
+    if (getCurrentUser()) {
+      console.log('User found, initializing widget');
+      initWidget();
+    } else if (attempt < maxAttempts) {
+      console.log(`No user yet, retrying in ${attempt * 500}ms...`);
+      setTimeout(() => tryInitialization(attempt + 1, maxAttempts), attempt * 500);
+    } else {
+      console.log('Max initialization attempts reached, giving up');
+    }
+  };
+  
+  // Start initialization attempts
+  tryInitialization();
+  
+  return certification;
+}
+
+// Auto-initialize when the module loads if we're on a profile page
+document.addEventListener('DOMContentLoaded', () => {
+  if (window.location.pathname.includes('profile.html')) {
+    console.log('Profile page detected, will initialize certification system');
+    // Small delay to ensure other systems are ready
+    setTimeout(() => {
+      initializeCertificationSystem();
+    }, 100);
+  }
+});
+
+// Also initialize when auth state changes
+if (typeof window !== 'undefined') {
+  window.addEventListener('authStateChanged', () => {
+    if (window.location.pathname.includes('profile.html')) {
+      console.log('Auth state changed on profile page, reinitializing certification');
+      setTimeout(() => {
+        initializeCertificationSystem();
+      }, 100);
+    }
+  });
+}
       const widget = document.createElement('div');
       widget.innerHTML = certification.createCertificationWidget();
       profileHeader.appendChild(widget);

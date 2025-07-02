@@ -39,10 +39,20 @@ export async function initAuth() {
                        (userProfile && !userProfile.username);
       
       showSuccessMessage(isNewUser);
+      
+      // Dispatch custom event for other modules
+      window.dispatchEvent(new CustomEvent('authStateChanged', { 
+        detail: { event, session, user: currentUser, profile: userProfile } 
+      }));
     } else if (event === 'SIGNED_OUT') {
       currentUser = null;
       userProfile = null;
       updateUIForUnauthenticatedUser();
+      
+      // Dispatch custom event for other modules
+      window.dispatchEvent(new CustomEvent('authStateChanged', { 
+        detail: { event, session: null, user: null, profile: null } 
+      }));
     }
   });
 
