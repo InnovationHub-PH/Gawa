@@ -290,33 +290,39 @@ async function handleProfilePictureUpload(e) {
     uploadBtn.textContent = 'UPLOADING...';
     uploadBtn.disabled = true;
     
-    // Check if Supabase is configured
-    if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
-      throw new Error('Supabase not configured. Please set up your environment variables.');
-    }
-    
     // Convert image to base64 as fallback if Supabase Storage isn't available
     const reader = new FileReader();
     reader.onload = async function(event) {
       try {
         const base64Image = event.target.result;
         
-        // Try Supabase Storage first
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
-        
-        const { data: uploadData, error: uploadError } = await db.uploadProfilePicture(fileName, file);
-        
         let avatarUrl;
         
-        if (uploadError) {
-          console.warn('Supabase Storage upload failed, using base64 fallback:', uploadError);
-          // Use base64 as fallback
-          avatarUrl = base64Image;
+        // Check if Supabase is configured for storage
+        if (import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY) {
+          // Try Supabase Storage first
+          const fileExt = file.name.split('.').pop();
+          const fileName = `${currentUser.id}-${Date.now()}.${fileExt}`;
+          
+          const { data: uploadData, error: uploadError } = await db.uploadProfilePicture(fileName, file);
+          
+          if (uploadError) {
+            console.warn('Supabase Storage upload failed, using database fallback:', uploadError);
+            // Save to database as fallback
+            await db.saveProfilePictureRecord(currentUser.id, base64Image, file.type, file.size);
+            avatarUrl = base64Image;
+          } else {
+            // Get public URL from Supabase Storage
+            const { data: urlData } = await db.getProfilePictureUrl(fileName);
+            avatarUrl = urlData?.publicUrl || base64Image;
+            
+            // Also save record to database for consistency
+            await db.saveProfilePictureRecord(currentUser.id, avatarUrl, file.type, file.size);
+          }
         } else {
-          // Get public URL from Supabase Storage
-          const { data: urlData } = await db.getProfilePictureUrl(fileName);
-          avatarUrl = urlData?.publicUrl || base64Image;
+          // No Supabase configuration, save directly to database
+          await db.saveProfilePictureRecord(currentUser.id, base64Image, file.type, file.size);
+          avatarUrl = base64Image;
         }
         
         // Update profile with new avatar URL
@@ -346,7 +352,7 @@ async function handleProfilePictureUpload(e) {
       showError('Failed to read the image file');
       // Reset button state
       const uploadBtn = document.getElementById('uploadProfilePictureBtn');
-      uploadBtn.textContent = originalText;
+      uploadBtn.textContent = 'UPLOAD PICTURE';
       uploadBtn.disabled = false;
     };
     
@@ -359,7 +365,7 @@ async function handleProfilePictureUpload(e) {
     
     // Reset button state
     const uploadBtn = document.getElementById('uploadProfilePictureBtn');
-    uploadBtn.textContent = originalText;
+    uploadBtn.textContent = 'UPLOAD PICTURE';
     uploadBtn.disabled = false;
   }
 }

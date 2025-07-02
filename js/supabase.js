@@ -119,6 +119,36 @@ export const db = {
     }
   },
 
+  // Profile pictures database operations
+  async saveProfilePictureRecord(userId, imageData, contentType, fileSize) {
+    const { data, error } = await supabase
+      .from('profile_pictures')
+      .upsert([{
+        user_id: userId,
+        image_data: imageData,
+        content_type: contentType,
+        file_size: fileSize
+      }]);
+    return { data, error };
+  },
+
+  async getProfilePictureRecord(userId) {
+    const { data, error } = await supabase
+      .from('profile_pictures')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    return { data, error };
+  },
+
+  async deleteProfilePictureRecord(userId) {
+    const { data, error } = await supabase
+      .from('profile_pictures')
+      .delete()
+      .eq('user_id', userId);
+    return { data, error };
+  },
+
   // Posts
   async createPost(postData) {
     const { data, error } = await supabase
