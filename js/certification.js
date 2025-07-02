@@ -114,12 +114,18 @@ export class ProfileCertification {
     if (this.isInitialized) return;
     
     const user = getCurrentUser();
-    if (!user) return;
+    if (!user) {
+      console.log('No user found for certification initialization');
+      return;
+    }
+
+    console.log('Initializing certification for user:', user.id);
 
     try {
       await this.loadCompletionData();
       await this.loadSelectedCategories();
       this.isInitialized = true;
+      console.log('Certification initialization complete');
     } catch (error) {
       console.error('Error initializing certification system:', error);
     }
@@ -127,17 +133,26 @@ export class ProfileCertification {
 
   async loadCompletionData() {
     const user = getCurrentUser();
-    if (!user) return;
+    if (!user) {
+      console.log('No user found for loading completion data');
+      return;
+    }
 
     try {
       const { data, error } = await db.getProfileCompletionSteps(user.id);
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading completion steps:', error);
+        // Don't throw error, just initialize with empty data
+        this.completionData = {};
+        return;
+      }
 
       this.completionData = {};
       if (data) {
         data.forEach(step => {
           this.completionData[step.step_number] = step.is_completed;
         });
+        console.log('Loaded completion data:', this.completionData);
       }
 
       // Find current step (first incomplete step)
@@ -151,27 +166,39 @@ export class ProfileCertification {
       if (this.getCompletionPercentage() === 100) {
         this.currentStep = this.totalSteps;
       }
+      console.log('Current step:', this.currentStep, 'Completion:', this.getCompletionPercentage() + '%');
     } catch (error) {
       console.error('Error loading completion data:', error);
+      this.completionData = {};
     }
   }
 
   async loadSelectedCategories() {
     const user = getCurrentUser();
-    if (!user) return;
+    if (!user) {
+      console.log('No user found for loading categories');
+      return;
+    }
 
     try {
       const { data, error } = await db.getProfileCategories(user.id);
-      if (error) throw error;
+      if (error) {
+        console.error('Error loading categories:', error);
+        // Don't throw error, just initialize with empty data
+        this.selectedCategories.clear();
+        return;
+      }
 
       this.selectedCategories.clear();
       if (data) {
         data.forEach(category => {
           this.selectedCategories.add(`${category.category_group}:${category.category_name}`);
         });
+        console.log('Loaded categories:', this.selectedCategories.size);
       }
     } catch (error) {
       console.error('Error loading selected categories:', error);
+      this.selectedCategories.clear();
     }
   }
 
@@ -257,6 +284,8 @@ export class ProfileCertification {
   createCertificationWidget() {
     const percentage = this.getCompletionPercentage();
     const isCertified = percentage === 100;
+    
+    console.log('Creating certification widget - Percentage:', percentage, 'Certified:', isCertified);
     
     return `
       <div class="certification-widget">
@@ -856,16 +885,22 @@ export class ProfileCertification {
 export function initializeCertificationSystem() {
   const certification = new ProfileCertification();
   
-  // Add certification widget to profile pages
-  document.addEventListener('DOMContentLoaded', async () => {
+  // Initialize immediately since DOM is already loaded when this is called
+  const initWidget = async () => {
     const user = getCurrentUser();
-    if (!user) return;
+    if (!user) {
+      console.log('No current user found for certification widget');
+      return;
+    }
+    
+    console.log('Initializing certification widget for user:', user.id);
     
     await certification.initialize();
     
     // Add widget to profile page if it exists
     const profileHeader = document.querySelector('.profile-header');
     if (profileHeader) {
+      console.log('Profile header found, adding certification widget');
       const widget = document.createElement('div');
       widget.innerHTML = certification.createCertificationWidget();
       profileHeader.appendChild(widget);
@@ -874,11 +909,29 @@ export function initializeCertificationSystem() {
       const startBtn = widget.querySelector('.certification-start-btn');
       if (startBtn) {
         startBtn.addEventListener('click', () => {
+          console.log('Certification button clicked');
           certification.showCertificationModal();
         });
       }
+      
+      console.log('Certification widget added to profile');
+    } else {
+      console.log('Profile header not found');
     }
-  });
+  };
+  
+  // Try to initialize immediately, or wait for auth if needed
+  if (getCurrentUser()) {
+    console.log('User already available, initializing widget immediately');
+    initWidget();
+  } else {
+    console.log('No user yet, waiting for auth...');
+    // Wait for auth to be ready
+    setTimeout(() => {
+      console.log('Retrying widget initialization after delay');
+      initWidget();
+    }, 1000);
+  }
   
   return certification;
 }

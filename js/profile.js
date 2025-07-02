@@ -549,7 +549,13 @@ function showSuccess(message) {
 
 // Auto-initialize profile page when module loads
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('Profile page initializing...');
   initProfilePage();
   initProfileInteractions();
-  initializeCertificationSystem();
+  
+  // Initialize certification system after a short delay to ensure auth is ready
+  setTimeout(() => {
+    console.log('Initializing certification system...');
+    initializeCertificationSystem();
+  }, 500);
 });
