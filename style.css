@@ -2505,7 +2505,17 @@ code[class*="language-"] {
 
 /* Auth hidden class to prevent flash */
 .auth-hidden {
-  display: none !important;
+  display: none;
+}
+
+/* Ensure auth button is visible by default */
+#authButton {
+  display: flex;
+}
+
+/* Hide user menu by default */
+#userMenu {
+  display: none;
 }
 
 @media (max-width: 768px) {

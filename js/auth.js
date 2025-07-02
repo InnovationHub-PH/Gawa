@@ -3,17 +3,27 @@ import { auth, db } from './supabase.js';
 // Global auth state
 let currentUser = null;
 let userProfile = null;
+let authInitialized = false;
 
 // Initialize authentication
 export async function initAuth() {
-  // Check for existing session
-  currentUser = await auth.getCurrentUser();
-  
-  if (currentUser) {
-    await loadUserProfile();
-    updateUIForAuthenticatedUser();
-  } else {
+  try {
+    // Check for existing session
+    currentUser = await auth.getCurrentUser();
+    
+    if (currentUser) {
+      await loadUserProfile();
+      updateUIForAuthenticatedUser();
+    } else {
+      updateUIForUnauthenticatedUser();
+    }
+    
+    authInitialized = true;
+  } catch (error) {
+    console.warn('Auth initialization failed:', error);
+    // Still show UI elements even if auth fails
     updateUIForUnauthenticatedUser();
+    authInitialized = true;
   }
 
   // Listen for auth state changes
@@ -37,6 +47,14 @@ export async function initAuth() {
 // Auto-initialize auth when module loads
 document.addEventListener('DOMContentLoaded', async () => {
   await initAuth();
+  
+  // Fallback: ensure UI is updated after a short delay
+  setTimeout(() => {
+    if (!authInitialized || (!currentUser && document.getElementById('authButton')?.classList.contains('auth-hidden'))) {
+      console.log('Running fallback UI update');
+      forceUIUpdate();
+    }
+  }, 1000);
 });
 
 // Load user profile
@@ -83,16 +101,32 @@ function updateUIForAuthenticatedUser() {
 
 // Update UI for unauthenticated user
 function updateUIForUnauthenticatedUser() {
+  console.log('Updating UI for unauthenticated user');
   const authButton = document.getElementById('authButton');
   const userMenu = document.getElementById('userMenu');
   
   if (authButton) {
     authButton.classList.remove('auth-hidden');
     authButton.style.display = 'flex';
+    console.log('Auth button should now be visible');
   }
   
   if (userMenu) {
     userMenu.classList.add('auth-hidden');
+  }
+}
+
+// Force UI update - fallback function
+function forceUIUpdate() {
+  console.log('Force updating UI elements');
+  const authButton = document.getElementById('authButton');
+  const userMenu = document.getElementById('userMenu');
+  
+  if (authButton && !currentUser) {
+    authButton.classList.remove('auth-hidden');
+    authButton.style.display = 'flex';
+  } else if (userMenu && currentUser) {
+    updateUIForAuthenticatedUser();
   }
 }
 

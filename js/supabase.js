@@ -6,15 +6,21 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Check if environment variables are available
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.warn('Supabase environment variables not configured. Some features may not work.');
+  console.warn('Supabase environment variables not configured. Auth will work in fallback mode.');
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create client with fallback for missing env vars
+export const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 // Auth helper functions
 export const auth = {
   // Sign up with email and password
   async signUp(email, password, userData = {}) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -27,6 +33,9 @@ export const auth = {
 
   // Sign in with email and password
   async signIn(email, password) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -36,18 +45,27 @@ export const auth = {
 
   // Sign out
   async signOut() {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
     const { error } = await supabase.auth.signOut();
     return { error };
   },
 
   // Get current user
   async getCurrentUser() {
+    if (!supabase) {
+      return null;
+    }
     const { data: { user } } = await supabase.auth.getUser();
     return user;
   },
 
   // Listen to auth changes
   onAuthStateChange(callback) {
+    if (!supabase) {
+      return () => {}; // Return empty unsubscribe function
+    }
     return supabase.auth.onAuthStateChange(callback);
   }
 };
@@ -56,6 +74,9 @@ export const auth = {
 export const db = {
   // User profiles
   async createProfile(userId, profileData) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
     const { data, error } = await supabase
       .from('profiles')
       .insert([{ id: userId, ...profileData }]);
@@ -63,6 +84,9 @@ export const db = {
   },
 
   async getProfile(userId) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
@@ -72,6 +96,9 @@ export const db = {
   },
 
   async updateProfile(userId, updates) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
     const { data, error } = await supabase
       .from('profiles')
       .update(updates)
