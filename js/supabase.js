@@ -393,10 +393,15 @@ export const db = {
       console.warn('Supabase not configured, returning empty array');
       return { data: [], error: null };
     }
-    // Only return certified profiles for public display
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, account_type, created_at, is_certified, city')
+      .select(`
+        id, username, full_name, avatar_url, bio, account_type, created_at, is_certified, city,
+        profile_categories (
+          category_group,
+          category_name
+        )
+      `)
       .eq('is_certified', true)
       .order('created_at', { ascending: false });
     return { data, error };
@@ -517,11 +522,30 @@ export const db = {
     }
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, bio, account_type, created_at, is_certified, city, latitude, longitude')
+      .select(`
+        id, username, full_name, avatar_url, bio, account_type, created_at, is_certified, city, latitude, longitude,
+        profile_categories (
+          category_group,
+          category_name
+        )
+      `)
       .eq('is_certified', true)
       .not('latitude', 'is', null)
       .not('longitude', 'is', null)
       .order('created_at', { ascending: false });
+    return { data, error };
+  },
+
+  // Get all unique categories for filter generation
+  async getAllCategories() {
+    if (!supabase) {
+      console.warn('Supabase not configured, returning empty array');
+      return { data: [], error: null };
+    }
+    const { data, error } = await supabase
+      .from('profile_categories')
+      .select('category_group, category_name')
+      .order('category_group, category_name');
     return { data, error };
   }
 };
