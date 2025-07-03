@@ -765,7 +765,10 @@ function initializeMobileFilterPopup() {
         return mobileBlogFilters;
       case 'jobs':
         return mobileJobsFilters;
-      case 'fabrication':
+      case 'fabricati
+    }
+  }
+}on':
         return mobileFabricationFilters;
       default:
         return new Set();
