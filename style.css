@@ -466,6 +466,10 @@ h2 {
   align-items: center;
   padding: 1.5rem;
   border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  background: var(--bg-color);
+  z-index: 1;
 }
 
 .auth-modal-header h3 {
@@ -2377,6 +2381,7 @@ code[class*="language-"] {
   align-items: center;
   padding: 2rem;
   overflow-y: auto;
+  overflow-y: auto;
 }
 
 .modal.hidden {
@@ -2390,6 +2395,9 @@ code[class*="language-"] {
   width: 100%;
   position: relative;
   padding: 0;
+  max-height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
   max-height: calc(100vh - 4rem);
   display: flex;
   flex-direction: column;
@@ -2435,6 +2443,7 @@ code[class*="language-"] {
 .edit-profile-form {
   padding: 2rem;
   overflow-y: auto;
+  overflow-y: auto;
 }
 
 .rating-comment {
@@ -2460,6 +2469,80 @@ code[class*="language-"] {
 }
 
 /* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .modal {
+    padding: 1rem;
+    align-items: flex-start;
+  }
+  
+  .modal-content {
+    max-height: calc(100vh - 2rem);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Category selection styles */
+.categories-container {
+  margin-top: 1rem;
+  border: 2px solid var(--border-color);
+  padding: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.category-group {
+  margin-bottom: 1.5rem;
+}
+
+.category-group-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.category-items {
+  margin-top: 0.5rem;
+  margin-left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+/* Location preview styles */
+.location-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 2px solid var(--border-color);
+  background-color: var(--frame-bg-color);
+}
+
+.location-preview h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.location-preview small {
+  display: block;
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+/* Privacy options */
+.privacy-options {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
 @media (max-width: 768px) {
   .content-layout {
     flex-direction: column;

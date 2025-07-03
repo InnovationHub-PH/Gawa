@@ -1,8 +1,10 @@
 import { db, auth } from './supabase.js';
 import { getCurrentUser, getUserProfile } from './auth.js';
+import { PROFILE_CATEGORIES, geocodingService } from './certification.js';
 
 // Global certification instance
 let certification = null;
+let selectedCategories = new Set();
 
 // Initialize profile page
 export function initProfilePage() {
@@ -486,6 +488,7 @@ function updateStarSelection(stars, rating) {
 
 // Show edit profile modal
 function showEditProfileModal() {
+  selectedCategories = new Set();
   const modal = document.getElementById('editProfileModal');
   const userProfile = getUserProfile();
   
@@ -495,6 +498,7 @@ function showEditProfileModal() {
   document.getElementById('editBio').value = userProfile.bio || '';
   document.getElementById('editLocation').value = userProfile.location || '';
   document.getElementById('editWebsite').value = userProfile.website || '';
+  
   
   // Show certification section if user is certified
   const certificationSection = document.getElementById('editProfileCertificationSection');
@@ -515,8 +519,184 @@ function showEditProfileModal() {
     if (privacyRadio) {
       privacyRadio.checked = true;
     }
+    
+    // Generate categories UI
+    generateCategoriesUI();
+    
+    // Load user's selected categories
+    loadUserCategories(userProfile.id);
+    
+    // Initialize location preview
+    initializeLocationPreview();
   } else if (certificationSection) {
     certificationSection.style.display = 'none';
+  }
+  
+  modal.classList.remove('hidden');
+}
+
+// Generate categories UI
+function generateCategoriesUI() {
+  const categoriesContainer = document.getElementById('editProfileCategories');
+  if (!categoriesContainer) return;
+  
+  let categoriesHtml = '';
+  
+  Object.entries(PROFILE_CATEGORIES).forEach(([group, categories]) => {
+    categoriesHtml += `
+      <div class="category-group">
+        <h4>
+          <label class="category-group-label">
+            <input type="checkbox" class="category-group-checkbox" data-group="${group}">
+            <strong>${group}</strong>
+          </label>
+        </h4>
+        <div class="category-items">
+          ${categories.map(category => `
+            <label class="category-item">
+              <input type="checkbox" class="category-checkbox" data-group="${group}" data-category="${category}">
+              <span>${category}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  });
+  
+  categoriesContainer.innerHTML = categoriesHtml;
+  
+  // Add event listeners for category checkboxes
+  initializeCategoryEvents();
+}
+
+// Initialize category events
+function initializeCategoryEvents() {
+  const modal = document.getElementById('editProfileModal');
+  
+  // Group checkbox handlers
+  modal.addEventListener('change', (e) => {
+    if (e.target.classList.contains('category-group-checkbox')) {
+      const group = e.target.dataset.group;
+      const isChecked = e.target.checked;
+      const categoryCheckboxes = modal.querySelectorAll(`input[data-group="${group}"].category-checkbox`);
+      
+      categoryCheckboxes.forEach(checkbox => {
+        checkbox.checked = isChecked;
+        updateCategorySelection(checkbox);
+      });
+    } else if (e.target.classList.contains('category-checkbox')) {
+      updateCategorySelection(e.target);
+      updateGroupCheckbox(e.target.dataset.group);
+    }
+  });
+}
+
+// Load user categories
+async function loadUserCategories(userId) {
+  try {
+    const { data, error } = await db.getProfileCategories(userId);
+    if (error) throw error;
+    
+    if (data && data.length > 0) {
+      // Clear previous selections
+      selectedCategories.clear();
+      
+      // Add each category to the set
+      data.forEach(cat => {
+        const categoryKey = `${cat.category_group}:${cat.category_name}`;
+        selectedCategories.add(categoryKey);
+        
+        // Check the corresponding checkbox
+        const checkbox = document.querySelector(`input[data-group="${cat.category_group}"][data-category="${cat.category_name}"]`);
+        if (checkbox) {
+          checkbox.checked = true;
+          updateGroupCheckbox(cat.category_group);
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Error loading user categories:', error);
+  }
+}
+
+// Update category selection
+function updateCategorySelection(checkbox) {
+  const categoryKey = `${checkbox.dataset.group}:${checkbox.dataset.category}`;
+  if (checkbox.checked) {
+    selectedCategories.add(categoryKey);
+  } else {
+    selectedCategories.delete(categoryKey);
+  }
+}
+
+// Update group checkbox state
+function updateGroupCheckbox(group) {
+  const modal = document.getElementById('editProfileModal');
+  const groupCheckbox = modal.querySelector(`input[data-group="${group}"].category-group-checkbox`);
+  const categoryCheckboxes = modal.querySelectorAll(`input[data-group="${group}"].category-checkbox`);
+  const checkedCount = Array.from(categoryCheckboxes).filter(cb => cb.checked).length;
+  
+  if (groupCheckbox) {
+    groupCheckbox.checked = checkedCount > 0;
+    groupCheckbox.indeterminate = checkedCount > 0 && checkedCount < categoryCheckboxes.length;
+  }
+}
+
+// Initialize location preview
+function initializeLocationPreview() {
+  const cityInput = document.getElementById('editCity');
+  const addressInput = document.getElementById('editAddress');
+  const preview = document.getElementById('locationPreview');
+  const previewText = document.getElementById('locationPreviewText');
+  
+  if (!cityInput || !addressInput || !preview || !previewText) return;
+  
+  let debounceTimer;
+  
+  const updatePreview = async () => {
+    const city = cityInput.value.trim();
+    const address = addressInput.value.trim();
+    
+    if (!city) {
+      preview.style.display = 'none';
+      return;
+    }
+    
+    // Clear previous timer
+    clearTimeout(debounceTimer);
+    
+    // Debounce the geocoding request
+    debounceTimer = setTimeout(async () => {
+      try {
+        const result = await geocodingService.geocodeLocation(city, address);
+        
+        if (result) {
+          preview.style.display = 'block';
+          previewText.innerHTML = `
+            <strong>📍 ${result.display_name}</strong><br>
+            <small>Coordinates: ${result.latitude.toFixed(4)}, ${result.longitude.toFixed(4)}</small><br>
+            <small>Source: ${result.source === 'nominatim' ? 'OpenStreetMap' : 'Built-in database'}</small>
+          `;
+        } else {
+          preview.style.display = 'block';
+          previewText.innerHTML = `
+            <strong>⚠️ Location not found</strong><br>
+            <small>We couldn't find coordinates for this location. You can still save it, but it won't appear on the map.</small>
+          `;
+        }
+      } catch (error) {
+        console.error('Preview geocoding error:', error);
+        preview.style.display = 'none';
+      }
+    }, 1000); // 1 second debounce
+  };
+  
+  cityInput.addEventListener('input', updatePreview);
+  addressInput.addEventListener('input', updatePreview);
+  
+  // Initial preview if fields are already filled
+  if (cityInput.value.trim()) {
+    updatePreview();
   }
   
   modal.classList.remove('hidden');
@@ -537,31 +717,42 @@ function initEditProfileModal() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const currentUser = getCurrentUser();
-    if (!currentUser) return;
-    
-    const formData = new FormData(e.target);
-    const updates = {
-      full_name: formData.get('fullName'),
-      username: formData.get('username'),
-      bio: formData.get('bio'),
-      location: formData.get('location'),
-      website: formData.get('website')
-    };
-    
-    // Add certification fields if user is certified
-    const userProfile = getUserProfile();
-    if (userProfile.is_certified) {
-      updates.city = formData.get('city') || null;
-      updates.address = formData.get('address') || null;
-      updates.phone = formData.get('phone') || null;
-      updates.facebook = formData.get('facebook') || null;
-      updates.instagram = formData.get('instagram') || null;
-      updates.linkedin = formData.get('linkedin') || null;
-      updates.address_privacy = formData.get('editAddressPrivacy') || 'private';
-    }
-    
     try {
+      const currentUser = getCurrentUser();
+      if (!currentUser) return;
+      
+      const formData = new FormData(e.target);
+      const updates = {
+        full_name: formData.get('fullName'),
+        username: formData.get('username'),
+        bio: formData.get('bio'),
+        location: formData.get('location'),
+        website: formData.get('website')
+      };
+      
+      // Add certification fields if user is certified
+      const userProfile = getUserProfile();
+      if (userProfile.is_certified) {
+        updates.city = formData.get('city') || null;
+        updates.address = formData.get('address') || null;
+        updates.phone = formData.get('phone') || null;
+        updates.facebook = formData.get('facebook') || null;
+        updates.instagram = formData.get('instagram') || null;
+        updates.linkedin = formData.get('linkedin') || null;
+        updates.address_privacy = formData.get('editAddressPrivacy') || 'private';
+        
+        // Update categories
+        await updateUserCategories(currentUser.id);
+        
+        // Update location coordinates
+        const city = formData.get('city');
+        const address = formData.get('address');
+        if (city) {
+          await geocodeAndUpdateLocation(currentUser.id, city, address);
+        }
+      }
+    
+      // Update profile
       await db.updateProfile(currentUser.id, updates);
       modal.classList.add('hidden');
       showSuccess('Profile updated successfully');
@@ -574,6 +765,57 @@ function initEditProfileModal() {
       showError('Failed to update profile');
     }
   });
+}
+
+// Update user categories
+async function updateUserCategories(userId) {
+  try {
+    // Clear existing categories
+    await db.clearProfileCategories(userId);
+    
+    // Save new categories
+    if (selectedCategories.size > 0) {
+      const categoriesToSave = Array.from(selectedCategories).map(categoryKey => {
+        const [group, name] = categoryKey.split(':');
+        return { category_group: group, category_name: name };
+      });
+      
+      await db.saveProfileCategories(userId, categoriesToSave);
+    }
+  } catch (error) {
+    console.error('Error updating categories:', error);
+    throw error;
+  }
+}
+
+// Geocode and update location
+async function geocodeAndUpdateLocation(userId, city, address) {
+  try {
+    console.log('Geocoding location:', { city, address });
+    
+    // Use the geocoding service to get coordinates
+    const result = await geocodingService.geocodeLocation(city, address);
+    
+    if (result) {
+      console.log('Geocoding successful:', result);
+      
+      // Update the profile with coordinates
+      await db.updateProfileLocation(userId, {
+        city,
+        address: address || null,
+        latitude: result.latitude,
+        longitude: result.longitude,
+        location_type: result.type
+      });
+      
+      console.log('Location updated with coordinates');
+    } else {
+      console.log('Geocoding failed, location saved without coordinates');
+    }
+  } catch (error) {
+    console.error('Error geocoding location:', error);
+    // Don't throw error - location is still saved without coordinates
+  }
 }
 
 // Utility functions
