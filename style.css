@@ -349,6 +349,7 @@ h2 {
 #authButton {
   background: none;
   cursor: pointer;
+  padding: 0 1rem;
   transition: all 0.3s ease;
   font-family: inherit;
   font-size: inherit;
