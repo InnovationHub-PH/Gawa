@@ -349,8 +349,10 @@ h2 {
 #authButton {
   background: none;
   cursor: pointer;
-  font-family: var(--font-mono);
   transition: all 0.3s ease;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
 }
 
 #authButton:hover {
@@ -365,7 +367,6 @@ h2 {
   gap: 0.5rem;
   height: var(--nav-element-height);
   color: var(--text-color);
-  font-family: var(--font-mono);
   cursor: pointer;
   transition: all 0.3s ease;
   text-decoration: none;
@@ -374,6 +375,9 @@ h2 {
   border-right: none;
   text-align: center;
   justify-content: center;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
 }
 
 .user-menu:hover {
