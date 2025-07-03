@@ -1,9 +1,6 @@
 import { db } from './supabase.js';
 import { blogPosts } from './blogData.js';
 
-// Temporarily disable popup
-const DISABLE_POPUP = true;
-
 // Sample job data
 const jobs = [
   {
@@ -951,11 +948,6 @@ function initializeSearchInterface() {
 
   // Initialize with blog mode
   switchMode('blog');
-  
-  // Temporarily disable popup initialization
-  if (!DISABLE_POPUP) {
-    // initializePopup(); // Commented out to disable popup
-  }
 }
 
 // Mobile filters
