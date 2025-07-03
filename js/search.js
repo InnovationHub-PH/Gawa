@@ -336,6 +336,7 @@ function getActiveFiltersForMode(mode) {
 }
 
 function getMobileFiltersForMode(mode) {
+}
 function getFiltersForMode(mode) {
   const jobsFilters = [
     { tag: 'robotics', label: 'ROBOTICS' },
