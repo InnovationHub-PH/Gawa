@@ -756,15 +756,6 @@ function initializeMobileFilterPopup() {
     }
   }
 }
-    }
-  }
-}     { tag: 'wood', label: 'WOOD' },
-          { tag: 'electronics', label: 'ELECTRONICS' }
-        ];
-      default:
-        return [];
-    }
-  }
 
   function getActiveFiltersForMode(mode) {
     switch (mode) {
