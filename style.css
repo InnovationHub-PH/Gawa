@@ -355,6 +355,8 @@ h2 {
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 #authButton:hover {
