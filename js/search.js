@@ -45,70 +45,6 @@ const jobs = [
   }
 ];
 
-// Community member data
-const communityMembers = [
-  {
-    name: 'TechLabs Manila',
-    category: 'COMPANIES',
-    website: 'https://techlabs.ph',
-    email: 'contact@techlabs.ph',
-    phone: '+63 2 8123 4567',
-    facebook: 'https://facebook.com/techlabsmanila',
-    tags: ['company', 'robotics', 'software'],
-    profileImage: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: {
-      lat: 14.5547,
-      lng: 120.9947,
-      address: 'Makati City, Philippines'
-    }
-  },
-  {
-    name: 'RoboCore Solutions',
-    category: 'COMPANIES',
-    website: 'https://robocore.ph',
-    email: 'info@robocore.ph',
-    phone: '+63 2 8234 5678',
-    facebook: 'https://facebook.com/robocore',
-    tags: ['company', 'robotics', 'hardware'],
-    profileImage: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: {
-      lat: 14.5580,
-      lng: 120.9890,
-      address: 'BGC, Taguig City, Philippines'
-    }
-  },
-  {
-    name: 'Jon Prado',
-    category: 'INDIVIDUALS',
-    website: 'https://jonprado.com',
-    email: 'jon@example.com',
-    phone: '+63 917 123 4567',
-    facebook: 'https://facebook.com/jonprado',
-    tags: ['individual', 'hardware', 'software'],
-    profileImage: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: {
-      lat: 14.5695,
-      lng: 120.9822,
-      address: 'Manila, Philippines'
-    }
-  },
-  {
-    name: 'Maria Santos',
-    category: 'INDIVIDUALS',
-    website: 'https://mariasantos.dev',
-    email: 'maria@example.com',
-    phone: '+63 918 234 5678',
-    facebook: 'https://facebook.com/mariasantos',
-    tags: ['individual', 'robotics', 'software'],
-    profileImage: 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
-    location: {
-      lat: 14.5542,
-      lng: 120.9965,
-      address: 'Makati City, Philippines'
-    }
-  }
-];
-
 // Fabrication items data
 const fabricationItems = [
   {
@@ -149,7 +85,12 @@ const fabricationItems = [
   }
 ];
 
-// Global variables
+// Global variables for community data
+let allCommunityMembers = [];
+let allCommunityCategories = [];
+let communityDataLoaded = false;
+
+// Other global variables
 let currentMode = 'blog';
 let activeFilters = new Set();
 let communityFilters = new Set();
@@ -181,6 +122,157 @@ function getUniqueTagsFromBlogPosts() {
     post.tags.forEach(tag => tags.add(tag));
   });
   return Array.from(tags);
+}
+
+// Fetch community data from Supabase
+async function fetchCommunityData() {
+  if (communityDataLoaded) return;
+
+  console.log('[Community] Starting to fetch community data...');
+  
+  // Show loading state
+  const communityTagsContainer = document.getElementById('communityTags');
+  if (communityTagsContainer) {
+    communityTagsContainer.innerHTML = '<div class="loading-categories">Loading categories...</div>';
+  }
+
+  try {
+    // Fetch profiles with coordinates
+    console.log('[Community] Fetching profiles with coordinates...');
+    const { data: profiles, error: profilesError } = await db.getProfilesWithCoordinates();
+    
+    if (profilesError) {
+      console.error('[Community] Error fetching profiles:', profilesError);
+      throw profilesError;
+    }
+
+    console.log('[Community] Profiles fetched:', { count: profiles?.length || 0 });
+
+    // Fetch all categories
+    console.log('[Community] Fetching categories...');
+    const { data: categories, error: categoriesError } = await db.getAllCategories();
+    
+    if (categoriesError) {
+      console.error('[Community] Error fetching categories:', categoriesError);
+      throw categoriesError;
+    }
+
+    console.log('[Community] Categories fetched:', { count: categories?.length || 0 });
+
+    // Transform profiles data to match expected format
+    allCommunityMembers = (profiles || []).map(profile => {
+      // Determine category based on account_type
+      let category = 'INDIVIDUALS';
+      if (profile.account_type === 'business') {
+        category = 'COMPANIES';
+      } else if (profile.account_type === 'education') {
+        category = 'EDUCATIONAL INSTITUTIONS';
+      }
+
+      // Create tags array from profile categories and account type
+      const tags = [profile.account_type];
+      if (profile.profile_categories) {
+        profile.profile_categories.forEach(cat => {
+          // Add both category group and name as tags
+          tags.push(cat.category_group.toLowerCase().replace(/\s+/g, '-'));
+          tags.push(cat.category_name.toLowerCase().replace(/\s+/g, '-'));
+        });
+      }
+
+      return {
+        id: profile.id,
+        name: profile.full_name || profile.username || 'Unknown User',
+        category: category,
+        website: profile.website || null,
+        email: profile.email || null,
+        phone: profile.phone || null,
+        facebook: profile.facebook || null,
+        instagram: profile.instagram || null,
+        linkedin: profile.linkedin || null,
+        tags: [...new Set(tags)], // Remove duplicates
+        profileImage: profile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png',
+        bio: profile.bio || '',
+        location: profile.latitude && profile.longitude ? {
+          lat: parseFloat(profile.latitude),
+          lng: parseFloat(profile.longitude),
+          address: profile.city || 'Unknown Location'
+        } : null,
+        categories: profile.profile_categories || []
+      };
+    });
+
+    // Transform categories data
+    const categoryMap = new Map();
+    (categories || []).forEach(cat => {
+      const groupKey = cat.category_group.toLowerCase().replace(/\s+/g, '-');
+      const nameKey = cat.category_name.toLowerCase().replace(/\s+/g, '-');
+      
+      categoryMap.set(groupKey, cat.category_group);
+      categoryMap.set(nameKey, cat.category_name);
+    });
+
+    // Create unique categories list for filters
+    allCommunityCategories = [
+      // Account type categories
+      { tag: 'person', label: 'INDIVIDUALS' },
+      { tag: 'business', label: 'COMPANIES' },
+      { tag: 'education', label: 'EDUCATIONAL INSTITUTIONS' },
+      // Dynamic categories from database
+      ...Array.from(categoryMap.entries()).map(([tag, label]) => ({
+        tag,
+        label: label.toUpperCase()
+      }))
+    ];
+
+    console.log('[Community] Data transformation complete:', {
+      members: allCommunityMembers.length,
+      categories: allCommunityCategories.length
+    });
+
+    communityDataLoaded = true;
+
+    // Update UI
+    populateCommunityTags();
+    if (currentMode === 'community') {
+      updateCommunityResults();
+    }
+
+  } catch (error) {
+    console.error('[Community] Error fetching community data:', error);
+    
+    // Show error state
+    if (communityTagsContainer) {
+      communityTagsContainer.innerHTML = '<div class="loading-categories">Error loading categories. Please try again.</div>';
+    }
+    
+    // Fallback to empty arrays
+    allCommunityMembers = [];
+    allCommunityCategories = [
+      { tag: 'person', label: 'INDIVIDUALS' },
+      { tag: 'business', label: 'COMPANIES' },
+      { tag: 'education', label: 'EDUCATIONAL INSTITUTIONS' }
+    ];
+  }
+}
+
+// Populate community tags in the UI
+function populateCommunityTags() {
+  const communityTagsContainer = document.getElementById('communityTags');
+  if (!communityTagsContainer) return;
+
+  // Clear loading state
+  communityTagsContainer.innerHTML = '';
+
+  // Add tag buttons
+  allCommunityCategories.forEach(category => {
+    const button = document.createElement('button');
+    button.className = 'tag-btn';
+    button.textContent = category.label;
+    button.dataset.tag = category.tag;
+    communityTagsContainer.appendChild(button);
+  });
+
+  console.log('[Community] Tags populated:', allCommunityCategories.length);
 }
 
 // Initialize map
@@ -274,22 +366,13 @@ function getMobileFiltersForMode(mode) {
     { tag: 'electronics', label: 'ELECTRONICS' }
   ];
 
-  const mobileCommunityFilters = [
-    { tag: 'company', label: 'COMPANIES' },
-    { tag: 'individual', label: 'INDIVIDUALS' },
-    { tag: 'education', label: 'EDUCATION' },
-    { tag: 'robotics', label: 'ROBOTICS' },
-    { tag: 'software', label: 'SOFTWARE' },
-    { tag: 'hardware', label: 'HARDWARE' }
-  ];
-
   switch (mode) {
     case 'blog':
       return getUniqueTagsFromBlogPosts().map(tag => ({ tag, label: tag.toUpperCase() }));
     case 'jobs':
       return mobileJobsFilters;
     case 'community':
-      return mobileCommunityFilters;
+      return allCommunityCategories; // Use dynamically fetched categories
     case 'fabrication':
       return mobileFabricationFilters;
     default:
@@ -367,6 +450,28 @@ function createMemberCard(member) {
     };
   }
 
+  if (member.email) {
+    processedInfo.email = {
+      full: member.email,
+      truncated: truncateWords(member.email, 11),
+      needsReadMore: member.email.split(' ').length > 11
+    };
+  }
+
+  if (member.facebook) {
+    const facebookText = member.facebook.replace('https://facebook.com/', '@');
+    processedInfo.facebook = {
+      full: member.facebook,
+      truncated: truncateWords(facebookText, 11),
+      needsReadMore: facebookText.split(' ').length > 11
+    };
+  }
+
+  // Display categories from Supabase data
+  const categoriesDisplay = member.categories && member.categories.length > 0 
+    ? member.categories.map(cat => `<span class="tag">${cat.category_name.toUpperCase()}</span>`).join('')
+    : '';
+
   return `
     <div class="card member-card" data-member="${member.name}" data-tags="${member.tags.join(' ')}">
       <div class="card-header">
@@ -377,6 +482,7 @@ function createMemberCard(member) {
         </div>
       </div>
       <div class="member-info">
+        ${member.bio ? `<p class="member-bio">${truncateWords(member.bio, 20)}</p>` : ''}
         ${member.website ? `
           <div class="info-item">
             <span class="info-label">Website: </span>
@@ -387,11 +493,30 @@ function createMemberCard(member) {
             </span>
           </div>
         ` : ''}
-        ${member.email ? `<p>Email: <a href="mailto:${member.email}">${member.email}</a></p>` : ''}
+        ${member.email ? `
+          <div class="info-item">
+            <span class="info-label">Email: </span>
+            <span class="info-content">
+              <span class="truncated"><a href="mailto:${processedInfo.email.full}">${processedInfo.email.truncated}</a></span>
+              <span class="full" style="display: none;"><a href="mailto:${processedInfo.email.full}">${processedInfo.email.full}</a></span>
+              ${processedInfo.email.needsReadMore ? '<button class="read-more-info">READ MORE</button>' : ''}
+            </span>
+          </div>
+        ` : ''}
         ${member.phone ? `<p>Phone: <a href="tel:${member.phone}">${member.phone}</a></p>` : ''}
+        ${member.facebook ? `
+          <div class="info-item">
+            <span class="info-label">Facebook: </span>
+            <span class="info-content">
+              <span class="truncated"><a href="${processedInfo.facebook.full}" target="_blank">${processedInfo.facebook.truncated}</a></span>
+              <span class="full" style="display: none;"><a href="${processedInfo.facebook.full}" target="_blank">${processedInfo.facebook.full}</a></span>
+              ${processedInfo.facebook.needsReadMore ? '<button class="read-more-info">READ MORE</button>' : ''}
+            </span>
+          </div>
+        ` : ''}
       </div>
       <div class="tags">
-        ${member.tags.map(tag => `<span class="tag">${tag.toUpperCase()}</span>`).join('')}
+        ${categoriesDisplay}
       </div>
     </div>
   `;
@@ -540,11 +665,11 @@ function updateJobsResults() {
 }
 
 function updateCommunityResults() {
-  let filteredMembers = communityMembers;
+  let filteredMembers = allCommunityMembers;
 
   // Apply area filter if selected
   if (selectedArea) {
-    filteredMembers = communityMembers.filter(member => {
+    filteredMembers = allCommunityMembers.filter(member => {
       if (!member.location) return false;
       return isPointInArea(member.location.lat, member.location.lng);
     });
@@ -553,6 +678,7 @@ function updateCommunityResults() {
   filteredMembers = filteredMembers.filter(member => {
     const matchesSearch = 
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.bio.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const activeCommunityFilters = window.innerWidth <= 768 && currentMode === 'community' ? communityFilters : activeFilters;
@@ -584,6 +710,36 @@ function updateCommunityResults() {
     if (targetGrid) {
       targetGrid.insertAdjacentHTML('beforeend', createMemberCard(member));
     }
+  });
+
+  // Add event listeners for read more buttons
+  document.querySelectorAll('.read-more-info').forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const container = this.closest('.info-content');
+      const truncated = container.querySelector('.truncated');
+      const full = container.querySelector('.full');
+      
+      if (truncated.style.display !== 'none') {
+        truncated.style.display = 'none';
+        full.style.display = 'inline';
+        this.textContent = 'READ LESS';
+      } else {
+        truncated.style.display = 'inline';
+        full.style.display = 'none';
+        this.textContent = 'READ MORE';
+      }
+    });
+  });
+
+  // Add click handlers for member cards
+  document.querySelectorAll('.member-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button') || e.target.closest('a')) return;
+      
+      const memberName = card.dataset.member;
+      highlightItem(memberName, 'community');
+    });
   });
 
   updateMapMarkers(filteredMembers, 'community');
@@ -748,7 +904,7 @@ function highlightItem(itemId, type) {
 }
 
 // Mode switching
-function switchMode(mode) {
+async function switchMode(mode) {
   currentMode = mode;
   activeFilters.clear();
   communityFilters.clear();
@@ -801,6 +957,11 @@ function switchMode(mode) {
     const element = document.getElementById(id);
     if (element) element.innerHTML = '';
   });
+
+  // Fetch community data when switching to community mode
+  if (mode === 'community' && !communityDataLoaded) {
+    await fetchCommunityData();
+  }
 
   updateResults();
 }
