@@ -51,20 +51,19 @@
         <a href="search.html" class="nav-link">COMMUNITY</a>
         <a href="resources.html" class="nav-link">RESOURCES</a>
         <a href="about.html" class="nav-link">ABOUT</a>
-      </nav>
+        <!-- Auth Button (shown when not logged in) -->
+        <button id="authButton" class="nav-link">SIGN IN</button>
 
-      <!-- Auth Button (shown when not logged in) -->
-      <button id="authButton" class="nav-link">SIGN IN</button>
-
-      <!-- User Menu (shown when logged in) -->
-      <div id="userMenu" class="user-menu" style="display: none;">
-        <img id="userAvatar" src="" alt="User Avatar" class="user-avatar">
-        <span id="userName">User</span>
-        <div class="user-dropdown">
-          <a href="profile.html" class="dropdown-item" id="profileLink">MY PROFILE</a>
-          <button id="signOutButton" class="dropdown-item">SIGN OUT</button>
+        <!-- User Menu (shown when logged in) -->
+        <div id="userMenu" class="user-menu" style="display: none;">
+          <img id="userAvatar" src="" alt="User Avatar" class="user-avatar">
+          <span id="userName">User</span>
+          <div class="user-dropdown">
+            <a href="profile.html" class="dropdown-item" id="profileLink">MY PROFILE</a>
+            <button id="signOutButton" class="dropdown-item">SIGN OUT</button>
+          </div>
         </div>
-      </div>
+      </nav>
 
       <button id="themeToggle" class="theme-toggle" aria-label="Switch theme">
         <pre class="theme-icon">[LIGHT]</pre>

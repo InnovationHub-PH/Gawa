@@ -264,7 +264,7 @@ h2 {
 .main-nav {
   flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   gap: 0;
 }
@@ -272,7 +272,7 @@ h2 {
 .nav-links {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 1rem;
 }
 
@@ -349,14 +349,15 @@ h2 {
 #authButton {
   background: none;
   cursor: pointer;
-  width: auto;
-  padding: 0 1.25rem;
+  padding: 0 1rem;
+  border: 2px solid var(--border-color);
+  border-right: none;
+  border-left: none;
   transition: all 0.3s ease;
   font-family: inherit;
   font-size: inherit;
   font-weight: inherit;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 #authButton:hover {
@@ -367,7 +368,6 @@ h2 {
 .user-menu {
   position: relative;
   display: flex;
-  width: auto;
   align-items: center;
   gap: 0.5rem;
   height: var(--nav-element-height);
@@ -1612,7 +1612,7 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-  }
+  } 
 
   .main-nav {
     display: none;
@@ -1621,7 +1621,7 @@ footer {
     left: 0;
     right: 0;
     background-color: var(--bg-color);
-    border-bottom: 2px solid var(--border-color);
+    border: 2px solid var(--border-color);
     flex-direction: column;
     padding: 0;
   }
@@ -1631,13 +1631,25 @@ footer {
     z-index: 9998;
   }
 
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-  }
-
   .nav-link {
-    display: flex;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 2px solid var(--border-color);
+  }
+  
+  #authButton {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 2px solid var(--border-color);
+  }
+  
+  .user-menu {
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 2px solid var(--border-color);
     width: 100%;
     text-align: center;
     justify-content: center;
@@ -2436,8 +2448,6 @@ code[class*="language-"] {
 /* Auth hidden utility */
 .auth-hidden {
   display: none !important;
-}
-
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .content-layout {

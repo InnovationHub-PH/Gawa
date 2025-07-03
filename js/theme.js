@@ -202,68 +202,32 @@ const setActiveNavLink = () => {
 // Handle mobile menu navigation including auth button
 const handleMobileNavigation = () => {
   const mainNav = document.querySelector('.main-nav');
-  const authButton = document.getElementById('authButton');
-  const userMenu = document.getElementById('userMenu');
   
-  // Remove any existing mobile auth elements
-  const existingMobileAuth = mainNav.querySelector('.mobile-auth');
-  if (existingMobileAuth) {
-    existingMobileAuth.remove();
+  // Add event listeners to close mobile menu when auth elements are clicked
+  const authButton = document.getElementById('authButton');
+  if (authButton) {
+    authButton.addEventListener('click', () => {
+      mainNav.classList.remove('active');
+      document.querySelector('.menu-toggle')?.classList.remove('active');
+    });
   }
   
-  // Only add mobile auth elements on mobile screens
-  if (window.innerWidth <= 768) {
-    // Add auth button or user menu to mobile navigation
-    if (authButton && !authButton.classList.contains('auth-hidden')) {
-      const mobileAuthButton = authButton.cloneNode(true);
-      mobileAuthButton.classList.add('mobile-auth');
-      mobileAuthButton.id = 'mobileAuthButton';
-      // Ensure proper styling is maintained
-      mobileAuthButton.classList.remove('auth-hidden');
-      mainNav.appendChild(mobileAuthButton);
-      
-      // Add event listener to mobile auth button
-      mobileAuthButton.addEventListener('click', () => {
-        const authModal = document.getElementById('authModal');
-        if (authModal) {
-          authModal.classList.remove('hidden');
-        }
-        // Close mobile menu
-        mainNav.classList.remove('active');
-        document.querySelector('.menu-toggle').classList.remove('active');
-      });
-    } else if (userMenu && !userMenu.classList.contains('auth-hidden')) {
-      const mobileUserMenu = userMenu.cloneNode(true);
-      mobileUserMenu.classList.add('mobile-auth');
-      mobileUserMenu.id = 'mobileUserMenu';
-      // Ensure proper styling is maintained
-      mobileUserMenu.classList.remove('auth-hidden');
-      mainNav.appendChild(mobileUserMenu);
-      
-      // Add event listeners to mobile user menu
-      const profileLink = mobileUserMenu.querySelector('a[href="profile.html"]');
-      const signOutButton = mobileUserMenu.querySelector('#signOutButton');
-      
-      if (profileLink) {
-        profileLink.addEventListener('click', () => {
-          mainNav.classList.remove('active');
-          document.querySelector('.menu-toggle').classList.remove('active');
-        });
-      }
-      
-      if (signOutButton) {
-        signOutButton.id = 'mobileSignOutButton';
-        signOutButton.addEventListener('click', () => {
-          // Trigger the original sign out button
-          const originalSignOut = document.getElementById('signOutButton');
-          if (originalSignOut) {
-            originalSignOut.click();
-          }
-          mainNav.classList.remove('active');
-          document.querySelector('.menu-toggle').classList.remove('active');
-        });
-      }
-    }
+  // Add event listeners to user menu items
+  const profileLink = document.querySelector('#userMenu #profileLink');
+  const signOutButton = document.querySelector('#userMenu #signOutButton');
+  
+  if (profileLink) {
+    profileLink.addEventListener('click', () => {
+      mainNav.classList.remove('active');
+      document.querySelector('.menu-toggle')?.classList.remove('active');
+    });
+  }
+  
+  if (signOutButton) {
+    signOutButton.addEventListener('click', () => {
+      mainNav.classList.remove('active');
+      document.querySelector('.menu-toggle')?.classList.remove('active');
+    });
   }
 };
 

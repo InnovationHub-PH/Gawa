@@ -111,13 +111,11 @@ function updateUIForAuthenticatedUser() {
   const userMenu = document.getElementById('userMenu');
   
   if (authButton) {
-    authButton.classList.add('auth-hidden');
-    authButton.style.display = 'none';
+    authButton.classList.add('auth-hidden'); 
   }
   
   if (userMenu) {
     userMenu.classList.remove('auth-hidden');
-    userMenu.style.display = 'flex';
     updateUserMenuContent();
   }
   
@@ -133,13 +131,11 @@ function updateUIForUnauthenticatedUser() {
   
   if (authButton) {
     authButton.classList.remove('auth-hidden');
-    authButton.style.display = 'flex';
     console.log('Auth button should now be visible');
   }
   
   if (userMenu) {
     userMenu.classList.add('auth-hidden');
-    userMenu.style.display = 'none';
   }
   
   // Update mobile navigation if needed
@@ -153,8 +149,7 @@ function forceUIUpdate() {
   const userMenu = document.getElementById('userMenu');
   
   if (authButton && !currentUser) {
-    authButton.classList.remove('auth-hidden');
-    authButton.style.display = 'flex';
+    authButton.classList.remove('auth-hidden'); 
   } else if (userMenu && currentUser) {
     updateUIForAuthenticatedUser();
   }
