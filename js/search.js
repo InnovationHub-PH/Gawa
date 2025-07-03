@@ -111,7 +111,8 @@ let mobileFiltersInitialized = false;
 
 // Scroll tracking variables
 let lastScrollY = 0;
-let scrollThreshold = 50; // Pixels to scroll before hiding/showing
+let hideThreshold = 5; // Pixels to scroll down before hiding
+let showThreshold = 50; // Pixels to scroll up before showing
 let isSearchInterfaceHidden = false;
 
 // Utility functions
@@ -1208,13 +1209,13 @@ function handleSearchInterfaceScroll() {
   
   if (!searchInterface) return;
 
-  // Hide interface when scrolling down by threshold amount
-  if (scrollDifference > scrollThreshold && !isSearchInterfaceHidden) {
+  // Hide interface when scrolling down by 5 pixels
+  if (scrollDifference > hideThreshold && !isSearchInterfaceHidden) {
     searchInterface.classList.add('hidden');
     isSearchInterfaceHidden = true;
   }
-  // Show interface when scrolling up by double threshold amount
-  else if (scrollDifference < -(scrollThreshold * 2) && isSearchInterfaceHidden) {
+  // Show interface when scrolling up by 50 pixels
+  else if (scrollDifference < -showThreshold && isSearchInterfaceHidden) {
     searchInterface.classList.remove('hidden');
     isSearchInterfaceHidden = false;
   }
