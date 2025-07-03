@@ -476,5 +476,52 @@ export const db = {
       user_uuid: userId
     });
     return { data, error };
+  },
+
+  // Location and geocoding functions
+  async updateProfileLocation(userId, locationData) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase
+      .from('profiles')
+      .update({
+        city: locationData.city,
+        address: locationData.address,
+        latitude: locationData.latitude,
+        longitude: locationData.longitude,
+        location_type: locationData.location_type,
+        geocoded_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', userId);
+    return { data, error };
+  },
+
+  async setProfileCoordinates(userId, latitude, longitude) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase.rpc('set_profile_coordinates', {
+      user_uuid: userId,
+      lat: latitude,
+      lng: longitude
+    });
+    return { data, error };
+  },
+
+  async getProfilesWithCoordinates() {
+    if (!supabase) {
+      console.warn('Supabase not configured, returning empty array');
+      return { data: [], error: null };
+    }
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, username, full_name, avatar_url, bio, account_type, created_at, is_certified, city, latitude, longitude')
+      .eq('is_certified', true)
+      .not('latitude', 'is', null)
+      .not('longitude', 'is', null)
+      .order('created_at', { ascending: false });
+    return { data, error };
   }
 };
