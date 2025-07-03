@@ -2376,6 +2376,7 @@ code[class*="language-"] {
   justify-content: center;
   align-items: center;
   padding: 2rem;
+  overflow-y: auto;
 }
 
 .modal.hidden {
@@ -2389,6 +2390,9 @@ code[class*="language-"] {
   width: 100%;
   position: relative;
   padding: 0;
+  max-height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-header {
@@ -2397,6 +2401,10 @@ code[class*="language-"] {
   align-items: center;
   padding: 1.5rem;
   border-bottom: 2px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  background: var(--bg-color);
+  z-index: 1;
 }
 
 .modal-header h3 {
@@ -2426,6 +2434,7 @@ code[class*="language-"] {
 .rating-form,
 .edit-profile-form {
   padding: 2rem;
+  overflow-y: auto;
 }
 
 .rating-comment {
@@ -2534,5 +2543,16 @@ code[class*="language-"] {
   .tab-btn {
     padding: 0.75rem 1rem;
     font-size: 0.9rem;
+  }
+  
+  .modal {
+    padding: 1rem;
+    align-items: flex-start;
+  }
+  
+  .modal-content {
+    max-height: calc(100vh - 2rem);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
   }
 }
