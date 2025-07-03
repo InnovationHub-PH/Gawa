@@ -2448,6 +2448,8 @@ code[class*="language-"] {
 /* Auth hidden utility */
 .auth-hidden {
   display: none !important;
+}
+
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
   .content-layout {
