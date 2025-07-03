@@ -109,6 +109,11 @@ let drawControl = null;
 let selectedArea = null;
 let mobileFiltersInitialized = false;
 
+// Scroll tracking variables
+let lastScrollY = 0;
+let scrollThreshold = 50; // Pixels to scroll before hiding/showing
+let isSearchInterfaceHidden = false;
+
 // Utility functions
 function truncateWords(text, wordCount) {
   const words = text.split(' ');
@@ -1195,6 +1200,43 @@ function initializeMobileFilters() {
   mobileFiltersInitialized = true;
 }
 
+// Scroll handling for search interface
+function handleSearchInterfaceScroll() {
+  const currentScrollY = window.scrollY;
+  const scrollDifference = currentScrollY - lastScrollY;
+  const searchInterface = document.getElementById('searchInterface');
+  
+  if (!searchInterface) return;
+
+  // Hide interface when scrolling down by threshold amount
+  if (scrollDifference > scrollThreshold && !isSearchInterfaceHidden) {
+    searchInterface.classList.add('hidden');
+    isSearchInterfaceHidden = true;
+  }
+  // Show interface when scrolling up by double threshold amount
+  else if (scrollDifference < -(scrollThreshold * 2) && isSearchInterfaceHidden) {
+    searchInterface.classList.remove('hidden');
+    isSearchInterfaceHidden = false;
+  }
+
+  lastScrollY = currentScrollY;
+}
+
+// Throttled scroll handler for better performance
+function createThrottledScrollHandler() {
+  let ticking = false;
+  
+  return function() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        handleSearchInterfaceScroll();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
+}
+
 function updateSelectedFiltersDisplay(mode) {
   const containers = {
     'community': 'selectedFilters',
@@ -1233,9 +1275,19 @@ function updateSelectedFiltersDisplay(mode) {
   }
 }
 
+// Initialize scroll handler
+function initializeScrollHandler() {
+  const throttledScrollHandler = createThrottledScrollHandler();
+  window.addEventListener('scroll', throttledScrollHandler);
+  
+  // Initialize scroll position
+  lastScrollY = window.scrollY;
+}
+
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
   if (document.getElementById('searchInterface')) {
     initializeSearchInterface();
+    initializeScrollHandler();
   }
 });
