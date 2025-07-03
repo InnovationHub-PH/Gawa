@@ -473,6 +473,33 @@ export const db = {
     return { data, error };
   },
 
+  // Category requests for "Other" submissions
+  async saveCategoryRequest(userId, categoryGroup, categoryName) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase
+      .from('category_requests')
+      .insert([{
+        user_id: userId,
+        requested_category_group: categoryGroup,
+        requested_category_name: categoryName
+      }]);
+    return { data, error };
+  },
+
+  async getUserCategoryRequests(userId) {
+    if (!supabase) {
+      throw new Error('Supabase not configured');
+    }
+    const { data, error } = await supabase
+      .from('category_requests')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    return { data, error };
+  },
+
   async updateCertificationStatus(userId) {
     if (!supabase) {
       throw new Error('Supabase not configured');
@@ -544,7 +571,8 @@ export const db = {
     }
     const { data, error } = await supabase
       .from('profile_categories')
-      .select('category_group, category_name')
+      .select('category_group, category_name, COUNT(*) as usage_count')
+      .group('category_group, category_name')
       .order('category_group, category_name');
     return { data, error };
   }
