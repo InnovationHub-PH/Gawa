@@ -467,14 +467,14 @@ function createCommunityCard(member) {
   const tags = [member.account_type || 'person'];
   
   // Add certified badge if applicable
-  const certifiedBadge = member.is_certified ? '<span class="profile-certified-badge">CERTIFIED</span>' : '';
+  const certifiedBadge = member.is_certified ? ' <span class="profile-certified-checkmark">✓</span>' : '';
   
   return `
     <div class="card member-card" data-member="${displayName}" data-tags="${tags.join(' ')}" data-category="${category}">
       <div class="card-header">
         <img src="${member.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png'}" alt="${displayName}" class="card-logo">
         <div class="title-info">
-          <h3>${displayName}${certifiedBadge}</h3>
+          <h3>${displayName}<span style="color: var(--primary-color); font-size: 1.2rem;">${certifiedBadge}</span></h3>
           ${member.username ? `<h4>@${member.username}</h4>` : ''}
           ${location ? `<p class="member-location">${location}</p>` : ''}
         </div>

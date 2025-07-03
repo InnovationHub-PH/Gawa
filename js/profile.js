@@ -78,7 +78,7 @@ async function loadUserProfile(userId) {
     updateProfileUI(profile, posts, ratings, average, count, followers?.length || 0, following?.length || 0, isOwnProfile, isFollowing);
     
     // Render certification widget if this is the user's own profile
-    if (isOwnProfile) {
+    if (isOwnProfile && !profile.is_certified) {
       await renderCertificationWidget();
     }
     
@@ -92,7 +92,17 @@ async function loadUserProfile(userId) {
 function updateProfileUI(profile, posts, ratings, averageRating, ratingCount, followersCount, followingCount, isOwnProfile, isFollowing) {
   // Update profile header
   document.getElementById('profileAvatar').src = profile.avatar_url || 'https://innovationhub-ph.github.io/MakersClub/images/Stealth_No_Image.png';
-  document.getElementById('profileName').textContent = profile.full_name || profile.username;
+  
+  // Update profile name with certification checkmark if certified
+  const profileNameElement = document.getElementById('profileName');
+  const displayName = profile.full_name || profile.username;
+  
+  if (profile.is_certified) {
+    profileNameElement.innerHTML = `${displayName} <span class="profile-certified-checkmark">✓</span>`;
+  } else {
+    profileNameElement.textContent = displayName;
+  }
+  
   document.getElementById('profileUsername').textContent = `@${profile.username}`;
   document.getElementById('profileBio').textContent = profile.bio || 'No bio available';
   document.getElementById('profileLocation').textContent = profile.location || '';
@@ -486,6 +496,29 @@ function showEditProfileModal() {
   document.getElementById('editLocation').value = userProfile.location || '';
   document.getElementById('editWebsite').value = userProfile.website || '';
   
+  // Show certification section if user is certified
+  const certificationSection = document.getElementById('editProfileCertificationSection');
+  if (userProfile.is_certified && certificationSection) {
+    certificationSection.style.display = 'block';
+    
+    // Pre-fill certification fields
+    document.getElementById('editCity').value = userProfile.city || '';
+    document.getElementById('editAddress').value = userProfile.address || '';
+    document.getElementById('editPhone').value = userProfile.phone || '';
+    document.getElementById('editFacebook').value = userProfile.facebook || '';
+    document.getElementById('editInstagram').value = userProfile.instagram || '';
+    document.getElementById('editLinkedin').value = userProfile.linkedin || '';
+    
+    // Set address privacy
+    const privacyValue = userProfile.address_privacy || 'private';
+    const privacyRadio = document.querySelector(`input[name="editAddressPrivacy"][value="${privacyValue}"]`);
+    if (privacyRadio) {
+      privacyRadio.checked = true;
+    }
+  } else if (certificationSection) {
+    certificationSection.style.display = 'none';
+  }
+  
   modal.classList.remove('hidden');
 }
 
@@ -515,6 +548,18 @@ function initEditProfileModal() {
       location: formData.get('location'),
       website: formData.get('website')
     };
+    
+    // Add certification fields if user is certified
+    const userProfile = getUserProfile();
+    if (userProfile.is_certified) {
+      updates.city = formData.get('city') || null;
+      updates.address = formData.get('address') || null;
+      updates.phone = formData.get('phone') || null;
+      updates.facebook = formData.get('facebook') || null;
+      updates.instagram = formData.get('instagram') || null;
+      updates.linkedin = formData.get('linkedin') || null;
+      updates.address_privacy = formData.get('editAddressPrivacy') || 'private';
+    }
     
     try {
       await db.updateProfile(currentUser.id, updates);

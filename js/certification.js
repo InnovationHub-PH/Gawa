@@ -290,6 +290,11 @@ export class ProfileCertification {
     
     console.log('Creating certification widget - Percentage:', percentage, 'Certified:', isCertified);
     
+    // Don't show widget if already certified
+    if (isCertified) {
+      return '';
+    }
+    
     return `
       <div class="certification-widget">
         <div class="certification-header">
