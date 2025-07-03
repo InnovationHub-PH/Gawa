@@ -1,5 +1,6 @@
 import { db, auth } from './supabase.js';
 import { getCurrentUser } from './auth.js';
+import { geocodingService } from './geocoding.js';
 
 // Category definitions
 export const PROFILE_CATEGORIES = {
@@ -384,15 +385,16 @@ export class ProfileCertification {
     return `
       <div class="certification-step">
         <h3>Step 3 of 5</h3>
-        <h4>Add Location (Linked to Map)</h4>
+        <h4>Add Location</h4>
+        <p class="location-help">Your location will be used to show you on the community map. We'll automatically find the coordinates for your city or address.</p>
         
         <label for="city">City</label>
         <p class="required-label">(Required)</p>
-        <input type="text" id="city" class="form-input" placeholder="Enter city" required>
+        <input type="text" id="city" class="form-input" placeholder="e.g., Manila, Makati, Cebu" required>
         
-        <label for="address">Address:</label>
-        <p>(Not Required)</p>
-        <input type="text" id="address" class="form-input" placeholder="Enter address">
+        <label for="address">Specific Address (Optional)</label>
+        <p>If you provide a specific address, we'll use that for more precise location on the map</p>
+        <input type="text" id="address" class="form-input" placeholder="e.g., 123 Main Street, Makati City">
         
         <h4>Would you like to keep your address private or public?</h4>
         <div class="privacy-options">
@@ -404,6 +406,12 @@ export class ProfileCertification {
             <input type="radio" name="addressPrivacy" value="public">
             <span class="radio-label">Public</span>
           </label>
+        </div>
+        
+        <div class="location-preview" id="locationPreview" style="display: none;">
+          <h4>Location Preview</h4>
+          <p id="locationPreviewText"></p>
+          <small>This is how your location will appear on the map</small>
         </div>
       </div>
     `;
@@ -725,11 +733,17 @@ export class ProfileCertification {
           const address = modal.querySelector('#address').value.trim();
           const addressPrivacy = modal.querySelector('input[name="addressPrivacy"]:checked').value;
           
-          await db.updateProfile(user.id, {
+          // First update the basic profile data
+          const profileUpdate = {
             city,
             address: address || null,
             address_privacy: addressPrivacy
-          });
+          };
+          
+          await db.updateProfile(user.id, profileUpdate);
+          
+          // Then geocode the location
+          await this.geocodeAndUpdateLocation(city, address);
           
           await this.markStepCompleted(3);
           break;
@@ -764,6 +778,38 @@ export class ProfileCertification {
       console.error('Error saving step:', error);
       this.showError('Error saving data. Please try again.');
       return false;
+    }
+  }
+
+  async geocodeAndUpdateLocation(city, address) {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    try {
+      console.log('Geocoding location:', { city, address });
+      
+      // Use the geocoding service to get coordinates
+      const result = await geocodingService.geocodeLocation(city, address);
+      
+      if (result) {
+        console.log('Geocoding successful:', result);
+        
+        // Update the profile with coordinates
+        await db.updateProfileLocation(user.id, {
+          city,
+          address: address || null,
+          latitude: result.latitude,
+          longitude: result.longitude,
+          location_type: result.type
+        });
+        
+        console.log('Location updated with coordinates');
+      } else {
+        console.log('Geocoding failed, location saved without coordinates');
+      }
+    } catch (error) {
+      console.error('Error geocoding location:', error);
+      // Don't throw error - location is still saved without coordinates
     }
   }
 
@@ -829,6 +875,66 @@ export class ProfileCertification {
     this.initializeCategoryEvents(modal);
     this.initializeBioWordCount(modal);
     this.loadCurrentStepData();
+    
+    // Initialize location preview for step 3
+    if (this.currentStep === 3) {
+      this.initializeLocationPreview(modal);
+    }
+  }
+
+  initializeLocationPreview(modal) {
+    const cityInput = modal.querySelector('#city');
+    const addressInput = modal.querySelector('#address');
+    const preview = modal.querySelector('#locationPreview');
+    const previewText = modal.querySelector('#locationPreviewText');
+    
+    let debounceTimer;
+    
+    const updatePreview = async () => {
+      const city = cityInput.value.trim();
+      const address = addressInput.value.trim();
+      
+      if (!city) {
+        preview.style.display = 'none';
+        return;
+      }
+      
+      // Clear previous timer
+      clearTimeout(debounceTimer);
+      
+      // Debounce the geocoding request
+      debounceTimer = setTimeout(async () => {
+        try {
+          const result = await geocodingService.geocodeLocation(city, address);
+          
+          if (result) {
+            preview.style.display = 'block';
+            previewText.innerHTML = `
+              <strong>📍 ${result.display_name}</strong><br>
+              <small>Coordinates: ${result.latitude.toFixed(4)}, ${result.longitude.toFixed(4)}</small><br>
+              <small>Source: ${result.source === 'nominatim' ? 'OpenStreetMap' : 'Built-in database'}</small>
+            `;
+          } else {
+            preview.style.display = 'block';
+            previewText.innerHTML = `
+              <strong>⚠️ Location not found</strong><br>
+              <small>We couldn't find coordinates for this location. You can still save it, but it won't appear on the map.</small>
+            `;
+          }
+        } catch (error) {
+          console.error('Preview geocoding error:', error);
+          preview.style.display = 'none';
+        }
+      }, 1000); // 1 second debounce
+    };
+    
+    cityInput.addEventListener('input', updatePreview);
+    addressInput.addEventListener('input', updatePreview);
+    
+    // Initial preview if fields are already filled
+    if (cityInput.value.trim()) {
+      updatePreview();
+    }
   }
 
   async completeCertification() {

@@ -529,7 +529,7 @@ function focusMapMarker(itemId) {
 async function loadCommunityMembers() {
   try {
     console.log('Loading community members from Supabase...');
-    const { data, error } = await db.getAllProfiles();
+    const { data, error } = await db.getProfilesWithCoordinates();
     
     if (error) {
       console.error('Error loading community members:', error);
@@ -538,11 +538,13 @@ async function loadCommunityMembers() {
     }
     
     communityMembers = data || [];
-    console.log(`Loaded ${communityMembers.length} community members from Supabase`);
+    console.log(`Loaded ${communityMembers.length} community members with coordinates from Supabase`);
     
     // Update community results if we're currently viewing community
     if (currentMode === 'community') {
       updateCommunityResults();
+      // Add markers to map for community members with coordinates
+      addCommunityMarkersToMap(communityMembers);
     }
   } catch (error) {
     console.error('Failed to load community members:', error);
@@ -922,7 +924,40 @@ function updateCommunityResults() {
   });
 
   // Since community members from Supabase don't have coordinates, we don't add map markers
-  // addMarkersToMap(filteredMembers, 'community');
+  addCommunityMarkersToMap(filteredMembers);
+}
+
+// Add community markers to map
+function addCommunityMarkersToMap(members) {
+  // Clear existing markers first
+  clearMapMarkers();
+  
+  members.forEach(member => {
+    if (member.latitude && member.longitude) {
+      const coordinates = [member.latitude, member.longitude];
+      const displayName = member.full_name || member.username || 'Unknown User';
+      const certifiedBadge = member.is_certified ? '✓ ' : '';
+      
+      const popupContent = `
+        <strong>${certifiedBadge}${displayName}</strong><br>
+        ${member.city || 'Location not specified'}<br>
+        <small>Click to view profile</small>
+      `;
+      
+      const marker = L.marker(coordinates)
+        .bindPopup(popupContent)
+        .addTo(map);
+      
+      marker.on('click', () => {
+        // Open profile in new tab/window
+        window.open(`profile.html?id=${member.id}`, '_blank');
+      });
+      
+      markers.set(displayName, marker);
+    }
+  });
+  
+  console.log(`Added ${markers.size} community markers to map`);
 }
 
 // Update fabrication results
