@@ -1721,6 +1721,12 @@ footer {
     justify-content: center;
   }
 
+  /* Hide auth elements from main nav on mobile - they appear in hamburger menu */
+  #authButton,
+  #userMenu {
+    display: none !important;
+  }
+
   .theme-toggle {
   }
 

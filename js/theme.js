@@ -205,14 +205,14 @@ const handleMobileNavigation = () => {
   const authButton = document.getElementById('authButton');
   const userMenu = document.getElementById('userMenu');
   
-  // Clone auth button or user menu for mobile menu
+  // Remove any existing mobile auth elements
+  const existingMobileAuth = mainNav.querySelector('.mobile-auth');
+  if (existingMobileAuth) {
+    existingMobileAuth.remove();
+  }
+  
+  // Only add mobile auth elements on mobile screens
   if (window.innerWidth <= 768) {
-    // Remove any existing mobile auth elements
-    const existingMobileAuth = mainNav.querySelector('.mobile-auth');
-    if (existingMobileAuth) {
-      existingMobileAuth.remove();
-    }
-    
     // Add auth button or user menu to mobile navigation
     if (authButton && !authButton.classList.contains('auth-hidden')) {
       const mobileAuthButton = authButton.cloneNode(true);
