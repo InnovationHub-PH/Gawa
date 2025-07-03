@@ -569,11 +569,20 @@ export const db = {
       console.warn('Supabase not configured, returning empty array');
       return { data: [], error: null };
     }
+    
+    console.log('[Supabase] Fetching all categories...');
+    
     const { data, error } = await supabase
       .from('profile_categories')
-      .select('category_group, category_name, COUNT(*) as usage_count')
-      .group('category_group, category_name')
+      .select('category_group, category_name')
       .order('category_group, category_name');
+    
+    if (error) {
+      console.error('[Supabase] Error fetching categories:', error);
+    } else {
+      console.log('[Supabase] Categories fetched successfully:', { count: data?.length || 0, data });
+    }
+    
     return { data, error };
   }
 };

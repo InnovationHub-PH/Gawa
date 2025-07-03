@@ -3159,6 +3159,37 @@ code[class*="language-"] {
   display: none !important;
 }
 
+/* Category loading states */
+.loading-categories {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-color);
+  opacity: 0.7;
+  font-family: var(--font-mono);
+}
+
+.category-loading-error {
+  padding: 1rem;
+  border: 2px solid var(--secondary-color);
+  background: var(--frame-bg-color);
+  margin-bottom: 1rem;
+}
+
+.category-loading-error p {
+  margin-bottom: 1rem;
+  color: var(--secondary-color);
+  font-family: var(--font-mono);
+  text-align: center;
+}
+
+.no-categories {
+  padding: 1rem;
+  text-align: center;
+  color: var(--text-color);
+  opacity: 0.7;
+  font-family: var(--font-mono);
+}
+
 /* Certification Widget Styles */
 .certification-widget {
   border: 2px solid var(--border-color);
