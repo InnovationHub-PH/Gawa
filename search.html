@@ -158,8 +158,8 @@
         <!-- Filter Section -->
         <section class="filter-section">
           <div id="blogFilters" class="filter-content active">
-            <!-- Mobile Filter Trigger -->
-            <button class="mobile-filter-trigger" id="blogFilterTrigger">
+            <!-- Filter Trigger -->
+            <button class="filter-trigger" id="blogFilterTrigger">
               SELECT FILTERS
             </button>
             
@@ -167,43 +167,28 @@
             <div class="selected-filters" id="selectedBlogFilters">
               <!-- Selected filter tags will appear here -->
             </div>
-            
-            <div class="tag-buttons" id="blogTags">
-              <!-- Blog tags will be populated by JavaScript -->
-            </div>
           </div>
 
           <div id="jobsFilters" class="filter-content">
-            <div class="filter-container">
-              <!-- Mobile Filter Trigger -->
-              <button class="mobile-filter-trigger" id="jobsFilterTrigger">
-                SELECT FILTERS
-              </button>
-              
-              <!-- Selected Filters Display -->
-              <div class="selected-filters" id="selectedJobsFilters">
-                <!-- Selected filter tags will appear here -->
-              </div>
-              
-              <div class="tag-buttons">
-                <button class="tag-btn" data-tag="robotics">ROBOTICS</button>
-                <button class="tag-btn" data-tag="software">SOFTWARE</button>
-                <button class="tag-btn" data-tag="hardware">HARDWARE</button>
-                <button class="tag-btn" data-tag="internship">INTERNSHIP</button>
-                <button class="tag-btn" data-tag="industrial-design">INDUSTRIAL DESIGN</button>
-                <button class="tag-btn" data-tag="manufacturing">MANUFACTURING</button>
-                <button class="tag-btn" data-tag="mechatronics">MECHATRONICS</button>
-              </div>
-              <div class="remote-toggle">
-                <input type="radio" id="remoteToggle" name="remote">
-                <label for="remoteToggle">REMOTE ONLY</label>
-              </div>
+            <!-- Filter Trigger -->
+            <button class="filter-trigger" id="jobsFilterTrigger">
+              SELECT FILTERS
+            </button>
+            
+            <!-- Selected Filters Display -->
+            <div class="selected-filters" id="selectedJobsFilters">
+              <!-- Selected filter tags will appear here -->
+            </div>
+            
+            <div class="remote-toggle">
+              <input type="radio" id="remoteToggle" name="remote">
+              <label for="remoteToggle">REMOTE ONLY</label>
             </div>
           </div>
 
           <div id="communityFilters" class="filter-content">
-            <!-- Mobile Filter Trigger -->
-            <button class="mobile-filter-trigger" id="communityFilterTrigger">
+            <!-- Filter Trigger -->
+            <button class="filter-trigger" id="communityFilterTrigger">
               SELECT FILTERS
             </button>
             
@@ -211,16 +196,11 @@
             <div class="selected-filters" id="selectedFilters">
               <!-- Selected filter tags will appear here -->
             </div>
-            
-            <div class="tag-buttons" id="communityTags" style="min-height: 50px;">
-              <!-- Community tags will be populated dynamically from Supabase categories -->
-              <div class="loading-categories">Loading categories...</div>
-            </div>
           </div>
 
           <div id="fabricationFilters" class="filter-content">
-            <!-- Mobile Filter Trigger -->
-            <button class="mobile-filter-trigger" id="fabricationFilterTrigger">
+            <!-- Filter Trigger -->
+            <button class="filter-trigger" id="fabricationFilterTrigger">
               SELECT FILTERS
             </button>
             
@@ -228,49 +208,18 @@
             <div class="selected-filters" id="selectedFabricationFilters">
               <!-- Selected filter tags will appear here -->
             </div>
-            
-            <div class="filter-container">
-              <div class="dropdown-filter">
-                <h3>MACHINES:</h3>
-                <select id="machineSelect" multiple class="filter-dropdown">
-                  <option value="">All Machines</option>
-                  <option value="3d-printer">3D Printers</option>
-                  <option value="laser-cutter">Laser Cutters</option>
-                  <option value="cnc-mill">CNC Mills</option>
-                  <option value="cnc-router">CNC Routers</option>
-                  <option value="vinyl-cutter">Vinyl Cutters</option>
-                  <option value="soldering-station">Soldering Stations</option>
-                  <option value="oscilloscope">Oscilloscopes</option>
-                  <option value="multimeter">Multimeters</option>
-                </select>
-              </div>
-              <div class="dropdown-filter">
-                <h3>MATERIALS:</h3>
-                <select id="materialSelect" multiple class="filter-dropdown">
-                  <option value="">All Materials</option>
-                  <option value="filament">Filaments</option>
-                  <option value="acrylic">Acrylic Sheets</option>
-                  <option value="wood">Wood</option>
-                  <option value="metal">Metal Stock</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="fabric">Fabric</option>
-                  <option value="foam">Foam</option>
-                  <option value="adhesives">Adhesives</option>
-                </select>
-              </div>
-            </div>
           </div>
         </section>
       </div>
 
-      <!-- Mobile Filter Popup -->
-      <div class="mobile-filter-popup" id="mobileFilterPopup">
-        <div class="mobile-filter-content">
-          <div class="mobile-filter-header">
-            <h3 id="mobileFilterTitle">SELECT FILTERS</h3>
-            <button class="mobile-filter-close" id="mobileFilterClose">&times;</button>
+      <!-- Filter Popup -->
+      <div class="filter-popup" id="filterPopup">
+        <div class="filter-popup-content">
+          <div class="filter-popup-header">
+            <h3 id="filterPopupTitle">SELECT FILTERS</h3>
+            <button class="filter-popup-close" id="filterPopupClose">&times;</button>
           </div>
-          <div class="mobile-filter-options" id="mobileFilterOptions">
+          <div class="filter-popup-options" id="filterPopupOptions">
             <!-- Filter options will be populated by JavaScript based on current mode -->
           </div>
         </div>

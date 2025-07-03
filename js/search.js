@@ -237,19 +237,13 @@ async function fetchCommunityData() {
 
     communityDataLoaded = true;
 
-    // Update UI
-    populateCommunityTags();
+    // Update UI - no need to populate tags since we use popup
     if (currentMode === 'community') {
       updateCommunityResults();
     }
 
   } catch (error) {
     console.error('[Community] Error fetching community data:', error);
-    
-    // Show error state
-    if (communityTagsContainer) {
-      communityTagsContainer.innerHTML = '<div class="loading-categories">Error loading categories. Please try again.</div>';
-    }
     
     // Fallback to empty arrays
     allCommunityMembers = [];
@@ -263,22 +257,8 @@ async function fetchCommunityData() {
 
 // Populate community tags in the UI
 function populateCommunityTags() {
-  const communityTagsContainer = document.getElementById('communityTags');
-  if (!communityTagsContainer) return;
-
-  // Clear loading state
-  communityTagsContainer.innerHTML = '';
-
-  // Add tag buttons
-  allCommunityCategories.forEach(category => {
-    const button = document.createElement('button');
-    button.className = 'tag-btn';
-    button.textContent = category.label;
-    button.dataset.tag = category.tag;
-    communityTagsContainer.appendChild(button);
-  });
-
-  console.log('[Community] Tags populated:', allCommunityCategories.length);
+  // Community tags are now populated through the filter popup
+  console.log('[Community] Categories loaded:', allCommunityCategories.length);
 }
 
 // Initialize map
@@ -356,31 +336,45 @@ function getActiveFiltersForMode(mode) {
 }
 
 function getMobileFiltersForMode(mode) {
-  const mobileJobsFilters = [
+function getFiltersForMode(mode) {
+  const jobsFilters = [
     { tag: 'robotics', label: 'ROBOTICS' },
     { tag: 'software', label: 'SOFTWARE' },
     { tag: 'hardware', label: 'HARDWARE' },
-    { tag: 'internship', label: 'INTERNSHIP' }
+    { tag: 'internship', label: 'INTERNSHIP' },
+    { tag: 'industrial-design', label: 'INDUSTRIAL DESIGN' },
+    { tag: 'manufacturing', label: 'MANUFACTURING' },
+    { tag: 'mechatronics', label: 'MECHATRONICS' }
   ];
 
-  const mobileFabricationFilters = [
+  const fabricationFilters = [
     { tag: '3d-printer', label: '3D PRINTERS' },
     { tag: 'laser-cutter', label: 'LASER CUTTERS' },
     { tag: 'cnc-mill', label: 'CNC MILLS' },
+    { tag: 'cnc-router', label: 'CNC ROUTERS' },
+    { tag: 'vinyl-cutter', label: 'VINYL CUTTERS' },
+    { tag: 'soldering-station', label: 'SOLDERING STATIONS' },
+    { tag: 'oscilloscope', label: 'OSCILLOSCOPES' },
+    { tag: 'multimeter', label: 'MULTIMETERS' },
     { tag: 'filament', label: 'FILAMENTS' },
     { tag: 'acrylic', label: 'ACRYLIC' },
+    { tag: 'wood', label: 'WOOD' },
+    { tag: 'metal', label: 'METAL STOCK' },
     { tag: 'electronics', label: 'ELECTRONICS' }
+    { tag: 'fabric', label: 'FABRIC' },
+    { tag: 'foam', label: 'FOAM' },
+    { tag: 'adhesives', label: 'ADHESIVES' }
   ];
 
   switch (mode) {
     case 'blog':
       return getUniqueTagsFromBlogPosts().map(tag => ({ tag, label: tag.toUpperCase() }));
     case 'jobs':
-      return mobileJobsFilters;
+      return jobsFilters;
     case 'community':
       return allCommunityCategories; // Use dynamically fetched categories
     case 'fabrication':
-      return mobileFabricationFilters;
+      return fabricationFilters;
     default:
       return [];
   }
@@ -569,8 +563,8 @@ function updateBlogResults() {
       post.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
 
     const matchesTags = 
-      (window.innerWidth <= 768 && currentMode === 'blog' ? blogFilters : activeFilters).size === 0 || 
-      post.tags.some(tag => (window.innerWidth <= 768 && currentMode === 'blog' ? blogFilters : activeFilters).has(tag));
+      blogFilters.size === 0 || 
+      post.tags.some(tag => blogFilters.has(tag));
 
     return matchesSearch && matchesTags;
   });
@@ -639,8 +633,7 @@ function updateJobsResults() {
     if (!matchesSearch) return false;
     if (remoteOnly && !job.remote) return false;
 
-    const activeJobFilters = window.innerWidth <= 768 && currentMode === 'jobs' ? jobsFilters : activeFilters;
-    return activeJobFilters.size === 0 || job.tags.some(tag => activeJobFilters.has(tag));
+    return jobsFilters.size === 0 || job.tags.some(tag => jobsFilters.has(tag));
   });
 
   const jobsList = document.getElementById('jobsList');
@@ -687,8 +680,7 @@ function updateCommunityResults() {
       member.bio.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
 
-    const activeCommunityFilters = window.innerWidth <= 768 && currentMode === 'community' ? communityFilters : activeFilters;
-    const matchesTags = activeCommunityFilters.size === 0 || member.tags.some(tag => activeCommunityFilters.has(tag));
+    const matchesTags = communityFilters.size === 0 || member.tags.some(tag => communityFilters.has(tag));
 
     return matchesSearch && matchesTags;
   });
@@ -771,20 +763,12 @@ function updateFabricationResults() {
 
     if (!matchesSearch) return false;
 
-    const activeFabFilters = window.innerWidth <= 768 && currentMode === 'fabrication' ? fabricationFilters : new Set([...machineFilters, ...materialFilters]);
+    const activeFabFilters = fabricationFilters;
 
-    if (window.innerWidth <= 768 && currentMode === 'fabrication') {
-      if (activeFabFilters.size > 0) {
-        const matchesCategory = activeFabFilters.has(item.category);
-        const matchesTags = item.tags.some(tag => activeFabFilters.has(tag));
-        if (!matchesCategory && !matchesTags) return false;
-      }
-    } else {
-      if (machineFilters.size > 0 && item.type === 'machine' && !machineFilters.has(item.category)) return false;
-      if (materialFilters.size > 0 && item.type === 'material' && !materialFilters.has(item.category)) return false;
-      if ((machineFilters.size > 0 || materialFilters.size > 0) && 
-          (item.type === 'machine' && machineFilters.size === 0) || 
-          (item.type === 'material' && materialFilters.size === 0)) return false;
+    if (activeFabFilters.size > 0) {
+      const matchesCategory = activeFabFilters.has(item.category);
+      const matchesTags = item.tags.some(tag => activeFabFilters.has(tag));
+      if (!matchesCategory && !matchesTags) return false;
     }
 
     return true;
@@ -954,9 +938,6 @@ async function switchMode(mode) {
   }
 
   // Clear all tag buttons
-  document.querySelectorAll('.tag-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
 
   // Clear selected filters displays
   ['selectedFilters', 'selectedBlogFilters', 'selectedJobsFilters', 'selectedFabricationFilters'].forEach(id => {
@@ -992,26 +973,12 @@ function updateResults() {
 
 // Initialize search interface
 function initializeSearchInterface() {
-  // Initialize blog tags
-  const blogTagsContainer = document.getElementById('blogTags');
-  if (blogTagsContainer) {
-    getUniqueTagsFromBlogPosts().forEach(tag => {
-      const button = document.createElement('button');
-      button.className = 'tag-btn';
-      button.textContent = tag.toUpperCase();
-      button.dataset.tag = tag;
-      blogTagsContainer.appendChild(button);
-    });
-  }
-
-  // Initialize mobile filters
-  initializeMobileFilters();
+  // Initialize filters
+  initializeFilters();
 
   // Event listeners
   const searchInput = document.getElementById('searchInput');
   const remoteToggle = document.getElementById('remoteToggle');
-  const machineSelect = document.getElementById('machineSelect');
-  const materialSelect = document.getElementById('materialSelect');
 
   // Mode buttons
   document.querySelectorAll('.mode-btn').forEach(btn => {
@@ -1029,51 +996,11 @@ function initializeSearchInterface() {
     });
   }
 
-  // Tag buttons
-  document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('tag-btn')) {
-      const tag = e.target.dataset.tag;
-      if (activeFilters.has(tag)) {
-        activeFilters.delete(tag);
-        e.target.classList.remove('active');
-      } else {
-        activeFilters.add(tag);
-        e.target.classList.add('active');
-      }
-      currentPage = 0;
-      updateResults();
-    }
-  });
-
   // Remote toggle
   if (remoteToggle) {
     remoteToggle.addEventListener('click', () => {
       remoteOnly = !remoteOnly;
       remoteToggle.checked = remoteOnly;
-      updateResults();
-    });
-  }
-
-  // Machine select
-  if (machineSelect) {
-    machineSelect.addEventListener('change', (e) => {
-      const selectedValues = Array.from(e.target.selectedOptions).map(option => option.value);
-      machineFilters.clear();
-      selectedValues.forEach(value => {
-        if (value) machineFilters.add(value);
-      });
-      updateResults();
-    });
-  }
-
-  // Material select
-  if (materialSelect) {
-    materialSelect.addEventListener('change', (e) => {
-      const selectedValues = Array.from(e.target.selectedOptions).map(option => option.value);
-      materialFilters.clear();
-      selectedValues.forEach(value => {
-        if (value) materialFilters.add(value);
-      });
       updateResults();
     });
   }
@@ -1118,33 +1045,33 @@ function initializeSearchInterface() {
 }
 
 // Mobile filters
-function initializeMobileFilters() {
-  if (mobileFiltersInitialized) return;
+function initializeFilters() {
+  if (mobileFiltersInitialized) return; // Rename this to filtersInitialized later
   
   const communityFilterTrigger = document.getElementById('communityFilterTrigger');
   const blogFilterTrigger = document.getElementById('blogFilterTrigger');
   const jobsFilterTrigger = document.getElementById('jobsFilterTrigger');
   const fabricationFilterTrigger = document.getElementById('fabricationFilterTrigger');
-  const mobileFilterPopup = document.getElementById('mobileFilterPopup');
-  const mobileFilterClose = document.getElementById('mobileFilterClose');
-  const mobileFilterOptions = document.getElementById('mobileFilterOptions');
-  const mobileFilterTitle = document.getElementById('mobileFilterTitle');
+  const filterPopup = document.getElementById('filterPopup');
+  const filterPopupClose = document.getElementById('filterPopupClose');
+  const filterPopupOptions = document.getElementById('filterPopupOptions');
+  const filterPopupTitle = document.getElementById('filterPopupTitle');
 
   let currentFilterMode = '';
 
-  function showMobileFilters(mode) {
+  function showFilters(mode) {
     currentFilterMode = mode;
-    mobileFilterTitle.textContent = `SELECT ${mode.toUpperCase()} FILTERS`;
-    mobileFilterPopup.classList.add('active');
-    populateMobileFilters(mode);
+    filterPopupTitle.textContent = `SELECT ${mode.toUpperCase()} FILTERS`;
+    filterPopup.classList.add('active');
+    populateFilters(mode);
   }
 
-  function populateMobileFilters(mode) {
-    const filters = getMobileFiltersForMode(mode);
+  function populateFilters(mode) {
+    const filters = getFiltersForMode(mode);
     const activeFiltersForMode = getActiveFiltersForMode(mode);
 
-    mobileFilterOptions.innerHTML = filters.map(filter => `
-      <button class="mobile-filter-option ${activeFiltersForMode.has(filter.tag) ? 'selected' : ''}" data-tag="${filter.tag}">
+    filterPopupOptions.innerHTML = filters.map(filter => `
+      <button class="filter-popup-option ${activeFiltersForMode.has(filter.tag) ? 'selected' : ''}" data-tag="${filter.tag}">
         ${filter.label}
       </button>
     `).join('');
@@ -1152,35 +1079,35 @@ function initializeMobileFilters() {
 
   // Event listeners
   if (communityFilterTrigger) {
-    communityFilterTrigger.addEventListener('click', () => showMobileFilters('community'));
+    communityFilterTrigger.addEventListener('click', () => showFilters('community'));
   }
   if (blogFilterTrigger) {
-    blogFilterTrigger.addEventListener('click', () => showMobileFilters('blog'));
+    blogFilterTrigger.addEventListener('click', () => showFilters('blog'));
   }
   if (jobsFilterTrigger) {
-    jobsFilterTrigger.addEventListener('click', () => showMobileFilters('jobs'));
+    jobsFilterTrigger.addEventListener('click', () => showFilters('jobs'));
   }
   if (fabricationFilterTrigger) {
-    fabricationFilterTrigger.addEventListener('click', () => showMobileFilters('fabrication'));
+    fabricationFilterTrigger.addEventListener('click', () => showFilters('fabrication'));
   }
 
-  if (mobileFilterClose) {
-    mobileFilterClose.addEventListener('click', () => {
-      mobileFilterPopup.classList.remove('active');
+  if (filterPopupClose) {
+    filterPopupClose.addEventListener('click', () => {
+      filterPopup.classList.remove('active');
     });
   }
 
-  if (mobileFilterPopup) {
-    mobileFilterPopup.addEventListener('click', (e) => {
-      if (e.target === mobileFilterPopup) {
-        mobileFilterPopup.classList.remove('active');
+  if (filterPopup) {
+    filterPopup.addEventListener('click', (e) => {
+      if (e.target === filterPopup) {
+        filterPopup.classList.remove('active');
       }
     });
   }
 
-  if (mobileFilterOptions) {
-    mobileFilterOptions.addEventListener('click', (e) => {
-      if (e.target.classList.contains('mobile-filter-option')) {
+  if (filterPopupOptions) {
+    filterPopupOptions.addEventListener('click', (e) => {
+      if (e.target.classList.contains('filter-popup-option')) {
         const tag = e.target.dataset.tag;
         const activeFiltersForMode = getActiveFiltersForMode(currentFilterMode);
 
