@@ -361,7 +361,7 @@ function getFiltersForMode(mode) {
     { tag: 'acrylic', label: 'ACRYLIC' },
     { tag: 'wood', label: 'WOOD' },
     { tag: 'metal', label: 'METAL STOCK' },
-    { tag: 'electronics', label: 'ELECTRONICS' }
+    { tag: 'electronics', label: 'ELECTRONICS' },
     { tag: 'fabric', label: 'FABRIC' },
     { tag: 'foam', label: 'FOAM' },
     { tag: 'adhesives', label: 'ADHESIVES' }
