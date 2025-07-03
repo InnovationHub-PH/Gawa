@@ -214,10 +214,12 @@ const handleMobileNavigation = () => {
     }
     
     // Add auth button or user menu to mobile navigation
-    if (authButton && authButton.style.display !== 'none') {
+    if (authButton && !authButton.classList.contains('auth-hidden')) {
       const mobileAuthButton = authButton.cloneNode(true);
       mobileAuthButton.classList.add('mobile-auth');
       mobileAuthButton.id = 'mobileAuthButton';
+      // Ensure proper styling is maintained
+      mobileAuthButton.classList.remove('auth-hidden');
       mainNav.appendChild(mobileAuthButton);
       
       // Add event listener to mobile auth button
@@ -230,10 +232,12 @@ const handleMobileNavigation = () => {
         mainNav.classList.remove('active');
         document.querySelector('.menu-toggle').classList.remove('active');
       });
-    } else if (userMenu && userMenu.style.display !== 'none') {
+    } else if (userMenu && !userMenu.classList.contains('auth-hidden')) {
       const mobileUserMenu = userMenu.cloneNode(true);
       mobileUserMenu.classList.add('mobile-auth');
       mobileUserMenu.id = 'mobileUserMenu';
+      // Ensure proper styling is maintained
+      mobileUserMenu.classList.remove('auth-hidden');
       mainNav.appendChild(mobileUserMenu);
       
       // Add event listeners to mobile user menu
