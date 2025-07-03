@@ -725,12 +725,70 @@ function initializeMobileFilterPopup() {
     switch (mode) {
       case 'community':
         return [
+          // Account Types
           { tag: 'business', label: 'COMPANIES' },
           { tag: 'person', label: 'INDIVIDUALS' },
-          { tag: 'education', label: 'EDUCATION' }
-        ];
-      case 'blog':
-        return getBlogTags().map(tag => ({ tag, label: tag.toUpperCase() }));
+          { tag: 'education', label: 'EDUCATION' },
+          
+          // Engineering & Technical Development
+          { tag: 'electrical-engineering', label: 'ELECTRICAL ENGINEERING' },
+          { tag: 'embedded-systems', label: 'EMBEDDED SYSTEMS' },
+          { tag: 'hardware-engineering', label: 'HARDWARE ENGINEERING' },
+          { tag: 'materials-science', label: 'MATERIALS SCIENCE' },
+          { tag: 'mechanical-engineering', label: 'MECHANICAL ENGINEERING' },
+          { tag: 'mechatronics', label: 'MECHATRONICS' },
+          { tag: 'robotics', label: 'ROBOTICS' },
+          { tag: 'software-engineering', label: 'SOFTWARE ENGINEERING' },
+          
+          // Fabrication & Manufacturing
+          { tag: 'digital-fabrication', label: 'DIGITAL FABRICATION' },
+          { tag: 'mass-manufacturing', label: 'MASS MANUFACTURING' },
+          { tag: 'small-batch-manufacturing', label: 'SMALL BATCH MANUFACTURING' },
+          { tag: 'traditional-fabrication', label: 'TRADITIONAL FABRICATION' },
+          
+          // Marketing
+          { tag: 'branding', label: 'BRANDING' },
+          { tag: 'content-creation', label: 'CONTENT CREATION' },
+          { tag: 'copywriting', label: 'COPYWRITING' },
+          { tag: 'digital-marketing', label: 'DIGITAL MARKETING' },
+          { tag: 'strategy', label: 'STRATEGY' },
+          
+          // Media & Storytelling
+          { tag: 'audio-storytelling', label: 'AUDIO STORYTELLING' },
+          { tag: 'documentary-filmmaking', label: 'DOCUMENTARY FILMMAKING' },
+          { tag: 'photography', label: 'PHOTOGRAPHY' },
+          { tag: 'videography', label: 'VIDEOGRAPHY' },
+          { tag: 'visual-journalism', label: 'VISUAL JOURNALISM' },
+          
+          // Research & Human-Centered Design
+          { tag: 'behavioral-design', label: 'BEHAVIORAL DESIGN' },
+          { tag: 'biodesign', label: 'BIODESIGN' },
+          { tag: 'ethnographic-research', label: 'ETHNOGRAPHIC RESEARCH' },
+          { tag: 'human-factors-research', label: 'HUMAN FACTORS RESEARCH' },
+          { tag: 'usability-testing', label: 'USABILITY TESTING' },
+          
+          // Sustainability & Regenerative Systems
+          { tag: 'agroecology', label: 'AGROECOLOGY / URBAN FARMING' },
+          { tag: 'circular-design', label: 'CIRCULAR DESIGN' },
+          { tag: 'energy-self-sufficiency', label: 'ENERGY SELF-SUFFICIENCY' },
+          { tag: 'local-resource-reuse', label: 'LOCAL RESOURCE REUSE' },
+          { tag: 'zero-waste-production', label: 'ZERO-WASTE PRODUCTION' },
+          
+          // Technology & Coding
+          { tag: 'coding-bootcamps', label: 'CODING BOOTCAMPS & TECH SCHOOLS' },
+          { tag: 'low-code-no-code', label: 'LOW-CODE/NO-CODE TOOLS' },
+          { tag: 'programming', label: 'PROGRAMMING (GENERAL)' },
+          { tag: 'software-development', label: 'SOFTWARE DEVELOPMENT' },
+          
+          // Trades & Skilled Labor
+          { tag: 'carpentry', label: 'CARPENTRY' },
+          { tag: 'electrical', label: 'ELECTRICAL' },
+          { tag: 'factory-work', label: 'FACTORY WORK' },
+          { tag: 'hvac', label: 'HVAC' },
+          { tag: 'masonry', label: 'MASONRY' },
+          { tag: 'plumbing', label: 'PLUMBING' },
+          { tag: 'tool-and-die', label: 'TOOL & DIE' },
+          { tag: 'welding', label: 'WELDING' }
       case 'jobs':
         return [
           { tag: 'robotics', label: 'ROBOTICS' },

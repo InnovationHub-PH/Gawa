@@ -4,41 +4,6 @@ import { geocodingService } from './geocoding.js';
 
 // Category definitions
 export const PROFILE_CATEGORIES = {
-  'Architecture & Built Environment': [
-    'Architecture',
-    'Landscape Design', 
-    'Permaculture Design',
-    'Urban Planning'
-  ],
-  'Artisanal & Cultural': [
-    'Artisan Co-ops & Guilds',
-    'Cultural Preservation Initiatives',
-    'Heritage Restoration',
-    'Local Cuisine & Food Crafting',
-    'Traditional Crafts (e.g., ceramics, weaving, woodworking)'
-  ],
-  'Business & Infrastructure': [
-    'Business Incubator / Accelerator (local-focused)',
-    'Inventory & Logistics',
-    'Local Retail (Pop-ups, Maker Markets)',
-    'Local Supply Chain Optimization',
-    'Sales & Distribution for Local Products'
-  ],
-  'Design & Aesthetics': [
-    'Fashion Design',
-    'Furniture Design',
-    'Graphic Design',
-    'Industrial Design',
-    'Product Design',
-    'UI/UX Design'
-  ],
-  'Education & Knowledge Transfer': [
-    'Online Resource',
-    'Local Workshops & Apprenticeships',
-    'Makerspace / Fab Lab',
-    'Open Source Education Platform',
-    'University'
-  ],
   'Engineering & Technical Development': [
     'Electrical Engineering',
     'Embedded Systems',
@@ -82,6 +47,12 @@ export const PROFILE_CATEGORIES = {
     'Energy Self-Sufficiency',
     'Local Resource Reuse (e.g., biowaste into material)',
     'Zero-Waste Production'
+  ],
+  'Technology & Coding': [
+    'Coding Bootcamps & Tech Schools',
+    'Low-Code/No-Code Tools',
+    'Programming (General)',
+    'Software Development'
   ],
   'Technology & Coding': [
     'Coding Bootcamps & Tech Schools',
