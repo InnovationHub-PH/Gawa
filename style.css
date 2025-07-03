@@ -802,6 +802,16 @@ input[type="radio"]:checked::before {
   font-family: var(--font-mono);
 }
 
+.certification-success {
+  display: block;
+  padding: 1rem;
+  margin: 1rem 2rem;
+  font-family: var(--font-mono);
+  border: 2px solid var(--border-color);
+  background: var(--primary-color);
+  color: var(--bg-color);
+}
+
 .tag-buttons {
   display: flex;
   gap: 0.5rem;

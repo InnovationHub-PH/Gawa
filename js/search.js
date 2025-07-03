@@ -1,6 +1,9 @@
 import { db } from './supabase.js';
 import { blogPosts } from './blogData.js';
 
+// Global variables for dynamic categories
+let availableCategories = [];
+
 // Job data (keeping existing structure)
 const jobs = [
   {
@@ -886,6 +889,523 @@ function updateCommunityResults() {
   const activeTagFilters = window.innerWidth <= 768 && currentMode === 'community' ? mobileActiveFilters : activeFilters;
   if (activeTagFilters.size > 0) {
     filteredMembers = filteredMembers.filter(member => {
+      // Check account type filters (legacy support)
+      const accountTypeMatch = activeTagFilters.has(member.account_type);
+      
+      // Check category filters (new dynamic system)
+      let categoryMatch = false;
+      if (member.profile_categories && member.profile_categories.length > 0) {
+        categoryMatch = member.profile_categories.some(category => {
+          const categoryKey = `${category.category_group}:${category.category_name}`;
+          return activeTagFilters.has(categoryKey);
+        });
+      }
+      
+      return accountTypeMatch || categoryMatch;
+    });
+  }
+
+  // Clear existing content
+  document.querySelector('.companies-grid').innerHTML = '';
+  document.querySelector('.individuals-grid').innerHTML = '';
+  document.querySelector('.education-grid').innerHTML = '';
+
+  // Group members by category and render
+  filteredMembers.forEach(member => {
+    const categoryMap = {
+      'business': '.companies-grid',
+      'person': '.individuals-grid', 
+      'education': '.education-grid'
+    };
+    
+    const gridSelector = categoryMap[member.account_type] || '.individuals-grid';
+    const grid = document.querySelector(gridSelector);
+    
+    if (grid) {
+      grid.insertAdjacentHTML('beforeend', createCommunityCard(member));
+    }
+  });
+
+  // Add click handlers for member cards
+  document.querySelectorAll('.member-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button') || e.target.closest('a')) return;
+      
+      const memberName = card.dataset.member;
+      document.querySelectorAll('.card.highlighted').forEach(c => c.classList.remove('highlighted'));
+      card.classList.add('highlighted');
+      focusMapMarker(memberName);
+    });
+  });
+
+  // Since community members from Supabase don't have coordinates, we don't add map markers
+  addCommunityMarkersToMap(filteredMembers);
+}
+
+// Load available categories from Supabase
+async function loadAvailableCategories() {
+  try {
+    console.log('Loading available categories from Supabase...');
+    const { data, error } = await db.getAllCategories();
+    
+    if (error) {
+      console.error('Error loading categories:', error);
+      availableCategories = [];
+      return;
+    }
+    
+    availableCategories = data || [];
+    console.log(`Loaded ${availableCategories.length} categories from Supabase`);
+    
+    // Update community filter tags if we're currently viewing community
+    if (currentMode === 'community') {
+      updateCommunityFilterTags();
+    }
+  } catch (error) {
+    console.error('Failed to load categories:', error);
+    availableCategories = [];
+  }
+}
+
+// Update community filter tags dynamically
+function updateCommunityFilterTags() {
+  const communityTagsContainer = document.getElementById('communityTags');
+  if (!communityTagsContainer) return;
+  
+  // Clear existing tags
+  communityTagsContainer.innerHTML = '';
+  
+  // Add account type filters (legacy support)
+  const accountTypes = [
+    { tag: 'business', label: 'COMPANIES' },
+    { tag: 'person', label: 'INDIVIDUALS' },
+    { tag: 'education', label: 'EDUCATION' }
+  ];
+  
+  accountTypes.forEach(type => {
+    const button = document.createElement('button');
+    button.className = 'tag-btn';
+    button.textContent = type.label;
+    button.dataset.tag = type.tag;
+    communityTagsContainer.appendChild(button);
+  });
+  
+  // Add dynamic category filters
+  const categoryGroups = {};
+  availableCategories.forEach(category => {
+    if (!categoryGroups[category.category_group]) {
+      categoryGroups[category.category_group] = [];
+    }
+    categoryGroups[category.category_group].push(category);
+  });
+  
+  // Create buttons for each category
+  Object.entries(categoryGroups).forEach(([group, categories]) => {
+    categories.forEach(category => {
+      const button = document.createElement('button');
+      button.className = 'tag-btn';
+      button.textContent = `${category.category_name.toUpperCase()}`;
+      button.dataset.tag = `${category.category_group}:${category.category_name}`;
+      button.title = `${category.category_group}: ${category.category_name}`;
+      communityTagsContainer.appendChild(button);
+    });
+  });
+}
+
+// Update mobile filter options for community
+function getCommunityFilterOptions() {
+  const options = [
+    { tag: 'business', label: 'COMPANIES' },
+    { tag: 'person', label: 'INDIVIDUALS' },
+    { tag: 'education', label: 'EDUCATION' }
+  ];
+  
+  // Add dynamic categories
+  availableCategories.forEach(category => {
+    options.push({
+      tag: `${category.category_group}:${category.category_name}`,
+      label: category.category_name.toUpperCase()
+    });
+  });
+  
+  return options;
+}
+
+// Update the getFilterOptions function in mobile filter popup
+function getFilterOptions(mode) {
+  switch (mode) {
+    case 'community':
+      return getCommunityFilterOptions();
+    case 'blog':
+      return getBlogTags().map(tag => ({ tag, label: tag.toUpperCase() }));
+    case 'jobs':
+      return [
+        { tag: 'robotics', label: 'ROBOTICS' },
+        { tag: 'software', label: 'SOFTWARE' },
+        { tag: 'hardware', label: 'HARDWARE' },
+        { tag: 'internship', label: 'INTERNSHIP' },
+        { tag: 'industrial-design', label: 'INDUSTRIAL DESIGN' },
+        { tag: 'manufacturing', label: 'MANUFACTURING' },
+        { tag: 'mechatronics', label: 'MECHATRONICS' }
+      ];
+    case 'fabrication':
+      return [
+        { tag: '3d-printer', label: '3D PRINTERS' },
+        { tag: 'laser-cutter', label: 'LASER CUTTERS' },
+        { tag: 'cnc-mill', label: 'CNC MILLS' },
+        { tag: 'cnc-router', label: 'CNC ROUTERS' },
+        { tag: 'filament', label: 'FILAMENTS' },
+        { tag: 'acrylic', label: 'ACRYLIC' },
+        { tag: 'wood', label: 'WOOD' },
+        { tag: 'electronics', label: 'ELECTRONICS' }
+      ];
+    default:
+      return [];
+  }
+}
+
+// Update the existing getFilterOptions function reference
+function initializeMobileFilterPopup() {
+  const communityTrigger = document.getElementById('communityFilterTrigger');
+  const blogTrigger = document.getElementById('blogFilterTrigger');
+  const jobsTrigger = document.getElementById('jobsFilterTrigger');
+  const fabricationTrigger = document.getElementById('fabricationFilterTrigger');
+  const popup = document.getElementById('mobileFilterPopup');
+  const closeBtn = document.getElementById('mobileFilterClose');
+  const optionsContainer = document.getElementById('mobileFilterOptions');
+  const titleElement = document.getElementById('mobileFilterTitle');
+
+  let currentFilterMode = '';
+
+  communityTrigger.addEventListener('click', () => {
+    currentFilterMode = 'community';
+    titleElement.textContent = 'SELECT COMMUNITY FILTERS';
+    showMobileFilterPopup();
+  });
+
+  blogTrigger.addEventListener('click', () => {
+    currentFilterMode = 'blog';
+    titleElement.textContent = 'SELECT BLOG FILTERS';
+    showMobileFilterPopup();
+  });
+
+  jobsTrigger.addEventListener('click', () => {
+    currentFilterMode = 'jobs';
+    titleElement.textContent = 'SELECT JOB FILTERS';
+    showMobileFilterPopup();
+  });
+
+  fabricationTrigger.addEventListener('click', () => {
+    currentFilterMode = 'fabrication';
+    titleElement.textContent = 'SELECT FABRICATION FILTERS';
+    showMobileFilterPopup();
+  });
+
+  function showMobileFilterPopup() {
+    popup.classList.add('active');
+    populateMobileFilterOptions(currentFilterMode);
+  }
+
+  function populateMobileFilterOptions(mode) {
+    const options = getFilterOptions(mode);
+    const activeFilters = getActiveFiltersForMode(mode);
+    
+    optionsContainer.innerHTML = options.map(option => `
+      <button class="mobile-filter-option ${activeFilters.has(option.tag) ? 'selected' : ''}" data-tag="${option.tag}">
+        ${option.label}
+      </button>
+    `).join('');
+  }
+
+  function getActiveFiltersForMode(mode) {
+    switch (mode) {
+      case 'community':
+        return mobileActiveFilters;
+      case 'blog':
+        return mobileBlogFilters;
+      case 'jobs':
+        return mobileJobsFilters;
+      case 'fabrication':
+        return mobileFabricationFilters;
+      default:
+        return new Set();
+    }
+  }
+
+  function getSelectedFiltersContainer(mode) {
+    switch (mode) {
+      case 'community':
+        return document.getElementById('selectedFilters');
+      case 'blog':
+        return document.getElementById('selectedBlogFilters');
+      case 'jobs':
+        return document.getElementById('selectedJobsFilters');
+      case 'fabrication':
+        return document.getElementById('selectedFabricationFilters');
+      default:
+        return null;
+    }
+  }
+
+  function updateSelectedFiltersDisplay(mode) {
+    const container = getSelectedFiltersContainer(mode);
+    const activeFilters = getActiveFiltersForMode(mode);
+    
+    if (container) {
+      container.innerHTML = '';
+      activeFilters.forEach(tag => {
+        const filterTag = document.createElement('div');
+        filterTag.className = 'selected-filter-tag';
+        filterTag.innerHTML = `
+          ${tag.toUpperCase()}
+          <button class="remove-filter" data-tag="${tag}" data-mode="${mode}">×</button>
+        `;
+        container.appendChild(filterTag);
+      });
+
+      // Add event listeners to remove buttons
+      container.querySelectorAll('.remove-filter').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const tag = e.target.dataset.tag;
+          const mode = e.target.dataset.mode;
+          getActiveFiltersForMode(mode).delete(tag);
+          updateSelectedFiltersDisplay(mode);
+          updateResults();
+        });
+      });
+    }
+  }
+
+  function updateAllSelectedFiltersDisplays() {
+    updateSelectedFiltersDisplay('community');
+    updateSelectedFiltersDisplay('blog');
+    updateSelectedFiltersDisplay('jobs');
+    updateSelectedFiltersDisplay('fabrication');
+  }
+
+  optionsContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('mobile-filter-option')) {
+      const tag = e.target.dataset.tag;
+      const activeFilters = getActiveFiltersForMode(currentFilterMode);
+      
+      if (activeFilters.has(tag)) {
+        activeFilters.delete(tag);
+        e.target.classList.remove('selected');
+      } else {
+        activeFilters.add(tag);
+        e.target.classList.add('selected');
+      }
+      
+      updateSelectedFiltersDisplay(currentFilterMode);
+      updateResults();
+    }
+  });
+
+  closeBtn.addEventListener('click', () => {
+    popup.classList.remove('active');
+  });
+
+  popup.addEventListener('click', (e) => {
+    if (e.target === popup) {
+      popup.classList.remove('active');
+    }
+  });
+
+  // Initialize selected filters display
+  updateAllSelectedFiltersDisplays();
+}
+
+// Switch between different modes
+function switchMode(mode) {
+  currentMode = mode;
+  
+  // Clear all filters
+  activeFilters.clear();
+  mobileActiveFilters.clear();
+  mobileBlogFilters.clear();
+  mobileJobsFilters.clear();
+  mobileFabricationFilters.clear();
+  machineFilters.clear();
+  materialFilters.clear();
+  currentPage = 0;
+
+  // Update mode buttons
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+
+  // Show/hide filter content
+  document.querySelectorAll('.filter-content').forEach(content => {
+    content.classList.toggle('active', content.id === `${mode}Filters`);
+  });
+
+  // Show/hide results content
+  document.querySelectorAll('.results-content').forEach(content => {
+    content.classList.toggle('active', content.id === `${mode}Results`);
+  });
+
+  // Handle map visibility
+  const mapContainer = document.getElementById('mapContainer');
+  const mapColumn = document.getElementById('mapColumn');
+  
+  if (mode === 'blog') {
+    mapContainer.style.display = 'none';
+    mapColumn.style.display = 'none';
+  } else {
+    mapContainer.style.display = 'block';
+    mapColumn.style.display = 'block';
+    if (!map) {
+      initializeMap();
+    }
+    setTimeout(() => map.invalidateSize(), 100);
+  }
+
+  // Clear tag button states
+  document.querySelectorAll('.tag-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+
+  // Clear selected filters displays
+  ['selectedFilters', 'selectedBlogFilters', 'selectedJobsFilters', 'selectedFabricationFilters'].forEach(id => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.innerHTML = '';
+    }
+  });
+
+  // Update community filter tags when switching to community mode
+  if (mode === 'community') {
+    updateCommunityFilterTags();
+  }
+
+  updateResults();
+}
+
+// Main initialization function
+function initializeSearchPage() {
+  initializeMapToggle();
+  initializeAboutPopup();
+  initializeMobileFilterPopup();
+  initializeCarousel();
+
+  // Add blog tags
+  const blogTagsContainer = document.getElementById('blogTags');
+  getBlogTags().forEach(tag => {
+    const button = document.createElement('button');
+    button.className = 'tag-btn';
+    button.textContent = tag.toUpperCase();
+    button.dataset.tag = tag;
+    blogTagsContainer.appendChild(button);
+  });
+
+  // Event listeners
+  const searchInput = document.getElementById('searchInput');
+  const remoteToggle = document.getElementById('remoteToggle');
+  const machineSelect = document.getElementById('machineSelect');
+  const materialSelect = document.getElementById('materialSelect');
+
+  // Mode switching
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchMode(btn.dataset.mode);
+    });
+  });
+
+  // Search input
+  searchInput.addEventListener('input', (e) => {
+    searchTerm = e.target.value;
+    currentPage = 0;
+    updateResults();
+  });
+
+  // Tag buttons
+  document.addEventListener('click', (e) => {
+    if (e.target.classList.contains('tag-btn')) {
+      const tag = e.target.dataset.tag;
+      if (activeFilters.has(tag)) {
+        activeFilters.delete(tag);
+        e.target.classList.remove('active');
+      } else {
+        activeFilters.add(tag);
+        e.target.classList.add('active');
+      }
+      currentPage = 0;
+      updateResults();
+    }
+  });
+
+  // Remote toggle
+  remoteToggle.addEventListener('click', () => {
+    remoteOnly = !remoteOnly;
+    remoteToggle.checked = remoteOnly;
+    updateResults();
+  });
+
+  // Machine select
+  if (machineSelect) {
+    machineSelect.addEventListener('change', (e) => {
+      const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+      machineFilters.clear();
+      selectedOptions.forEach(option => {
+        if (option) machineFilters.add(option);
+      });
+      updateResults();
+    });
+  }
+
+  // Material select
+  if (materialSelect) {
+    materialSelect.addEventListener('change', (e) => {
+      const selectedOptions = Array.from(e.target.selectedOptions).map(option => option.value);
+      materialFilters.clear();
+      selectedOptions.forEach(option => {
+        if (option) materialFilters.add(option);
+      });
+      updateResults();
+    });
+  }
+
+  // Blog navigation
+  document.querySelector('.prev-btn').addEventListener('click', () => {
+    if (currentPage > 0) {
+      currentPage--;
+      updateBlogResults();
+    }
+  });
+
+  document.querySelector('.next-btn').addEventListener('click', () => {
+    currentPage++;
+    updateBlogResults();
+  });
+
+  // Handle window resize
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if (currentMode === 'blog') {
+        currentPage = 0;
+        updateBlogResults();
+      }
+      if (map) {
+        map.invalidateSize();
+      }
+    }, 250);
+  });
+
+  // Load community members and categories from Supabase
+  loadCommunityMembers();
+  loadAvailableCategories();
+
+  // Initialize with blog mode
+  switchMode('blog');
+
+  // Add scroll handler
+  window.addEventListener('scroll', throttledScrollHandler());
+
+  // Initialize dropdown collapse functionality
+  initializeDropdownCollapse();
+}
       return activeTagFilters.has(member.account_type);
     });
   }

@@ -757,7 +757,23 @@ export class ProfileCertification {
           // Handle other category
           const otherCategoryInput = modal.querySelector('#otherCategory');
           if (otherCategoryInput && otherCategoryInput.value.trim()) {
-            this.selectedCategories.add(`Other:${otherCategoryInput.value.trim()}`);
+            const otherCategoryName = otherCategoryInput.value.trim();
+            
+            // Save as category request instead of adding directly
+            try {
+              await db.saveCategoryRequest(user.id, 'Other', otherCategoryName);
+              console.log('Category request submitted:', otherCategoryName);
+              
+              // Show success message to user
+              this.showSuccess(`Category request "${otherCategoryName}" submitted for review. Thank you for your suggestion!`);
+              
+              // Clear the input
+              otherCategoryInput.value = '';
+            } catch (error) {
+              console.error('Error submitting category request:', error);
+              this.showError('Failed to submit category request. Please try again.');
+              return false;
+            }
           }
           
           await this.saveSelectedCategories();
@@ -979,6 +995,17 @@ export class ProfileCertification {
     
     // Prevent body scroll
     document.body.style.overflow = 'hidden';
+  }
+
+  showSuccess(message) {
+    // Create a simple success display
+    const existingSuccess = document.querySelector('.certification-success');
+    if (existingSuccess) {
+      existingSuccess.remove();
+    }
+    
+    // For now, use the same styling as error but with different class
+    this.showError(message, 'certification-success');
   }
 
   showError(message) {
