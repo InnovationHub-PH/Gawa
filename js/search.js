@@ -112,7 +112,7 @@ let mobileFiltersInitialized = false;
 // Scroll tracking variables
 let lastScrollY = 0;
 let hideThreshold = 5; // Pixels to scroll down before hiding
-let showThreshold = 50; // Pixels to scroll up before showing
+let showThreshold = 10; // Pixels to scroll up before showing
 let isSearchInterfaceHidden = false;
 
 // Utility functions
