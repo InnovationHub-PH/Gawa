@@ -752,7 +752,10 @@ function initializeMobileFilterPopup() {
           { tag: 'cnc-router', label: 'CNC ROUTERS' },
           { tag: 'filament', label: 'FILAMENTS' },
           { tag: 'acrylic', label: 'ACRYLIC' },
-          { tag: 'wood', label: 'WOOD' },
+     
+    }
+  }
+}     { tag: 'wood', label: 'WOOD' },
           { tag: 'electronics', label: 'ELECTRONICS' }
         ];
       default:
