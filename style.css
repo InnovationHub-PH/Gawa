@@ -349,8 +349,8 @@ h2 {
 #authButton {
   background: none;
   cursor: pointer;
-  padding: 0 1rem;
-  min-width: 90px;
+  width: auto;
+  padding: 0 1.25rem;
   transition: all 0.3s ease;
   font-family: inherit;
   font-size: inherit;
@@ -365,7 +365,7 @@ h2 {
 .user-menu {
   position: relative;
   display: flex;
-  min-width: 90px;
+  width: auto;
   align-items: center;
   gap: 0.5rem;
   height: var(--nav-element-height);
