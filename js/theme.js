@@ -267,6 +267,9 @@ const handleMobileNavigation = () => {
   }
 };
 
+// Make handleMobileNavigation globally available
+window.handleMobileNavigation = handleMobileNavigation;
+
 // Initialize theme and navigation
 document.addEventListener('DOMContentLoaded', () => {
   const storedTheme = getStoredTheme();
@@ -295,4 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Update mobile navigation on resize
   window.addEventListener('resize', handleMobileNavigation);
+  
+  // Listen for auth state changes to update mobile navigation
+  window.addEventListener('authStateChanged', handleMobileNavigation);
 });

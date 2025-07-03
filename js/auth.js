@@ -44,6 +44,11 @@ export async function initAuth() {
       window.dispatchEvent(new CustomEvent('authStateChanged', { 
         detail: { event, session, user: currentUser, profile: userProfile } 
       }));
+      
+      // Force UI update after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        updateUIForAuthenticatedUser();
+      }, 100);
     } else if (event === 'SIGNED_OUT') {
       currentUser = null;
       userProfile = null;
@@ -101,17 +106,23 @@ async function loadUserProfile() {
 
 // Update UI for authenticated user
 function updateUIForAuthenticatedUser() {
+  console.log('Updating UI for authenticated user');
   const authButton = document.getElementById('authButton');
   const userMenu = document.getElementById('userMenu');
   
   if (authButton) {
     authButton.classList.add('auth-hidden');
+    authButton.style.display = 'none';
   }
   
   if (userMenu) {
     userMenu.classList.remove('auth-hidden');
+    userMenu.style.display = 'flex';
     updateUserMenuContent();
   }
+  
+  // Update mobile navigation if needed
+  updateMobileNavigation();
 }
 
 // Update UI for unauthenticated user
@@ -122,12 +133,17 @@ function updateUIForUnauthenticatedUser() {
   
   if (authButton) {
     authButton.classList.remove('auth-hidden');
+    authButton.style.display = 'flex';
     console.log('Auth button should now be visible');
   }
   
   if (userMenu) {
     userMenu.classList.add('auth-hidden');
+    userMenu.style.display = 'none';
   }
+  
+  // Update mobile navigation if needed
+  updateMobileNavigation();
 }
 
 // Force UI update - fallback function
@@ -138,6 +154,7 @@ function forceUIUpdate() {
   
   if (authButton && !currentUser) {
     authButton.classList.remove('auth-hidden');
+    authButton.style.display = 'flex';
   } else if (userMenu && currentUser) {
     updateUIForAuthenticatedUser();
   }
@@ -163,6 +180,14 @@ function updateUserMenuContent() {
       link.href = `profile.html?id=${currentUser.id}`;
     }
   });
+}
+
+// Update mobile navigation
+function updateMobileNavigation() {
+  // Trigger mobile navigation update if theme.js is loaded
+  if (typeof window.handleMobileNavigation === 'function') {
+    window.handleMobileNavigation();
+  }
 }
 
 // Initialize auth modal
@@ -259,6 +284,8 @@ function showSuccessMessage(isNewUser = false) {
   // Hide modal after showing success message
   setTimeout(() => {
     hideAuthModal();
+    // Ensure UI is updated after modal closes
+    updateUIForAuthenticatedUser();
   }, 2500);
 }
 
@@ -284,22 +311,34 @@ function showSuccessModal(title, subtitle = '') {
 async function handleSignIn(e) {
   e.preventDefault();
   
+  // Clear any existing error messages
+  clearAuthMessages();
+  
   const formData = new FormData(e.target);
   const email = formData.get('email');
   const password = formData.get('password');
   
-  const { data, error } = await auth.signIn(email, password);
-  
-  if (error) {
-    showAuthError(error.message);
-  } else {
-    // Success will be handled by auth state change listener
+  try {
+    const { data, error } = await auth.signIn(email, password);
+    
+    if (error) {
+      showAuthError(error.message);
+    } else {
+      console.log('Sign in successful, waiting for auth state change...');
+      // Success will be handled by auth state change listener
+    }
+  } catch (error) {
+    console.error('Sign in error:', error);
+    showAuthError('An error occurred during sign in. Please try again.');
   }
 }
 
 // Handle sign up
 async function handleSignUp(e) {
   e.preventDefault();
+  
+  // Clear any existing error messages
+  clearAuthMessages();
   
   const formData = new FormData(e.target);
   const email = formData.get('email');
@@ -314,29 +353,41 @@ async function handleSignUp(e) {
     return;
   }
   
-  const { data, error } = await auth.signUp(email, password, {
-    full_name: fullName,
-    username: username,
-    account_type: accountType
-  });
-  
-  if (error) {
-    showAuthError(error.message);
-  } else {
-    // Mark as new user for welcome message
-    if (data.user) {
-      data.user.user_metadata = { ...data.user.user_metadata, is_new_user: true };
+  try {
+    const { data, error } = await auth.signUp(email, password, {
+      full_name: fullName,
+      username: username,
+      account_type: accountType
+    });
+    
+    if (error) {
+      showAuthError(error.message);
+    } else {
+      console.log('Sign up successful, waiting for auth state change...');
+      // Mark as new user for welcome message
+      if (data.user) {
+        data.user.user_metadata = { ...data.user.user_metadata, is_new_user: true };
+      }
+      // Success will be handled by auth state change listener
     }
-    // Success will be handled by auth state change listener
+  } catch (error) {
+    console.error('Sign up error:', error);
+    showAuthError('An error occurred during sign up. Please try again.');
   }
 }
 
 // Handle sign out
 async function handleSignOut() {
-  const { error } = await auth.signOut();
-  
-  if (error) {
-    console.error('Error signing out:', error);
+  try {
+    const { error } = await auth.signOut();
+    
+    if (error) {
+      console.error('Error signing out:', error);
+    } else {
+      console.log('Sign out successful');
+    }
+  } catch (error) {
+    console.error('Sign out error:', error);
   }
 }
 
