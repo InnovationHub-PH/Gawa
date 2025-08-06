@@ -4,6 +4,12 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+// Debug environment variables
+console.log('Supabase Config:', {
+  url: supabaseUrl ? 'configured' : 'missing',
+  key: supabaseAnonKey ? 'configured' : 'missing'
+});
+
 // Check if environment variables are available
 if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('Supabase environment variables not configured. Auth will work in fallback mode.');

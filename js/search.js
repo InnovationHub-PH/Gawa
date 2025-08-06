@@ -145,22 +145,47 @@ async function fetchCommunityData() {
   try {
     // Fetch profiles with coordinates
     console.log('[Community] Fetching profiles with coordinates...');
-    const { data: profiles, error: profilesError } = await db.getProfilesWithCoordinates();
+    
+    // Add better error handling for Supabase connection
+    let profiles = [];
+    let profilesError = null;
+    
+    try {
+      const result = await db.getProfilesWithCoordinates();
+      profiles = result.data;
+      profilesError = result.error;
+    } catch (connectionError) {
+      console.error('[Community] Supabase connection error:', connectionError);
+      profilesError = { message: 'Failed to connect to database. Please check your Supabase configuration.', code: 'CONNECTION_ERROR' };
+    }
     
     if (profilesError) {
       console.error('[Community] Error fetching profiles:', profilesError);
-      throw profilesError;
+      // Don't throw, continue with empty data
+      profiles = [];
     }
 
     console.log('[Community] Profiles fetched:', { count: profiles?.length || 0 });
 
     // Fetch all categories
     console.log('[Community] Fetching categories...');
-    const { data: categories, error: categoriesError } = await db.getAllCategories();
+    
+    let categories = [];
+    let categoriesError = null;
+    
+    try {
+      const result = await db.getAllCategories();
+      categories = result.data;
+      categoriesError = result.error;
+    } catch (connectionError) {
+      console.error('[Community] Categories connection error:', connectionError);
+      categoriesError = { message: 'Failed to connect to database for categories', code: 'CONNECTION_ERROR' };
+    }
     
     if (categoriesError) {
       console.error('[Community] Error fetching categories:', categoriesError);
-      throw categoriesError;
+      // Don't throw, continue with empty data
+      categories = [];
     }
 
     console.log('[Community] Categories fetched:', { count: categories?.length || 0 });
