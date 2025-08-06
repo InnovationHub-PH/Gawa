@@ -146,7 +146,6 @@ async function fetchCommunityData() {
     // Fetch profiles with coordinates
     console.log('[Community] Fetching profiles with coordinates...');
     
-    // Add better error handling for Supabase connection
     let profiles = [];
     let profilesError = null;
     
@@ -156,11 +155,19 @@ async function fetchCommunityData() {
       profilesError = result.error;
     } catch (connectionError) {
       console.error('[Community] Supabase connection error:', connectionError);
-      profilesError = { message: 'Failed to connect to database. Please check your Supabase configuration.', code: 'CONNECTION_ERROR' };
+      // Handle different types of connection errors
+      if (connectionError.name === 'TypeError' && connectionError.message.includes('Failed to fetch')) {
+        console.warn('[Community] Supabase service unavailable - continuing with empty profiles');
+        profilesError = { message: 'Supabase service currently unavailable', code: 'SERVICE_UNAVAILABLE' };
+      } else {
+        console.error('[Community] Unexpected connection error:', connectionError);
+        profilesError = { message: 'Failed to connect to database. Please check your Supabase configuration.', code: 'CONNECTION_ERROR' };
+      }
+      profiles = [];
     }
     
     if (profilesError) {
-      console.error('[Community] Error fetching profiles:', profilesError);
+      console.warn('[Community] Error fetching profiles:', profilesError.message);
       // Don't throw, continue with empty data
       profiles = [];
     }
@@ -179,11 +186,19 @@ async function fetchCommunityData() {
       categoriesError = result.error;
     } catch (connectionError) {
       console.error('[Community] Categories connection error:', connectionError);
-      categoriesError = { message: 'Failed to connect to database for categories', code: 'CONNECTION_ERROR' };
+      // Handle different types of connection errors
+      if (connectionError.name === 'TypeError' && connectionError.message.includes('Failed to fetch')) {
+        console.warn('[Community] Supabase service unavailable - continuing with default categories');
+        categoriesError = { message: 'Supabase service currently unavailable', code: 'SERVICE_UNAVAILABLE' };
+      } else {
+        console.error('[Community] Unexpected categories error:', connectionError);
+        categoriesError = { message: 'Failed to connect to database for categories', code: 'CONNECTION_ERROR' };
+      }
+      categories = [];
     }
     
     if (categoriesError) {
-      console.error('[Community] Error fetching categories:', categoriesError);
+      console.warn('[Community] Error fetching categories:', categoriesError.message);
       // Don't throw, continue with empty data
       categories = [];
     }
@@ -268,7 +283,7 @@ async function fetchCommunityData() {
     }
 
   } catch (error) {
-    console.error('[Community] Error fetching community data:', error);
+    console.warn('[Community] Unexpected error in fetchCommunityData:', error);
     
     // Fallback to empty arrays
     allCommunityMembers = [];
@@ -277,6 +292,14 @@ async function fetchCommunityData() {
       { tag: 'business', label: 'COMPANIES' },
       { tag: 'education', label: 'EDUCATIONAL INSTITUTIONS' }
     ];
+    
+    // Mark as loaded even if failed to prevent repeated attempts
+    communityDataLoaded = true;
+    
+    // Update UI with empty data
+    if (currentMode === 'community') {
+      updateCommunityResults();
+    }
   }
 }
 
