@@ -578,17 +578,22 @@ export const db = {
     
     console.log('[Supabase] Fetching all categories...');
     
-    const { data, error } = await supabase
-      .from('profile_categories')
-      .select('category_group, category_name')
-      .order('category_group, category_name');
-    
-    if (error) {
-      console.error('[Supabase] Error fetching categories:', error);
-    } else {
-      console.log('[Supabase] Categories fetched successfully:', { count: data?.length || 0, data });
+    try {
+      const { data, error } = await supabase
+        .from('profile_categories')
+        .select('category_group, category_name')
+        .order('category_group, category_name');
+      
+      if (error) {
+        console.error('[Supabase] Error fetching categories:', error);
+        return { data: [], error };
+      } else {
+        console.log('[Supabase] Categories fetched successfully:', { count: data?.length || 0, data });
+        return { data, error };
+      }
+    } catch (fetchError) {
+      console.warn('[Supabase] Failed to fetch categories - service may be unavailable:', fetchError.message);
+      return { data: [], error: { message: 'Failed to fetch categories', code: 'FETCH_ERROR' } };
     }
-    
-    return { data, error };
   }
 };
